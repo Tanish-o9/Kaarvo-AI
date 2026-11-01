@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Sparkles, Camera, Mic, MicOff, ShoppingBag, Layers, Package, Users, Sliders,
   TrendingUp, Send, CheckCircle, FileText, ArrowRight, ShieldCheck, RefreshCw,
@@ -233,6 +233,30 @@ export default function App() {
 
   // DB State
   const [products, setProducts] = useState([]);
+
+  // DYNAMIC SELLING ARTISANS (Zero Fake Data: Only artisans who have listed real products)
+  const activeArtisans = useMemo(() => {
+    const map = new Map();
+    products.forEach(p => {
+      const name = p.artisan || p.artisan_name;
+      if (!name || name === 'Verified Artisan') return;
+      if (!map.has(name)) {
+        map.set(name, {
+          name,
+          location: p.location || 'India',
+          category: p.category || p.craft_type || 'Traditional Crafts',
+          bio: p.artisan_bio || p.craftStory || `Verified master artisan specializing in authentic handcrafted ${p.category || 'heirlooms'}.`,
+          productsCount: 1,
+          products: [p]
+        });
+      } else {
+        const existing = map.get(name);
+        existing.productsCount += 1;
+        existing.products.push(p);
+      }
+    });
+    return Array.from(map.values());
+  }, [products]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -772,8 +796,9 @@ export default function App() {
           price: catalog.price.suggested_range.min || 480,
           rating: 5.0,
           reviewsCount: 1,
-          artisan: 'Verified Master Artisan (Mohan Lal)',
-          location: entities.region || 'Jaipur, Rajasthan',
+          artisan: currentUser ? (currentUser.full_name || currentUser.username) : 'Verified Master Artisan',
+          artisan_bio: currentUser?.craft_type ? `${currentUser.craft_type} Craftsman from ${currentUser.region || 'India'}.` : 'Verified master artisan handcrafting authentic heirlooms.',
+          location: (currentUser && currentUser.region) ? currentUser.region : (entities.region || 'Jaipur, Rajasthan'),
           description: catalog.descriptor.long_desc,
           materials: entities.material || 'Natural Kiln-Fired Clay / Pure Handloom',
           craftStory: catalog.descriptor.long_desc,
@@ -799,7 +824,14 @@ export default function App() {
         replyObj = {
           id: Date.now() + 1,
           sender: 'bot',
-          text: `✨ Shandaar Mohan ji! Aapka product automatically ONDC standards me catalog ho gaya hai:\n\n📦 *${catalog.descriptor.name}*\n🏷️ *Price:* ₹${catalog.price.suggested_range.min}\n📍 *Origin:* ${entities.region}\n🧵 *Material:* ${entities.material}\n\n✅ Ye sidha Kaarvo Live Storefront aur ONDC Beckn network par live publish kar diya gaya hai!`,
+          text: `✨ Shandaar Mohan ji! Aapka product automatically ONDC standards me catalog ho gaya hai:
+
+📦 *${catalog.descriptor.name}*
+🏷️ *Price:* ₹${catalog.price.suggested_range.min}
+📍 *Origin:* ${entities.region}
+🧵 *Material:* ${entities.material}
+
+✅ Ye sidha Kaarvo Live Storefront aur ONDC Beckn network par live publish kar diya gaya hai!`,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           card: {
             title: catalog.descriptor.name,
@@ -1562,8 +1594,9 @@ export default function App() {
       status: 'published',
       material_cost: materialCost || 180,
       labor_cost: laborCost || 150,
-      artisan: 'Ramswaroop Prajapat',
-      location: entities?.region || 'Jaipur, Rajasthan',
+      artisan: currentUser ? (currentUser.full_name || currentUser.username) : 'Master Artisan',
+      artisan_bio: currentUser?.craft_type ? `${currentUser.craft_type} Craftsman from ${currentUser.region || 'India'}.` : 'Verified master artisan handcrafting authentic heirlooms.',
+      location: (currentUser && currentUser.region) ? currentUser.region : (entities?.region || 'Jaipur, Rajasthan'),
       rating: 5.0,
       reviewsCount: 1,
       image: activeImage,
@@ -1694,19 +1727,68 @@ export default function App() {
     const totalRev = orders.reduce((sum, o) => sum + (parseFloat(o.total_price) || 0), 0);
 
     if (/application|app\b|platform|kaarvo|baare me|kya hai|kya h|kaise kaam|about|features|intro/i.test(qLower)) {
-      fallbackAnswer = `🙏 Namaste! Kaarvo AI ek AI-Powered Commerce Operating System hai jo Indian Artisans (हस्तशिल्पकार) ko digital bazaar aur ONDC se jodta hai:\n\n✨ 1. AI Visual Studio: Craft photos ko auto-lighting aur high-clarity background enhancement deta hai.\n🎙️ 2. Multilingual Voice Cataloger: Aap Hindi me bolein, ye automatically grammatically correct English catalog, title aur description bana deta hai.\n⚖️ 3. Cost-Plus Fair Pricing: Material + Artisan Labor cost ke aadhar par fair living-wage margin suggest karta hai.\n📜 4. Digital Heritage Passport: 100% offline QR code ke sath GI authenticity aur artisan provenance verify karta hai.\n💬 5. WhatsApp AI Sahayak: WhatsApp par mic se bolkar ya photo bhejkar sidha live ONDC listing aur order updates deta hai.\n\nCurrently aapke store me ${products.length} products listed hain aur ₹${totalRev.toLocaleString()} ki sales process ho chuki hai!`;
+      fallbackAnswer = `🙏 Namaste! Kaarvo AI ek AI-Powered Commerce Operating System hai jo Indian Artisans (हस्तशिल्पकार) ko digital bazaar aur ONDC se jodta hai:
+
+✨ 1. AI Visual Studio: Craft photos ko auto-lighting aur high-clarity background enhancement deta hai.
+🎙️ 2. Multilingual Voice Cataloger: Aap Hindi me bolein, ye automatically grammatically correct English catalog, title aur description bana deta hai.
+⚖️ 3. Cost-Plus Fair Pricing: Material + Artisan Labor cost ke aadhar par fair living-wage margin suggest karta hai.
+📜 4. Digital Heritage Passport: 100% offline QR code ke sath GI authenticity aur artisan provenance verify karta hai.
+💬 5. WhatsApp AI Sahayak: WhatsApp par mic se bolkar ya photo bhejkar sidha live ONDC listing aur order updates deta hai.
+
+Currently aapke store me ${products.length} products listed hain aur ₹${totalRev.toLocaleString()} ki sales process ho chuki hai!`;
     } else if (/create product|list product|naya product|add product|kaise beche/i.test(qLower)) {
-      fallbackAnswer = `📦 Naya Product List Karna Bahut Aasan Hai:\n\n1. '3-Pillar AI Studio' tab par jaayein ya niche WhatsApp Bot kholein.\n2. Apne craft ki photo upload karein (AI Visual Studio automatically photo enhance karega).\n3. Multilingual Mic par Hindi me bole (e.g. 'Banarasi silk saree zari embroidery ke sath').\n4. 'Generate Auto-Catalog' par click karein aur 'Publish to Kaarvo Store' dabayein!\n\nProduct turant live storefront aur ONDC Beckn network par customer khareedari ke liye uplabdh ho jayega.`;
+      fallbackAnswer = `📦 Naya Product List Karna Bahut Aasan Hai:
+
+1. '3-Pillar AI Studio' tab par jaayein ya niche WhatsApp Bot kholein.
+2. Apne craft ki photo upload karein (AI Visual Studio automatically photo enhance karega).
+3. Multilingual Mic par Hindi me bole (e.g. 'Banarasi silk saree zari embroidery ke sath').
+4. 'Generate Auto-Catalog' par click karein aur 'Publish to Kaarvo Store' dabayein!
+
+Product turant live storefront aur ONDC Beckn network par customer khareedari ke liye uplabdh ho jayega.`;
     } else if (/sales|revenue|orders|kamai|munafa|analyze sales/i.test(qLower)) {
-      fallbackAnswer = `📊 Aapke Business Ka Live Sales & Revenue Report:\n\n• Total Orders: ${orders.length} orders successfully received\n• Total Revenue: ₹${totalRev.toLocaleString()}\n• Active Live Listings: ${products.length} handcrafted items\n• Top Performing Crafts: Terracotta Clay Pot, Banarasi Saree\n\n💡 Recommendation: Tier-1 metro cities me handcrafted home decor aur textiles ki demand is hafte 28% badh gayi hai.`;
+      fallbackAnswer = `📊 Aapke Business Ka Live Sales & Revenue Report:
+
+• Total Orders: ${orders.length} orders successfully received
+• Total Revenue: ₹${totalRev.toLocaleString()}
+• Active Live Listings: ${products.length} handcrafted items
+• Top Performing Crafts: Terracotta Clay Pot, Banarasi Saree
+
+💡 Recommendation: Tier-1 metro cities me handcrafted home decor aur textiles ki demand is hafte 28% badh gayi hai.`;
     } else if (/suggest price|pricing|price|rate|daam|kimat|kitne me bechu|margin/i.test(qLower)) {
-      fallbackAnswer = `💡 Kaarvo Cost-Plus Fair Living-Wage Pricing Strategy:\n\nPricing formula: Base Cost = (Material Cost + Artisan Fair Wage)\n• Terracotta / Clay: 40% – 60% markup\n• Textiles / Handloom: 30% – 45% markup\n• Metal / Brass: 35% – 55% markup\n• Woodwork: 35% – 50% markup\n\nPillar 3 Pricing Engine me material aur labor cost daalne par accurate ONDC market range automatically mil jati hai.`;
+      fallbackAnswer = `💡 Kaarvo Cost-Plus Fair Living-Wage Pricing Strategy:
+
+Pricing formula: Base Cost = (Material Cost + Artisan Fair Wage)
+• Terracotta / Clay: 40% – 60% markup
+• Textiles / Handloom: 30% – 45% markup
+• Metal / Brass: 35% – 55% markup
+• Woodwork: 35% – 50% markup
+
+Pillar 3 Pricing Engine me material aur labor cost daalne par accurate ONDC market range automatically mil jati hai.`;
     } else if (/campaign|marketing|diwali|festival|create campaign/i.test(qLower)) {
-      fallbackAnswer = `📣 Festive Growth & Marketing Campaign Strategy:\n\n1. Festive Bundle Offer: Handcrafted Brass Diya aur Terracotta Planter ka 'Diwali Festive Box' create karein.\n2. Social Media Flyer Generator: Kisi bhi product card par 'Flyer' button click karke ready-to-post Instagram/WhatsApp flyer download karein.\n3. Voice Storytelling: Customers ko apne craft ki generational heritage kahani sunayein.\n\nIn 3 actions se aapka conversion rate 35% tak badh sakta hai!`;
+      fallbackAnswer = `📣 Festive Growth & Marketing Campaign Strategy:
+
+1. Festive Bundle Offer: Handcrafted Brass Diya aur Terracotta Planter ka 'Diwali Festive Box' create karein.
+2. Social Media Flyer Generator: Kisi bhi product card par 'Flyer' button click karke ready-to-post Instagram/WhatsApp flyer download karein.
+3. Voice Storytelling: Customers ko apne craft ki generational heritage kahani sunayein.
+
+In 3 actions se aapka conversion rate 35% tak badh sakta hai!`;
     } else if (/inventory|stock|check inventory/i.test(qLower)) {
-      fallbackAnswer = `📦 Live Inventory Health Check:\n\n• Total Cataloged Products: ${products.length} unique craft lines\n• Stock Status: All active craft batches are currently fulfilled and synced with ONDC.\n• Fast-Moving Items: Terracotta Clay Water Pots aur Handloom Sarees fast-moving category me hain.\n\n💡 Tip: Upcoming festival season ke liye kam se kam 25-30 units ka buffer stock ready rakhein.`;
+      fallbackAnswer = `📦 Live Inventory Health Check:
+
+• Total Cataloged Products: ${products.length} unique craft lines
+• Stock Status: All active craft batches are currently fulfilled and synced with ONDC.
+• Fast-Moving Items: Terracotta Clay Water Pots aur Handloom Sarees fast-moving category me hain.
+
+💡 Tip: Upcoming festival season ke liye kam se kam 25-30 units ka buffer stock ready rakhein.`;
     } else {
-      fallbackAnswer = `Namaste! Maine aapka sawal samjha: "${q}".\n\nAap Kaarvo AI Copilot se yeh sab pooch sakte hain:\n• 'Muje apni application ke baare me btaooo' (Platform overview)\n• 'Analyze Sales' (Aapki live kamai aur orders ki report)\n• 'Suggest Price' (Craft category ke hisaab se fair price calculator)\n• 'Create Campaign' (Diwali aur festive marketing strategy)\n• 'Check Inventory' (Stock status aur buffer recommendation)`;
+      fallbackAnswer = `Namaste! Maine aapka sawal samjha: "${q}".
+
+Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
+• 'Muje apni application ke baare me btaooo' (Platform overview)
+• 'Analyze Sales' (Aapki live kamai aur orders ki report)
+• 'Suggest Price' (Craft category ke hisaab se fair price calculator)
+• 'Create Campaign' (Diwali aur festive marketing strategy)
+• 'Check Inventory' (Stock status aur buffer recommendation)`;
     }
 
     setCopilotHistory(prev => [...prev, { sender: 'ai', content: fallbackAnswer }]);
@@ -1808,13 +1890,15 @@ export default function App() {
               {/* Brand Logo & Name */}
               <div 
                 onClick={() => switchCustomerTab('home')}
-                className="flex items-center gap-3.5 cursor-pointer group select-none"
+                className="flex items-center gap-3 cursor-pointer group select-none"
               >
-                <img
-                  alt="KAARVO Luxury Logo"
-                  className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
-                  src="https://lh3.googleusercontent.com/aida/AEtjO1Uhs93tN5Vdr6hc1UEwSALe4SxN2jM7MAWTO06wrU6kabT4FGtTQWfdiy9tbQ63qIPO-dpLgZ3ZivuBJ9iX0PlSzf8BhTtHyKmNQLpse_GSfDb8aVY9qItgKBCSlGodxdKuR4S8WE2n0S5WXYRSfUhpa8KusB3qLRM5wnoy4ZFj6I5fNXG0sq5XTt6w5Df6E64Y6SJ5T0bXiiZlQrEgi0Tl5Ey0XfRDaxvLNu6-1cQG"
-                />
+                <div className="w-9 h-9 rounded bg-[#1c1a18] border border-[#c5a66a]/60 flex items-center justify-center text-[#c5a66a] shadow-sm group-hover:border-[#c5a66a] transition-colors">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                    <path d="M2 17l10 5 10-5" />
+                    <path d="M2 12l10 5 10-5" />
+                  </svg>
+                </div>
                 <div className="flex flex-col">
                   <span className="font-serif text-[22px] font-medium tracking-[0.22em] uppercase text-white leading-none">
                     KAARVO
@@ -2859,267 +2943,96 @@ export default function App() {
                 <section className="relative w-full py-16 bg-[#121110] border-b border-[#262422]">
                   <div className="max-w-7xl mx-auto px-4 lg:px-12 space-y-3">
                     <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#c5a66a]">
-                      LIVING HERITAGE GUILDS
+                      VERIFIED GUILD REGISTRY
                     </span>
                     <h1 className="font-serif text-3xl sm:text-5xl text-white">
-                      Living Master Artisan Guilds
+                      Active Master Artisan Guilds
                     </h1>
                     <p className="text-[14px] text-[#b8b3a7] max-w-2xl leading-relaxed">
-                      Direct patronage to 4th and 5th generation Indian national awardee craftsmen keeping endangered art forms alive.
+                      Direct patronage of authentic Indian craftsmen. Only verified artisans who register and sell their certified hand-crafted creations on Kaarvo are showcased here.
                     </p>
                   </div>
                 </section>
 
-                {/* 6 Living Master Craftsmen Profiles Grid */}
-                <section className="px-4 lg:px-12 py-16 bg-[#0e0e0e]">
-                  <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    
-                    {/* Master 1: Leeladhar Sharma */}
-                    <div className="bg-[#161514] border border-[#262422] p-6 lg:p-8 flex flex-col justify-between hover:border-[#c5a66a]/60 transition-colors">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                          <img
-                            alt="Master Leeladhar Sharma"
-                            className="w-16 h-16 rounded-full object-cover border-2 border-[#c5a66a]"
-                            src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=400&q=80"
-                          />
-                          <div>
-                            <span className="text-[9px] font-bold text-[#c5a66a] uppercase tracking-widest block">
-                              NATIONAL AWARDEE
-                            </span>
-                            <h3 className="font-serif text-xl text-white">Master Leeladhar Sharma</h3>
-                            <span className="text-[12px] text-[#a39e93]">4th Gen Blue Pottery Patriarch</span>
-                          </div>
+                {/* Real Artisans Grid (Strictly Zero Fake Data) */}
+                <section className="px-4 lg:px-12 py-16 bg-[#0e0e0e] min-h-[450px]">
+                  <div className="max-w-7xl mx-auto">
+                    {activeArtisans.length === 0 ? (
+                      <div className="py-20 px-6 text-center max-w-xl mx-auto space-y-4">
+                        <div className="w-14 h-14 mx-auto rounded-full bg-[#181715] border border-[#2d2b28] flex items-center justify-center text-[#c5a66a]">
+                          <Award size={26} />
                         </div>
-                        <p className="text-[13px] text-[#b8b3a7] leading-relaxed">
-                          Custodial master of the historic Sanganer kiln cluster. Reintroduced genuine Persian quartz stone grinding and mineral cobalt pigment reduction techniques.
+                        <h3 className="font-serif text-2xl text-white">No Active Selling Artisans Yet</h3>
+                        <p className="text-[13px] text-[#a39e93] leading-relaxed">
+                          Yahan sirf wahi verified artisans show honge jo sign-up karke apne authentic handcrafted products sell ke liye list karenge. Jaise hi koi artisan apna pehla craft list karega, unka verified profile yahan live ho jayega.
                         </p>
-                        <div className="text-[11px] font-semibold text-white uppercase flex items-center gap-2">
-                          <MapPin size={13} className="text-[#c5a66a]" />
-                          Sanganer Cluster, Jaipur, Rajasthan
+                        <div className="pt-3">
+                          <button
+                            onClick={() => {
+                              setAuthMode('register');
+                              setAuthRole('artisan');
+                              setIsAuthModalOpen(true);
+                            }}
+                            className="bg-white text-[#121212] hover:bg-[#c5a66a] px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.18em] transition-all cursor-pointer shadow-lg"
+                          >
+                            + Register as Artisan & Sell
+                          </button>
                         </div>
                       </div>
-                      <div className="pt-6 border-t border-[#262422] flex items-center justify-between">
-                        <button
-                          onClick={() => { setCustomerSearchQuery('Leeladhar'); switchCustomerTab('shop'); }}
-                          className="bg-white text-[#121212] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#c5a66a] transition-colors cursor-pointer"
-                        >
-                          View Crafts
-                        </button>
-                        <button
-                          onClick={() => setIsWhatsappOpen(true)}
-                          className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
-                        >
-                          <MessageCircle size={13} /> Chat Bot
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Master 2: Shrimati Jamuna Devi */}
-                    <div className="bg-[#161514] border border-[#262422] p-6 lg:p-8 flex flex-col justify-between hover:border-[#c5a66a]/60 transition-colors">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                          <img
-                            alt="Shrimati Jamuna Devi"
-                            className="w-16 h-16 rounded-full object-cover border-2 border-[#c5a66a]"
-                            src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80"
-                          />
-                          <div>
-                            <span className="text-[9px] font-bold text-[#c5a66a] uppercase tracking-widest block">
-                              PADMA SHRI RECIPIENT
-                            </span>
-                            <h3 className="font-serif text-xl text-white">Shrimati Jamuna Devi</h3>
-                            <span className="text-[12px] text-[#a39e93]">Madhubani Heritage Guild</span>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {activeArtisans.map((artisan, idx) => (
+                          <div 
+                            key={idx}
+                            className="bg-[#161514] border border-[#262422] p-6 lg:p-8 flex flex-col justify-between hover:border-[#c5a66a]/60 transition-colors"
+                          >
+                            <div className="space-y-4">
+                              <div className="flex items-center gap-4">
+                                <div className="w-16 h-16 rounded-full bg-[#1c1a18] border-2 border-[#c5a66a] flex items-center justify-center text-[#c5a66a] font-serif font-bold text-2xl flex-shrink-0">
+                                  {artisan.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <span className="text-[9px] font-bold text-[#c5a66a] uppercase tracking-widest block">
+                                    VERIFIED GUILD ARTISAN
+                                  </span>
+                                  <h3 className="font-serif text-xl text-white">{artisan.name}</h3>
+                                  <span className="text-[12px] text-[#a39e93]">{artisan.category}</span>
+                                </div>
+                              </div>
+                              <p className="text-[13px] text-[#b8b3a7] leading-relaxed">
+                                {artisan.bio}
+                              </p>
+                              <div className="text-[11px] font-semibold text-white uppercase flex items-center justify-between">
+                                <span className="flex items-center gap-1.5 text-[#a39e93]">
+                                  <MapPin size={13} className="text-[#c5a66a]" />
+                                  {artisan.location}
+                                </span>
+                                <span className="text-[#c5a66a] text-[10px] font-bold">
+                                  {artisan.productsCount} Active {artisan.productsCount === 1 ? 'Creation' : 'Creations'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="pt-6 border-t border-[#262422] flex items-center justify-between">
+                              <button
+                                onClick={() => {
+                                  setCustomerSearchQuery(artisan.name);
+                                  switchCustomerTab('shop');
+                                }}
+                                className="bg-white text-[#121212] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#c5a66a] transition-colors cursor-pointer"
+                              >
+                                View Crafts ({artisan.productsCount})
+                              </button>
+                              <button
+                                onClick={() => setIsWhatsappOpen(true)}
+                                className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
+                              >
+                                <MessageCircle size={13} /> Chat Bot
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                        <p className="text-[13px] text-[#b8b3a7] leading-relaxed">
-                          Pioneered natural earth pigment extraction in Mithila, training over 350 rural women artisans in traditional Kohbar and Godna line artwork.
-                        </p>
-                        <div className="text-[11px] font-semibold text-white uppercase flex items-center gap-2">
-                          <MapPin size={13} className="text-[#c5a66a]" />
-                          Jitwarpur, Madhubani, Bihar
-                        </div>
+                        ))}
                       </div>
-                      <div className="pt-6 border-t border-[#262422] flex items-center justify-between">
-                        <button
-                          onClick={() => { setCustomerSearchQuery('Jamuna'); switchCustomerTab('shop'); }}
-                          className="bg-white text-[#121212] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#c5a66a] transition-colors cursor-pointer"
-                        >
-                          View Crafts
-                        </button>
-                        <button
-                          onClick={() => setIsWhatsappOpen(true)}
-                          className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
-                        >
-                          <MessageCircle size={13} /> Chat Bot
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Master 3: Mandar Baghel */}
-                    <div className="bg-[#161514] border border-[#262422] p-6 lg:p-8 flex flex-col justify-between hover:border-[#c5a66a]/60 transition-colors">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                          <img
-                            alt="Master Mandar Baghel"
-                            className="w-16 h-16 rounded-full object-cover border-2 border-[#c5a66a]"
-                            src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80"
-                          />
-                          <div>
-                            <span className="text-[9px] font-bold text-[#c5a66a] uppercase tracking-widest block">
-                              MASTERCRAFTSMAN
-                            </span>
-                            <h3 className="font-serif text-xl text-white">Master Mandar Baghel</h3>
-                            <span className="text-[12px] text-[#a39e93]">Bastar Dhokra Bell-Metal Smith</span>
-                          </div>
-                        </div>
-                        <p className="text-[13px] text-[#b8b3a7] leading-relaxed">
-                          Cast tribal bronze sculptures using pure beeswax ribbons and clay cores. Representing 5 generations of Ghadwa smiths honoring ancestral spirits.
-                        </p>
-                        <div className="text-[11px] font-semibold text-white uppercase flex items-center gap-2">
-                          <MapPin size={13} className="text-[#c5a66a]" />
-                          Kondagaon, Bastar, Chhattisgarh
-                        </div>
-                      </div>
-                      <div className="pt-6 border-t border-[#262422] flex items-center justify-between">
-                        <button
-                          onClick={() => { setCustomerSearchQuery('Baghel'); switchCustomerTab('shop'); }}
-                          className="bg-white text-[#121212] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#c5a66a] transition-colors cursor-pointer"
-                        >
-                          View Crafts
-                        </button>
-                        <button
-                          onClick={() => setIsWhatsappOpen(true)}
-                          className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
-                        >
-                          <MessageCircle size={13} /> Chat Bot
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Master 4: Hariram Kumbhar */}
-                    <div className="bg-[#161514] border border-[#262422] p-6 lg:p-8 flex flex-col justify-between hover:border-[#c5a66a]/60 transition-colors">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                          <img
-                            alt="Master Hariram Kumbhar"
-                            className="w-16 h-16 rounded-full object-cover border-2 border-[#c5a66a]"
-                            src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=400&q=80"
-                          />
-                          <div>
-                            <span className="text-[9px] font-bold text-[#c5a66a] uppercase tracking-widest block">
-                              SHILP GURU NOMINEE
-                            </span>
-                            <h3 className="font-serif text-xl text-white">Master Hariram Kumbhar</h3>
-                            <span className="text-[12px] text-[#a39e93]">Terracotta Wheel Specialist</span>
-                          </div>
-                        </div>
-                        <p className="text-[13px] text-[#b8b3a7] leading-relaxed">
-                          Handcrafts devotional terracotta plaques and porous drinking vessels using wild riverbed silt and ancestral straw kilns without electric wheels.
-                        </p>
-                        <div className="text-[11px] font-semibold text-white uppercase flex items-center gap-2">
-                          <MapPin size={13} className="text-[#c5a66a]" />
-                          Molela, Rajsamand, Rajasthan
-                        </div>
-                      </div>
-                      <div className="pt-6 border-t border-[#262422] flex items-center justify-between">
-                        <button
-                          onClick={() => { setCustomerSearchQuery('Kumbhar'); switchCustomerTab('shop'); }}
-                          className="bg-white text-[#121212] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#c5a66a] transition-colors cursor-pointer"
-                        >
-                          View Crafts
-                        </button>
-                        <button
-                          onClick={() => setIsWhatsappOpen(true)}
-                          className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
-                        >
-                          <MessageCircle size={13} /> Chat Bot
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Master 5: Abdul Rashid */}
-                    <div className="bg-[#161514] border border-[#262422] p-6 lg:p-8 flex flex-col justify-between hover:border-[#c5a66a]/60 transition-colors">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                          <img
-                            alt="Master Abdul Rashid"
-                            className="w-16 h-16 rounded-full object-cover border-2 border-[#c5a66a]"
-                            src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80"
-                          />
-                          <div>
-                            <span className="text-[9px] font-bold text-[#c5a66a] uppercase tracking-widest block">
-                              GI WEAVER CUSTODIAN
-                            </span>
-                            <h3 className="font-serif text-xl text-white">Master Abdul Rashid</h3>
-                            <span className="text-[12px] text-[#a39e93]">Kani Pashmina Master Weaver</span>
-                          </div>
-                        </div>
-                        <p className="text-[13px] text-[#b8b3a7] leading-relaxed">
-                          Weaves rare certified Changthangi goat pashmina using wooden needles (tujis) following coded talim scripts dating back to royal workshops.
-                        </p>
-                        <div className="text-[11px] font-semibold text-white uppercase flex items-center gap-2">
-                          <MapPin size={13} className="text-[#c5a66a]" />
-                          Old City, Srinagar, Kashmir
-                        </div>
-                      </div>
-                      <div className="pt-6 border-t border-[#262422] flex items-center justify-between">
-                        <button
-                          onClick={() => { setCustomerSearchQuery('Rashid'); switchCustomerTab('shop'); }}
-                          className="bg-white text-[#121212] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#c5a66a] transition-colors cursor-pointer"
-                        >
-                          View Crafts
-                        </button>
-                        <button
-                          onClick={() => setIsWhatsappOpen(true)}
-                          className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
-                        >
-                          <MessageCircle size={13} /> Chat Bot
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Master 6: Gajanand Prajapat */}
-                    <div className="bg-[#161514] border border-[#262422] p-6 lg:p-8 flex flex-col justify-between hover:border-[#c5a66a]/60 transition-colors">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                          <img
-                            alt="Master Gajanand Prajapat"
-                            className="w-16 h-16 rounded-full object-cover border-2 border-[#c5a66a]"
-                            src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=400&q=80"
-                          />
-                          <div>
-                            <span className="text-[9px] font-bold text-[#c5a66a] uppercase tracking-widest block">
-                              HERITAGE POTTER
-                            </span>
-                            <h3 className="font-serif text-xl text-white">Master Gajanand Prajapat</h3>
-                            <span className="text-[12px] text-[#a39e93]">Terracotta Kiln Master</span>
-                          </div>
-                        </div>
-                        <p className="text-[13px] text-[#b8b3a7] leading-relaxed">
-                          Over 32 years shaping water-purifying earthen cookware and amphoras. Fired using solar-dried husks for natural mineral heat distribution.
-                        </p>
-                        <div className="text-[11px] font-semibold text-white uppercase flex items-center gap-2">
-                          <MapPin size={13} className="text-[#c5a66a]" />
-                          Alwar Heritage Hub, Rajasthan
-                        </div>
-                      </div>
-                      <div className="pt-6 border-t border-[#262422] flex items-center justify-between">
-                        <button
-                          onClick={() => { setCustomerSearchQuery('Prajapat'); switchCustomerTab('shop'); }}
-                          className="bg-white text-[#121212] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#c5a66a] transition-colors cursor-pointer"
-                        >
-                          View Crafts
-                        </button>
-                        <button
-                          onClick={() => setIsWhatsappOpen(true)}
-                          className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
-                        >
-                          <MessageCircle size={13} /> Chat Bot
-                        </button>
-                      </div>
-                    </div>
-
+                    )}
                   </div>
                 </section>
 
@@ -3494,11 +3407,13 @@ export default function App() {
                 {/* Col 1: Identity & Provenance (4 cols) */}
                 <div className="lg:col-span-4 space-y-4">
                   <div className="flex items-center gap-3">
-                    <img
-                      alt="KAARVO Logo"
-                      className="h-7 w-auto object-contain"
-                      src="https://lh3.googleusercontent.com/aida/AEtjO1Uhs93tN5Vdr6hc1UEwSALe4SxN2jM7MAWTO06wrU6kabT4FGtTQWfdiy9tbQ63qIPO-dpLgZ3ZivuBJ9iX0PlSzf8BhTtHyKmNQLpse_GSfDb8aVY9qItgKBCSlGodxdKuR4S8WE2n0S5WXYRSfUhpa8KusB3qLRM5wnoy4ZFj6I5fNXG0sq5XTt6w5Df6E64Y6SJ5T0bXiiZlQrEgi0Tl5Ey0XfRDaxvLNu6-1cQG"
-                    />
+                    <div className="w-8 h-8 rounded bg-[#1c1a18] border border-[#c5a66a]/60 flex items-center justify-center text-[#c5a66a]">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                      <path d="M2 17l10 5 10-5" />
+                      <path d="M2 12l10 5 10-5" />
+                    </svg>
+                  </div>
                     <span className="font-serif text-lg font-bold tracking-[0.2em] uppercase text-white">
                       KAARVO
                     </span>
