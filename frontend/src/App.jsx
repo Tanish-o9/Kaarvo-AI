@@ -548,6 +548,8 @@ export default function App() {
   // --- PILLAR 2: MULTILINGUAL VOICE AUTO-CATALOGER STATES ---
   const [voiceText, setVoiceText] = useState('Handcrafted Jaipur pure terracotta clay water pot with floral engravings, 1.5-liter capacity.');
   const [rawSpokenHindi, setRawSpokenHindi] = useState('');
+  const [isTranslating, setIsTranslating] = useState(false);
+  const speechTranslateTimeoutRef = useRef(null);
   const [selectedLanguage, setSelectedLanguage] = useState('hi-IN');
   const [isRecording, setIsRecording] = useState(false);
   const [extractedEntities, setExtractedEntities] = useState(null);
@@ -713,10 +715,14 @@ export default function App() {
   const isRecordingRef = useRef(false);
   const mediaStreamRef = useRef(null);
 
-  const stopVoiceRecording = () => {
+  const stopVoiceRecording = async () => {
     isRecordingRef.current = false;
     setIsRecording(false);
-    
+
+    if (speechTranslateTimeoutRef.current) {
+      clearTimeout(speechTranslateTimeoutRef.current);
+    }
+
     if (speechRecRef.current) {
       try {
         speechRecRef.current.onend = null;
@@ -734,11 +740,23 @@ export default function App() {
     }
 
     showToast('🔴 Mic Stopped.');
+
+    if (rawSpokenHindi && rawSpokenHindi.trim()) {
+      setIsTranslating(true);
+      const english = await translateHindiSpeechToEnglish(rawSpokenHindi);
+      if (english) {
+        setVoiceText(english);
+      }
+      setIsTranslating(false);
+    }
   };
 
-  // --- COMPREHENSIVE HINDI/HINGLISH TO FLUENT PROPER ENGLISH TRANSLATOR ---
-  const translateHindiSpeechToEnglish = (input) => {
-    const raw = (input || '').trim();
+  // --- REAL MULTILINGUAL NEURAL & DOMAIN TRANSLATION ENGINE ---
+  const cleanOfflineDomainTranslation = (input) => {
+    const raw = (input || '').trim()
+      .replace(/^(Authentic artisan product:\s*)+/gi, '')
+      .replace(/^(Authentic:\s*)+/gi, '')
+      .trim();
     if (!raw) return '';
     const lower = raw.toLowerCase();
 
@@ -757,119 +775,103 @@ export default function App() {
     else if (/moradabad|मुरादाबाद/i.test(lower)) { region = 'Moradabad, Uttar Pradesh'; regionShort = 'Moradabad'; }
     else if (/saharanpur|सहारनपुर/i.test(lower)) { region = 'Saharanpur, Uttar Pradesh'; regionShort = 'Saharanpur'; }
 
-    // 2. Action Verbs (Sourced / Handcrafted)
     const isProcured = /mangaya|mangwaya|laya|procured|sourced|आयात|मंगाया|लाया/i.test(lower);
     const isHandmade = /banaya|bana hua|hath se|handcrafted|handmade|बनाया|हाथ से/i.test(lower);
 
-    // 3. Product & Craft Item Detection
+    // 2. Product Detection
     let product = '';
-    let material = '';
-
-    // Pottery / Clay
     if (/matka|ghada|kalash|घड़ा|घड़ा|मटका|कलश/i.test(lower)) product = 'earthen terracotta water pot (matka)';
     else if (/surahi|सुराही/i.test(lower)) product = 'traditional long-neck earthen water flask (surahi)';
-    else if (/gamla|planter|गमला/i.test(lower)) product = 'handcrafted clay planter pot';
-    else if (/vase|phool dan|फूलदान/i.test(lower)) product = 'ceramic decorative floral vase';
-    else if (/kulhad|कुल्हड़|कुल्हड़/i.test(lower)) product = 'traditional clay chai kulhads';
-    else if (/handi|हांडी/i.test(lower)) product = 'earthen clay cooking handi';
-    else if (/pottery|terracotta|clay|mitti|miti|मिट्टी/i.test(lower)) product = 'authentic terracotta clay craft';
+    else if (/saree|sari|साड़ी|साड़ी/i.test(lower)) product = 'heritage handloom saree';
+    else if (/shawl|stole|pashmina|शॉल|पश्मीना/i.test(lower)) product = 'warm handwoven artisan shawl';
+    else if (/toy|khilona|खिलौना/i.test(lower)) product = 'hand-carved wooden toy';
+    else if (/diya|deepak|दीया|दीपक/i.test(lower)) product = 'hand-cast solid brass oil diya lamp';
 
-    // Textiles / Silk
-    if (/saree|sari|साड़ी|साड़ी/i.test(lower)) product = 'heritage handloom saree';
-    else if (/dupatta|chunni|दुपट्टा/i.test(lower)) product = 'artisanal handwoven dupatta stole';
-    else if (/shawl|stole|pashmina|शॉल|पश्मीना/i.test(lower)) product = 'authentic warm handwoven winter shawl';
-    else if (/kurta|kurti|कुर्ता/i.test(lower)) product = 'handcrafted ethnic artisan kurta';
-
-    // Wood
-    if (/toy|khilona|खिलौना/i.test(lower)) product = 'eco-friendly hand-carved wooden toy';
-    else if (/elephant|haathi|हाथी/i.test(lower)) product = 'hand-carved wooden elephant artifact';
-    else if (/box|dabba|sandook|डिब्बा/i.test(lower)) product = 'intricately carved wooden keepsake box';
-    else if (/lakdi|wood|wooden|लकड़ी|लकड़ी/i.test(lower)) product = 'handcrafted natural hardwood craft';
-
-    // Metal
-    if (/diya|deepak|दीया|दीपक/i.test(lower)) product = 'hand-cast solid brass oil diya lamp';
-    else if (/thali|थाली/i.test(lower)) product = 'engraved brass ritual puja thali';
-    else if (/bell|ghanta|घंटी/i.test(lower)) product = 'traditional hand-cast temple bell';
-    else if (/peetal|brass|पीतल/i.test(lower)) product = 'traditional solid brass artware';
-    else if (/taamba|copper|तांबा/i.test(lower)) product = 'pure hammered copper craft';
-
-    // Art
-    if (/painting|canvas|chitra|पेंटिंग|चित्र/i.test(lower)) product = 'authentic hand-painted folk canvas artwork';
-
-    // Material extraction
-    if (/silk|resham|सिल्क|रेशम/i.test(lower)) material = 'pure mulberry silk';
-    else if (/cotton|khadi|सूती|कॉटन/i.test(lower)) material = 'organic handspun khadi cotton';
-    else if (/terracotta|clay|mitti|मिट्टी/i.test(lower)) material = 'natural kiln-fired terracotta clay';
-    else if (/wood|lakdi|लकड़ी/i.test(lower)) material = 'seasoned natural hardwood';
-    else if (/brass|peetal|पीतल/i.test(lower)) material = 'solid sand-cast brass';
-    else if (/copper|taamba|तांबा/i.test(lower)) material = 'pure hammered copper';
-    else if (/silver|chaandi|चांदी/i.test(lower)) material = 'antique oxidized 925 silver finish';
-
-    // Motifs & Attributes
-    const features = [];
-    if (/floral|phool|phul|flower|कमल|फूल/i.test(lower)) features.push('intricate floral motifs');
-    if (/peacock|mor|mayur|मयूर|मोर/i.test(lower)) features.push('royal peacock design');
-    if (/zari|zardozi|जरी|कढ़ाई|embroidery/i.test(lower)) features.push('traditional metallic zari embroidery');
-    if (/eco friendly|organic|non toxic/i.test(lower)) features.push('eco-friendly non-toxic lacquer finish');
-    if (/pooja|puja|पूजा/i.test(lower)) features.push('designed for auspicious ritual worship');
-    if (/bacho|kids|children|बच्चों/i.test(lower)) features.push('safe for children');
-    if (/heavy base|bhari/i.test(lower)) features.push('sturdy heavy base');
-
-    // Dimensions & Capacity
-    const cap = lower.match(/(\d+(?:\.\d+)?)\s*(?:liter|litre|l|ltr|लीटर)/i);
-    if (cap) features.push(`${cap[1]}-liter capacity`);
-    const len = lower.match(/(\d+(?:\.\d+)?)\s*(?:meter|metre|m|मीटर)/i);
-    if (len) features.push(`${len[1]} meters length`);
-
-    // Case A: Pure origin / sourcing sentence (e.g. "Jisko Kashmir se mangaya Gaya hai.")
-    if (!product && region) {
-      if (isProcured) {
-        return `Authentic handcrafted artisan piece, sourced directly from the heritage craft clusters of ${region}.`;
-      } else if (isHandmade) {
-        return `Master-crafted traditional artisan creation, authentically made by hand in ${region}.`;
-      } else {
-        return `Authentic heritage handicraft creation from ${region}, preserving traditional artisan culture.`;
-      }
-    }
-
-    // Case B: Product with or without region
     if (product) {
       let sentence = 'Authentic ';
       if (regionShort) sentence += `${regionShort} `;
-      if (material) sentence += `${material} `;
       sentence += product;
-
-      if (features.length > 0) {
-        sentence += ` featuring ${features.join(', ')}`;
-      }
-
-      if (region && !sentence.includes(regionShort)) {
-        sentence += `, sourced directly from ${region}`;
-      }
-
+      if (isProcured && region) sentence += `, sourced directly from ${region}`;
       return sentence.trim() + '.';
     }
 
-    // Case C: Generic Hindi sentence fallback word-by-word cleaner
-    let translated = raw
-      .replace(/\b(jisko|jise|jo|yeh ek|yeh|ye|yaha|yahan)\b/gi, 'This handcrafted item')
-      .replace(/\b(kashmir se|jaipur se|banaras se)\b/gi, 'from the craft clusters of $1')
-      .replace(/\b(mangaya gaya hai|mangwaya gaya hai|laya gaya hai)\b/gi, 'is authentically sourced and curated')
-      .replace(/\b(banaya gaya hai|bana hua hai)\b/gi, 'is handcrafted by master artisans')
-      .replace(/\b(hath se|haath se)\b/gi, 'by traditional handcrafting')
-      .replace(/\b(ke sath|ke saath|with)\b/gi, 'featuring')
-      .replace(/\b(ka|ki|ke|hai|h|hain)\b/gi, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    if (translated.length > 5) {
-      return `Authentic artisan product: ${translated}.`;
+    if (region) {
+      return `Authentic handcrafted artisan piece, sourced directly from the heritage craft clusters of ${region}.`;
     }
 
     return raw;
   };
 
-  const toggleVoiceRecording = async () => {
+  const translateHindiSpeechToEnglish = async (input) => {
+    let raw = (input || '').trim()
+      .replace(/^(Authentic artisan product:\s*)+/gi, '')
+      .replace(/^(Authentic:\s*)+/gi, '')
+      .trim();
+    if (!raw) return '';
+
+    // Preprocess common Hinglish phonetic words
+    let preprocessed = raw
+      .replace(/\bmangaya gaya hai\b/gi, 'mangwaya gaya hai')
+      .replace(/\blaya gaya hai\b/gi, 'laya hai');
+
+    // 1. Try Backend Translate API (127.0.0.1:8001)
+    try {
+      const res = await fetch('http://127.0.0.1:8001/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: preprocessed })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.translated) {
+          return data.translated;
+        }
+      }
+    } catch (err) {
+      console.warn('Backend /api/translate error, trying direct Google API:', err);
+    }
+
+    // 2. Direct Google GTX API (Free, fast, CORS enabled)
+    try {
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=${encodeURIComponent(preprocessed)}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data[0]) {
+          let translated = data[0].map(item => item ? item[0] : '').join('').trim();
+          if (translated) {
+            translated = translated.charAt(0).toUpperCase() + translated.slice(1);
+            if (!/[.!?]$/.test(translated)) translated += '.';
+            return translated;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Google GTX fallback error:', err);
+    }
+
+    // 3. MyMemory Free API
+    try {
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(preprocessed)}&langpair=hi|en`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.responseData && data.responseData.translatedText) {
+          let text = data.responseData.translatedText.trim();
+          text = text.charAt(0).toUpperCase() + text.slice(1);
+          if (!/[.!?]$/.test(text)) text += '.';
+          return text;
+        }
+      }
+    } catch (err) {
+      console.warn('MyMemory fallback error:', err);
+    }
+
+    // 4. Offline domain fallback
+    return cleanOfflineDomainTranslation(raw);
+  };
+
+    const toggleVoiceRecording = async () => {
     if (isRecordingRef.current) {
       stopVoiceRecording();
       return;
@@ -917,19 +919,32 @@ export default function App() {
 
       recognition.onresult = (event) => {
         let fullTranscript = '';
+        let isFinalSegment = false;
         for (let i = 0; i < event.results.length; i++) {
           const item = event.results[i];
           if (item && item[0] && item[0].transcript) {
             fullTranscript += item[0].transcript + ' ';
+            if (item.isFinal) isFinalSegment = true;
           }
         }
         const cleaned = fullTranscript.trim();
         if (cleaned) {
           setRawSpokenHindi(cleaned);
-          // AUTO-TRANSLATE SPOKEN HINDI/HINGLISH TO FLUENT PROPER ENGLISH!
-          const englishText = translateHindiSpeechToEnglish(cleaned);
-          setVoiceText(englishText || cleaned);
-          showToast(`✨ Translated: "${cleaned.slice(0, 24)}..." ➔ Proper English`);
+
+          if (speechTranslateTimeoutRef.current) {
+            clearTimeout(speechTranslateTimeoutRef.current);
+          }
+
+          // Debounce translation: wait 500ms after speech pause or trigger on final
+          speechTranslateTimeoutRef.current = setTimeout(async () => {
+            setIsTranslating(true);
+            const englishText = await translateHindiSpeechToEnglish(cleaned);
+            if (englishText) {
+              setVoiceText(englishText);
+              showToast(`✨ Auto-translated to English: "${englishText.slice(0, 28)}..."`);
+            }
+            setIsTranslating(false);
+          }, isFinalSegment ? 100 : 500);
         }
       };
 
@@ -3019,15 +3034,22 @@ export default function App() {
                     {rawSpokenHindi && (
                       <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '8px 12px', borderRadius: '8px', marginBottom: '10px', fontSize: '12px', color: '#065F46', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div>
-                          <strong>🎙️ Spoken Input:</strong> <em>"{rawSpokenHindi}"</em>
-                          <span style={{ color: '#047857', fontWeight: '700', marginLeft: '6px' }}>➔ Translated to Proper English below:</span>
+                          <strong>🎙️ Spoken Hindi:</strong> <em>"{rawSpokenHindi}"</em>
+                          <span style={{ color: '#047857', fontWeight: '700', marginLeft: '6px' }}>➔ Proper English below:</span>
                         </div>
                         <button 
                           type="button" 
-                          onClick={() => setVoiceText(translateHindiSpeechToEnglish(voiceText))}
-                          style={{ background: '#059669', color: '#FFFFFF', border: 'none', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: '700' }}
+                          disabled={isTranslating}
+                          onClick={async () => {
+                            setIsTranslating(true);
+                            const english = await translateHindiSpeechToEnglish(rawSpokenHindi || voiceText);
+                            if (english) setVoiceText(english);
+                            setIsTranslating(false);
+                            showToast('✨ Re-translated to proper English!');
+                          }}
+                          style={{ background: '#059669', color: '#FFFFFF', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: '700' }}
                         >
-                          Re-Translate
+                          {isTranslating ? '⏳ Translating...' : 'Re-Translate'}
                         </button>
                       </div>
                     )}
@@ -3038,51 +3060,58 @@ export default function App() {
                         className="input-artisan"
                         value={voiceText}
                         onChange={(e) => setVoiceText(e.target.value)}
-                        placeholder="Speak in Hindi/Hinglish (e.g., 'Jisko Kashmir se mangaya gaya hai') - auto-translates to proper English..."
+                        placeholder="Speak in Hindi/Hinglish (e.g. 'ये सेब हमने कश्मीर से मंगाया है') - auto-translates to proper English..."
                         style={{ resize: 'none', marginBottom: '8px', paddingRight: '120px' }}
                       />
                       <button
                         type="button"
-                        onClick={() => {
-                          const translated = translateHindiSpeechToEnglish(voiceText);
-                          setVoiceText(translated);
+                        disabled={isTranslating}
+                        onClick={async () => {
+                          setIsTranslating(true);
+                          const translated = await translateHindiSpeechToEnglish(voiceText);
+                          if (translated) setVoiceText(translated);
+                          setIsTranslating(false);
                           showToast('✨ Converted to proper, grammatically correct English!');
                         }}
                         style={{
                           position: 'absolute',
                           top: '10px',
                           right: '10px',
-                          background: 'linear-gradient(135deg, #D97706, #B45309)',
+                          background: isTranslating ? '#9CA3AF' : 'linear-gradient(135deg, #D97706, #B45309)',
                           color: '#FFFFFF',
                           border: 'none',
                           padding: '6px 10px',
                           borderRadius: '8px',
                           fontSize: '11px',
                           fontWeight: '800',
-                          cursor: 'pointer',
+                          cursor: isTranslating ? 'not-allowed' : 'pointer',
                           display: 'flex',
                           alignItems: 'center',
                           gap: '4px',
                           boxShadow: '0 2px 6px rgba(217, 119, 6, 0.3)'
                         }}
                       >
-                        <Sparkles size={12} /> Translate
+                        <Sparkles size={12} /> {isTranslating ? 'Translating...' : 'Translate'}
                       </button>
                     </div>
 
-                    {/* Auto-Translate Hint */}
-                    {/(hai|h|ka|ki|ke|se|mangaya|banaya|yeh|ye|jisko|hath|hath se)/i.test(voiceText) && (
+                    {/* Auto-Translate Hint (Devanagari + Hinglish detection) */}
+                    {(/[ऀ-ॿ]|((hai|h|hain|ka|ki|ke|se|mangaya|banaya|yeh|ye|jisko|hath|humne|hamne))/i.test(voiceText)) && (
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', background: '#FEF3C7', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', color: '#92400E' }}>
-                        <span>💡 Hindi/Hinglish phrase detected. Click to translate to proper English:</span>
+                        <span>💡 Hindi/Hinglish text detected. Convert to proper English:</span>
                         <button
                           type="button"
-                          onClick={() => {
-                            setVoiceText(translateHindiSpeechToEnglish(voiceText));
+                          disabled={isTranslating}
+                          onClick={async () => {
+                            setIsTranslating(true);
+                            const translated = await translateHindiSpeechToEnglish(voiceText);
+                            if (translated) setVoiceText(translated);
+                            setIsTranslating(false);
                             showToast('✨ Translated into fluent English copy!');
                           }}
-                          style={{ background: '#D97706', color: '#FFFFFF', border: 'none', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
+                          style={{ background: '#D97706', color: '#FFFFFF', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: '700', cursor: isTranslating ? 'not-allowed' : 'pointer' }}
                         >
-                          Convert to English →
+                          {isTranslating ? '⏳ Translating...' : 'Convert to English →'}
                         </button>
                       </div>
                     )}

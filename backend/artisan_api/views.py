@@ -808,6 +808,58 @@ class AssistantChatView(APIView):
         return Response(rag_result)
 
 
+
+
+class TranslateTextView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        import urllib.request, urllib.parse, json, re
+        raw_text = (request.data.get('text') or '').strip()
+        if not raw_text:
+            return Response({'translated': '', 'original': ''})
+
+        # Strip any repeated boilerplate
+        cleaned = re.sub(r'^(Authentic artisan product:\s*)+', '', raw_text, flags=re.IGNORECASE)
+        cleaned = re.sub(r'^(Authentic:\s*)+', '', cleaned, flags=re.IGNORECASE).strip()
+
+        # Preprocess common Hinglish phrases
+        preprocessed = re.sub(r'\bmangaya gaya hai\b', 'mangwaya gaya hai', cleaned, flags=re.IGNORECASE)
+        preprocessed = re.sub(r'\bmangwaya gaya hai\b', 'mangwaya gaya hai', preprocessed, flags=re.IGNORECASE)
+
+        # 1. Google Translate GTX
+        try:
+            url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=' + urllib.parse.quote(preprocessed)
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, timeout=5) as res:
+                data = json.loads(res.read().decode('utf-8'))
+                translated = ''.join([p[0] for p in data[0] if p and p[0]]).strip()
+                if translated:
+                    translated = translated[0].upper() + translated[1:]
+                    if not translated.endswith(('.', '!', '?')):
+                        translated += '.'
+                    return Response({'translated': translated, 'original': raw_text, 'engine': 'google_gtx'})
+        except Exception as e:
+            pass
+
+        # 2. MyMemory Fallback
+        try:
+            url = 'https://api.mymemory.translated.net/get?q=' + urllib.parse.quote(preprocessed) + '&langpair=hi|en'
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, timeout=5) as res:
+                data = json.loads(res.read().decode('utf-8'))
+                translated = data.get('responseData', {}).get('translatedText', '').strip()
+                if translated:
+                    translated = translated[0].upper() + translated[1:]
+                    if not translated.endswith(('.', '!', '?')):
+                        translated += '.'
+                    return Response({'translated': translated, 'original': raw_text, 'engine': 'mymemory'})
+        except Exception as e:
+            pass
+
+        return Response({'translated': cleaned, 'original': raw_text, 'engine': 'raw'})
+
+
 class AnalyticsOverviewView(APIView):
     permission_classes = [permissions.AllowAny]
 
