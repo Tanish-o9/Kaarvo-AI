@@ -10,6 +10,30 @@ import {
 
 const API_BASE = 'http://127.0.0.1:8001/api/v1';
 
+// Authentic Craft-Specific Image Mapping (Prevents generic duplicate image bugs)
+const getCraftSpecificImage = (category, title) => {
+  const text = `${category || ''} ${title || ''}`.toLowerCase();
+  if (/saree|sari|silk|handloom|dupatta|textile|cloth|weaving|saadi/i.test(text)) {
+    return 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80'; // Silk Saree
+  }
+  if (/painting|canvas|folk|art|madhubani|warli|chitra/i.test(text)) {
+    return 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80'; // Folk Art Painting
+  }
+  if (/toy|wood|wooden|channapatna|elephant|khilona|lakdi/i.test(text)) {
+    return 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=800&q=80'; // Wooden Toy Elephant
+  }
+  if (/diya|brass|metal|peetal|deepak|bell|puja|thali/i.test(text)) {
+    return 'https://images.unsplash.com/photo-1605647540924-852290f6b0d5?auto=format&fit=crop&w=800&q=80'; // Brass Diya
+  }
+  if (/matka|water pot|pottery|terracotta|clay|ghada|mitti/i.test(text)) {
+    return 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=800&q=80'; // Terracotta Clay Matka
+  }
+  if (/vase|ceramic|blue pottery|surahi|planter/i.test(text)) {
+    return 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?auto=format&fit=crop&w=800&q=80'; // Blue Pottery Ceramic Vase
+  }
+  return 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=800&q=80';
+};
+
 export default function App() {
   // Tab Persistence: Customer vs Artisan views
   const getInitialMode = () => {
@@ -576,7 +600,7 @@ export default function App() {
           description: catalog.descriptor.long_desc,
           materials: entities.material || 'Natural Kiln-Fired Clay / Pure Handloom',
           craftStory: catalog.descriptor.long_desc,
-          image: enhancedImage || rawImageFile || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80',
+          image: enhancedImage || rawImageFile || getCraftSpecificImage(catalog.category, catalog.descriptor.name),
           badge: 'ONDC Verified'
         };
 
@@ -868,9 +892,11 @@ export default function App() {
             description: item.description || item.voice_transcript || 'Authentic handcrafted item produced by verified master artisan.',
             materials: item.verified_facts?.materials || 'Natural Pure Clay / Handloom Silk',
             craftStory: item.pricing_explanation || 'Preserving centuries of traditional Indian craftsmanship with 100% fair trade direct market linkage.',
-            image: (item.media && item.media.length > 0 && item.media[0].file_url)
-              ? item.media[0].file_url
-              : 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80',
+            image: (item.verified_facts && item.verified_facts.image_url)
+              ? item.verified_facts.image_url
+              : (item.media && item.media.length > 0 && item.media[0].file_url)
+                ? item.media[0].file_url
+                : getCraftSpecificImage(item.category, item.title),
             badge: item.verification_state === 'org_verified' ? 'Verified Heritage' : 'Fair Trade'
           }));
           setProducts(mapped);
@@ -1332,8 +1358,8 @@ export default function App() {
     setExtractedEntities(entities);
     setGeneratedCatalog(catalog);
 
-    // Pick active image uploaded/enhanced in Pillar 1 or raw image file
-    const activeImage = enhancedImage || rawImageFile || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80';
+    // Pick active image: User's uploaded/enhanced photo if present, else authentic craft image
+    const activeImage = enhancedImage || rawImageFile || getCraftSpecificImage(catalog.category, catalog.descriptor.name);
 
     // Pick active pricing from Pillar 3 or catalog calculated range
     const activePrice = pricingResult?.min || catalog.price.suggested_range.min || (parseFloat(materialCost || 0) + parseFloat(laborCost || 0)) * 1.4 || 480;
@@ -1371,10 +1397,12 @@ export default function App() {
 
     showToast(`🎉 "${newP.title.slice(0, 30)}" Posted Live to Customer Store!`);
     
-    // Refresh & Reset Studio form for next product listing
+    // Refresh & Reset Studio form completely for next product listing
     setEnhancedImage(null);
     setRawImageFile(null);
+    setImageLightingInfo(null);
     setVoiceText('');
+    setRawSpokenHindi('');
     setExtractedEntities(null);
     setGeneratedCatalog(null);
     setMaterialCost('');
@@ -3354,7 +3382,7 @@ export default function App() {
                               category: generatedCatalog.category,
                               price: generatedCatalog.price.suggested_range.min,
                               location: extractedEntities?.region || 'Jaipur, Rajasthan',
-                              image: enhancedImage || rawImageFile || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80',
+                              image: enhancedImage || rawImageFile || getCraftSpecificImage(catalog.category, catalog.descriptor.name),
                               materials: extractedEntities?.material || 'Natural Clay / Silk',
                               craftStory: generatedCatalog.descriptor.long_desc,
                               artisan: 'Verified Master Artisan (Mohan Lal)'

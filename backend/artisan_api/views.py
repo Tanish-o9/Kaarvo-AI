@@ -242,6 +242,22 @@ class ProductListCreateView(APIView):
                 status='success'
             )
 
+        # Save image URL (base64 or remote URL) provided by user
+        custom_img = request.data.get('image')
+        if custom_img:
+            facts = product.verified_facts or {}
+            facts['image_url'] = custom_img
+            product.verified_facts = facts
+            product.status = ProductStatus.PUBLISHED
+            product.save()
+
+        if request.data.get('price'):
+            try:
+                product.price = float(request.data.get('price'))
+                product.save()
+            except Exception:
+                pass
+
         if request.FILES.get('image'):
             ProductMedia.objects.create(
                 product=product,
@@ -274,6 +290,14 @@ class ProductDetailView(APIView):
             return Response(ProductSerializer(product).data)
         except Product.DoesNotExist:
             return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk):
+        try:
+            product = Product.objects.get(pk=pk)
+            product.delete()
+            return Response({'status': 'deleted', 'id': str(pk)}, status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            return Response({'status': 'deleted', 'id': str(pk)}, status=status.HTTP_200_OK)
 
 
 class ProductMediaUploadView(APIView):
