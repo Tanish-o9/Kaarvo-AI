@@ -4177,10 +4177,10 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                   className="card-artisan" 
                   style={{ 
                     padding: '28px 32px', 
-                    background: 'linear-gradient(135deg, #FFF7ED, #FFFFFF)', 
-                    border: '2px solid var(--primary)', 
+                    background: 'linear-gradient(135deg, #1f1b16 0%, #28221a 100%)', 
+                    border: '2px solid #c5a66a', 
                     borderRadius: '16px',
-                    boxShadow: '0 8px 24px rgba(217, 119, 6, 0.12)',
+                    boxShadow: '0 8px 32px rgba(197, 166, 106, 0.25)',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '16px'
@@ -4188,24 +4188,28 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                        <span className="badge-tag badge-terracotta">✓ Ready to Post Live</span>
-                        <span className="badge-tag badge-teal">✓ ONDC Beckn Sync</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '800', background: 'rgba(197, 166, 106, 0.2)', border: '1px solid #c5a66a', color: '#f5d794', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                          ✓ Ready to Post Live
+                        </span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '800', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid #10b981', color: '#6ee7b7', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                          ✓ ONDC Beckn Sync
+                        </span>
                       </div>
-                      <h3 style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-main)' }}>
+                      <h3 style={{ fontSize: '22px', fontWeight: '800', color: '#FFFFFF', letterSpacing: '0.01em', margin: '4px 0' }}>
                         {generatedCatalog ? generatedCatalog.descriptor.name : 'Publish Handcrafted Product to Kaarvo Store'}
                       </h3>
-                      <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                      <p style={{ fontSize: '14px', color: '#e5e2dc', marginTop: '4px', maxWidth: '650px', lineHeight: '1.5' }}>
                         {generatedCatalog ? generatedCatalog.descriptor.long_desc : 'Click the button to post your product live so all customer users across India can view & purchase it!'}
                       </p>
 
                       {/* QUICK ACTION BUTTONS: Audio, Passport & Social Flyer */}
                       {generatedCatalog && (
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '14px' }}>
                           <button
                             type="button"
                             onClick={() => speakText(`Aapka product ${generatedCatalog.descriptor.name} safalta-purvak list ho gaya hai. Recommended price hai rupaye ${generatedCatalog.price.suggested_range.min}. Shuddh hastkala pramanit!`, 'hi-IN')}
-                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '6px 12px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', cursor: 'pointer', color: 'var(--primary)' }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '8px 14px', borderRadius: '8px', background: '#2d2720', border: '1px solid #c5a66a', cursor: 'pointer', color: '#f5d794' }}
                           >
                             <Volume2 size={14} /> 🔊 Suniye (Hindi Audio)
                           </button>
@@ -4220,11 +4224,11 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                               image: enhancedImage || rawImageFile || getCraftSpecificImage(catalog.category, catalog.descriptor.name),
                               materials: extractedEntities?.material || 'Natural Clay / Silk',
                               craftStory: generatedCatalog.descriptor.long_desc,
-                              artisan: 'Verified Master Artisan (Mohan Lal)'
+                              artisan: currentUser ? (currentUser.full_name || currentUser.username) : 'Master Artisan'
                             })}
-                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '6px 12px', borderRadius: '8px', background: '#ECFDF5', border: '1px solid #10B981', cursor: 'pointer', color: '#059669' }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '8px 14px', borderRadius: '8px', background: '#064e3b', border: '1px solid #10b981', cursor: 'pointer', color: '#a7f3d0' }}
                           >
-                            <QrCode size={14} /> 📜 Digital Passport & QR
+                            <QrCode size={14} /> 🛡️ Digital Passport & QR
                           </button>
                           <button
                             type="button"
@@ -4235,9 +4239,9 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                               location: extractedEntities?.region || 'Jaipur, Rajasthan',
                               image: enhancedImage || rawImageFile || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80'
                             })}
-                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '6px 12px', borderRadius: '8px', background: '#FEF3C7', border: '1px solid #D97706', cursor: 'pointer', color: '#B45309' }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '8px 14px', borderRadius: '8px', background: '#78350f', border: '1px solid #d97706', cursor: 'pointer', color: '#fde68a' }}
                           >
-                            <Share2 size={14} /> 🎨 WhatsApp Status Flyer
+                            <Share2 size={14} /> 📲 WhatsApp Status Flyer
                           </button>
                         </div>
                       )}
@@ -4245,113 +4249,118 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
 
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                       <button 
-                        className="btn-artisan-primary" 
                         onClick={handleSaveCatalogToDB} 
                         style={{ 
-                          padding: '14px 28px', 
+                          background: 'linear-gradient(135deg, #c5a66a 0%, #e6ca85 50%, #d4af37 100%)',
+                          color: '#121212',
+                          padding: '16px 32px', 
                           fontSize: '15px', 
-                          fontWeight: '700',
+                          fontWeight: '900',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.12em',
                           borderRadius: '12px',
-                          boxShadow: '0 4px 14px rgba(217, 119, 6, 0.3)',
+                          border: 'none',
+                          boxShadow: '0 6px 24px rgba(197, 166, 106, 0.45)',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '8px'
+                          gap: '10px',
+                          cursor: 'pointer',
+                          transition: 'transform 0.2s ease, box-shadow 0.2s ease'
                         }}
                       >
-                        <Send size={18} />
-                        Post Product Live to All Customers →
+                        <Send size={18} color="#121212" />
+                        POST PRODUCT LIVE TO ALL CUSTOMERS →
                       </button>
                     </div>
                   </div>
                 </div>
 
                 {/* PILLAR 5: B2B WHOLESALE EXPORT & LIVING-WAGE AI NEGOTIATOR */}
-                <div className="card-artisan" style={{ padding: '28px', border: '2px solid #3B82F6', borderRadius: '16px', background: '#F8FAFC' }}>
+                <div className="card-artisan" style={{ padding: '28px', border: '2px solid #3b82f6', borderRadius: '16px', background: '#181a1f' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Briefcase size={22} color="#2563EB" />
+                      <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid #3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Briefcase size={22} color="#60a5fa" />
                       </div>
                       <div>
-                        <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#1E293B' }}>Pillar 5: Autonomous B2B Wholesale & Export AI Negotiator</h3>
-                        <p style={{ fontSize: '12px', color: '#64748B' }}>Protects artisan living wages during bulk wholesale buyer negotiations (US/EU/Global retail chains)</p>
+                        <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#ffffff' }}>Pillar 5: Autonomous B2B Wholesale & Export AI Negotiator</h3>
+                        <p style={{ fontSize: '13px', color: '#94a3b8' }}>Protects artisan living wages during bulk wholesale buyer negotiations (US/EU/Global retail chains)</p>
                       </div>
                     </div>
-                    <span className="badge-tag badge-teal" style={{ background: '#DBEAFE', color: '#1E40AF', borderColor: '#93C5FD' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '800', background: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd', border: '1px solid #3b82f6' }}>
                       ⚡ Living-Wage Protection Active
                     </span>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '18px' }}>
-                    <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-                      <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', marginBottom: '4px' }}>SIMULATED GLOBAL BUYER RFQ</div>
-                      <div style={{ fontSize: '14px', fontWeight: '800', color: '#1E293B' }}>Nordic Living Stores, Stockholm (Sweden)</div>
-                      <div style={{ fontSize: '12px', color: '#475569', marginTop: '6px' }}>Target Item: Handcrafted Heritage Artifacts</div>
+                    <div style={{ background: '#20232a', padding: '16px', borderRadius: '12px', border: '1px solid #334155' }}>
+                      <div style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', letterSpacing: '0.08em', marginBottom: '4px' }}>SIMULATED GLOBAL BUYER RFQ</div>
+                      <div style={{ fontSize: '15px', fontWeight: '800', color: '#ffffff' }}>Nordic Living Stores, Stockholm (Sweden)</div>
+                      <div style={{ fontSize: '13px', color: '#cbd5e1', marginTop: '6px' }}>Target Item: Handcrafted Heritage Artifacts</div>
                       <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
                         <div style={{ flex: 1 }}>
-                          <label style={{ fontSize: '11px', color: '#64748B' }}>Bulk Quantity (Units):</label>
+                          <label style={{ fontSize: '11px', fontWeight: '700', color: '#94a3b8' }}>Bulk Quantity (Units):</label>
                           <input 
                             type="number" 
                             className="input-artisan" 
                             value={b2bUnits} 
                             onChange={(e) => setB2bUnits(e.target.value)} 
-                            style={{ padding: '8px', fontSize: '13px', marginTop: '2px' }}
+                            style={{ padding: '8px 12px', fontSize: '14px', fontWeight: '700', marginTop: '4px', background: '#0f172a', border: '1px solid #475569', color: '#ffffff', borderRadius: '6px' }}
                           />
                         </div>
                         <div style={{ flex: 1 }}>
-                          <label style={{ fontSize: '11px', color: '#64748B' }}>Buyer Initial Bid (₹/unit):</label>
+                          <label style={{ fontSize: '11px', fontWeight: '700', color: '#94a3b8' }}>Buyer Initial Bid (₹/unit):</label>
                           <input 
                             type="number" 
                             className="input-artisan" 
                             value={b2bTargetPrice} 
                             onChange={(e) => setB2bTargetPrice(e.target.value)} 
-                            style={{ padding: '8px', fontSize: '13px', marginTop: '2px' }}
+                            style={{ padding: '8px 12px', fontSize: '14px', fontWeight: '700', marginTop: '4px', background: '#0f172a', border: '1px solid #475569', color: '#ffffff', borderRadius: '6px' }}
                           />
                         </div>
                       </div>
                     </div>
 
-                    <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                      <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', marginBottom: '6px' }}>ETHICAL LIVING WAGE BENCHMARK</div>
-                      <div style={{ fontSize: '13px', color: '#334155', lineHeight: '1.6' }}>
-                        • Raw Material Floor: <strong>₹160/unit</strong><br />
-                        • Skilled Artisan Living Wage: <strong>₹140/unit</strong><br />
-                        • Sea-Freight Export Crating: <strong>₹50/unit</strong><br />
-                        • Minimum Ethical Floor: <strong style={{ color: '#DC2626' }}>₹350/unit</strong>
+                    <div style={{ background: '#20232a', padding: '16px', borderRadius: '12px', border: '1px solid #334155', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                      <div style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', letterSpacing: '0.08em', marginBottom: '6px' }}>ETHICAL LIVING WAGE BENCHMARK</div>
+                      <div style={{ fontSize: '13px', color: '#e2e8f0', lineHeight: '1.6' }}>
+                        • Raw Material Floor: <strong style={{ color: '#ffffff' }}>₹160/unit</strong><br />
+                        • Skilled Artisan Living Wage: <strong style={{ color: '#ffffff' }}>₹140/unit</strong><br />
+                        • Sea-Freight Export Crating: <strong style={{ color: '#ffffff' }}>₹50/unit</strong><br />
+                        • Minimum Ethical Floor: <strong style={{ color: '#f87171' }}>₹350/unit</strong>
                       </div>
                       <button 
-                        className="btn-artisan-primary" 
                         onClick={runB2bNegotiation}
                         disabled={b2bNegotiating}
-                        style={{ marginTop: '12px', padding: '10px 16px', fontSize: '13px', background: '#2563EB', borderColor: '#2563EB' }}
+                        style={{ marginTop: '14px', padding: '10px 16px', fontSize: '13px', fontWeight: '800', background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                       >
-                        {b2bNegotiating ? '⚡ Running Living-Wage Algorithm...' : '🤝 Generate AI Living-Wage Counter-Offer'}
+                        🤝 GENERATE AI LIVING-WAGE COUNTER-OFFER
                       </button>
                     </div>
                   </div>
 
                   {b2bAnalysis && (
-                    <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '20px', borderRadius: '12px' }}>
+                    <div style={{ background: '#1e293b', border: '1px solid #3b82f6', padding: '20px', borderRadius: '12px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-                        <div style={{ fontSize: '14px', fontWeight: '800', color: '#1E40AF', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ fontSize: '14px', fontWeight: '800', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <CheckCircle size={16} /> Autonomous AI Counter-Proposal (Living-Wage Preserved)
                         </div>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                          <span style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '6px', background: '#DCFCE7', color: '#166534', fontWeight: '700' }}>
+                          <span style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', fontWeight: '700', border: '1px solid #10b981' }}>
                             Net Artisan Earnings: ₹{b2bAnalysis.totalArtisanEarnings.toLocaleString()}
                           </span>
-                          <span style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '6px', background: '#DBEAFE', color: '#1E40AF', fontWeight: '700' }}>
+                          <span style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '6px', background: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd', fontWeight: '700', border: '1px solid #3b82f6' }}>
                             Optimal FOB Quote: ₹{b2bAnalysis.safeWholesalePrice}/unit
                           </span>
                         </div>
                       </div>
-                      <p style={{ fontSize: '13px', color: '#1E293B', lineHeight: '1.6', background: '#FFFFFF', padding: '14px', borderRadius: '8px', border: '1px solid #DBEAFE', fontStyle: 'italic' }}>
+                      <p style={{ fontSize: '13px', color: '#e2e8f0', lineHeight: '1.6', background: '#0f172a', padding: '14px', borderRadius: '8px', border: '1px solid #334155', fontStyle: 'italic' }}>
                         "{b2bAnalysis.counterOfferText}"
                       </p>
                       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '12px' }}>
                         <button 
                           onClick={() => speakText(b2bAnalysis.counterOfferText, 'en-IN')}
-                          style={{ fontSize: '12px', padding: '6px 14px', borderRadius: '8px', background: '#FFFFFF', border: '1px solid #CBD5E1', cursor: 'pointer', fontWeight: '700', color: '#2563EB', display: 'flex', alignItems: 'center', gap: '6px' }}
+                          style={{ fontSize: '12px', padding: '8px 14px', borderRadius: '8px', background: '#1e293b', border: '1px solid #475569', cursor: 'pointer', fontWeight: '700', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '6px' }}
                         >
                           <Volume2 size={14} /> 🔊 Listen English Pitch
                         </button>
@@ -4360,9 +4369,9 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                             navigator.clipboard?.writeText(b2bAnalysis.counterOfferText);
                             showToast('📋 Export Quote copied to clipboard!');
                           }}
-                          style={{ fontSize: '12px', padding: '6px 14px', borderRadius: '8px', background: '#2563EB', color: '#FFFFFF', border: 'none', cursor: 'pointer', fontWeight: '700' }}
+                          style={{ fontSize: '12px', padding: '8px 16px', borderRadius: '8px', background: '#2563eb', color: '#ffffff', border: 'none', cursor: 'pointer', fontWeight: '800' }}
                         >
-                          Send Official ONDC Export Quote →
+                          Send Official ONDC Export Quote 🚀
                         </button>
                       </div>
                     </div>
