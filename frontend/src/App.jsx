@@ -557,8 +557,8 @@ export default function App() {
   const [cataloging, setCataloging] = useState(false);
 
   // --- PILLAR 3: DYNAMIC COST-PLUS PRICING ASSISTANT STATES ---
-  const [materialCost, setMaterialCost] = useState(180);
-  const [laborCost, setLaborCost] = useState(150);
+  const [materialCost, setMaterialCost] = useState('');
+  const [laborCost, setLaborCost] = useState('');
   const [craftCategory, setCraftCategory] = useState('Pottery / Terracotta');
   const [pricingResult, setPricingResult] = useState(null);
 
@@ -632,7 +632,7 @@ export default function App() {
 
   useEffect(() => {
     fetchData();
-    calculatePricing(180, 150, 'Pottery / Terracotta');
+    // No default pricing calculation until user enters costs
   }, []);
 
   useEffect(() => {
@@ -697,6 +697,10 @@ export default function App() {
   const calculatePricing = (mat, lab, cat) => {
     const markup = categoryMarkups[cat] || categoryMarkups['Pottery / Terracotta'];
     const baseCost = (parseFloat(mat) || 0) + (parseFloat(lab) || 0);
+    if (baseCost <= 0) {
+      setPricingResult(null);
+      return;
+    }
     const minP = Math.round((baseCost * (1 + markup.min)) / 10) * 10;
     const maxP = Math.round((baseCost * (1 + markup.max)) / 10) * 10;
 
@@ -1232,8 +1236,8 @@ export default function App() {
     setVoiceText('');
     setExtractedEntities(null);
     setGeneratedCatalog(null);
-    setMaterialCost(180);
-    setLaborCost(150);
+    setMaterialCost('');
+    setLaborCost('');
     setPricingResult(null);
     if (isRecordingRef.current) {
       stopVoiceRecording();
@@ -3101,11 +3105,23 @@ export default function App() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
                       <div>
                         <label style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Material Cost (₹)</label>
-                        <input type="number" className="input-artisan" value={materialCost} onChange={(e) => { setMaterialCost(e.target.value); calculatePricing(e.target.value, laborCost, craftCategory); }} />
+                        <input 
+                          type="number" 
+                          className="input-artisan" 
+                          placeholder="e.g. 180" 
+                          value={materialCost} 
+                          onChange={(e) => { setMaterialCost(e.target.value); calculatePricing(e.target.value, laborCost, craftCategory); }} 
+                        />
                       </div>
                       <div>
                         <label style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Labor Cost (₹)</label>
-                        <input type="number" className="input-artisan" value={laborCost} onChange={(e) => { setLaborCost(e.target.value); calculatePricing(materialCost, e.target.value, craftCategory); }} />
+                        <input 
+                          type="number" 
+                          className="input-artisan" 
+                          placeholder="e.g. 150" 
+                          value={laborCost} 
+                          onChange={(e) => { setLaborCost(e.target.value); calculatePricing(materialCost, e.target.value, craftCategory); }} 
+                        />
                       </div>
                     </div>
 
