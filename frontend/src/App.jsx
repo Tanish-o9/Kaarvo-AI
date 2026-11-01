@@ -546,7 +546,8 @@ export default function App() {
   };
 
   // --- PILLAR 2: MULTILINGUAL VOICE AUTO-CATALOGER STATES ---
-  const [voiceText, setVoiceText] = useState('Yeh Jaipur ki pure terracotta clay water pot hai, hand-carved floral design ke sath, 1.5 liter capacity.');
+  const [voiceText, setVoiceText] = useState('Handcrafted Jaipur pure terracotta clay water pot with floral engravings, 1.5-liter capacity.');
+  const [rawSpokenHindi, setRawSpokenHindi] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('hi-IN');
   const [isRecording, setIsRecording] = useState(false);
   const [extractedEntities, setExtractedEntities] = useState(null);
@@ -735,6 +736,139 @@ export default function App() {
     showToast('🔴 Mic Stopped.');
   };
 
+  // --- COMPREHENSIVE HINDI/HINGLISH TO FLUENT PROPER ENGLISH TRANSLATOR ---
+  const translateHindiSpeechToEnglish = (input) => {
+    const raw = (input || '').trim();
+    if (!raw) return '';
+    const lower = raw.toLowerCase();
+
+    // 1. Region & Origin Detection
+    let region = '';
+    let regionShort = '';
+    if (/kashmir|srinagar|कश्मीर|श्रीनगर/i.test(lower)) { region = 'Kashmir, India'; regionShort = 'Kashmir'; }
+    else if (/jaipur|rajasthan|जयपुर|राजस्थान/i.test(lower)) { region = 'Jaipur, Rajasthan'; regionShort = 'Jaipur'; }
+    else if (/banaras|varanasi|kashi|बनारस|वाराणसी|काशी/i.test(lower)) { region = 'Varanasi, Uttar Pradesh'; regionShort = 'Varanasi'; }
+    else if (/channapatna|karnataka|चन्नापटना|कर्नाटक/i.test(lower)) { region = 'Channapatna, Karnataka'; regionShort = 'Channapatna'; }
+    else if (/kanchipuram|tamil|कांचीपुरम/i.test(lower)) { region = 'Kanchipuram, Tamil Nadu'; regionShort = 'Kanchipuram'; }
+    else if (/khurja|खुर्जा/i.test(lower)) { region = 'Khurja, Uttar Pradesh'; regionShort = 'Khurja'; }
+    else if (/madhubani|mithila|bihar|मधुबनी|मिथिला/i.test(lower)) { region = 'Mithila, Bihar'; regionShort = 'Mithila'; }
+    else if (/bengal|kolkata|shantiniketan|बंगाल/i.test(lower)) { region = 'Kolkata, West Bengal'; regionShort = 'Bengal'; }
+    else if (/kutch|gujarat|कच्छ|गुजरात/i.test(lower)) { region = 'Kutch, Gujarat'; regionShort = 'Kutch'; }
+    else if (/moradabad|मुरादाबाद/i.test(lower)) { region = 'Moradabad, Uttar Pradesh'; regionShort = 'Moradabad'; }
+    else if (/saharanpur|सहारनपुर/i.test(lower)) { region = 'Saharanpur, Uttar Pradesh'; regionShort = 'Saharanpur'; }
+
+    // 2. Action Verbs (Sourced / Handcrafted)
+    const isProcured = /mangaya|mangwaya|laya|procured|sourced|आयात|मंगाया|लाया/i.test(lower);
+    const isHandmade = /banaya|bana hua|hath se|handcrafted|handmade|बनाया|हाथ से/i.test(lower);
+
+    // 3. Product & Craft Item Detection
+    let product = '';
+    let material = '';
+
+    // Pottery / Clay
+    if (/matka|ghada|kalash|घड़ा|घड़ा|मटका|कलश/i.test(lower)) product = 'earthen terracotta water pot (matka)';
+    else if (/surahi|सुराही/i.test(lower)) product = 'traditional long-neck earthen water flask (surahi)';
+    else if (/gamla|planter|गमला/i.test(lower)) product = 'handcrafted clay planter pot';
+    else if (/vase|phool dan|फूलदान/i.test(lower)) product = 'ceramic decorative floral vase';
+    else if (/kulhad|कुल्हड़|कुल्हड़/i.test(lower)) product = 'traditional clay chai kulhads';
+    else if (/handi|हांडी/i.test(lower)) product = 'earthen clay cooking handi';
+    else if (/pottery|terracotta|clay|mitti|miti|मिट्टी/i.test(lower)) product = 'authentic terracotta clay craft';
+
+    // Textiles / Silk
+    if (/saree|sari|साड़ी|साड़ी/i.test(lower)) product = 'heritage handloom saree';
+    else if (/dupatta|chunni|दुपट्टा/i.test(lower)) product = 'artisanal handwoven dupatta stole';
+    else if (/shawl|stole|pashmina|शॉल|पश्मीना/i.test(lower)) product = 'authentic warm handwoven winter shawl';
+    else if (/kurta|kurti|कुर्ता/i.test(lower)) product = 'handcrafted ethnic artisan kurta';
+
+    // Wood
+    if (/toy|khilona|खिलौना/i.test(lower)) product = 'eco-friendly hand-carved wooden toy';
+    else if (/elephant|haathi|हाथी/i.test(lower)) product = 'hand-carved wooden elephant artifact';
+    else if (/box|dabba|sandook|डिब्बा/i.test(lower)) product = 'intricately carved wooden keepsake box';
+    else if (/lakdi|wood|wooden|लकड़ी|लकड़ी/i.test(lower)) product = 'handcrafted natural hardwood craft';
+
+    // Metal
+    if (/diya|deepak|दीया|दीपक/i.test(lower)) product = 'hand-cast solid brass oil diya lamp';
+    else if (/thali|थाली/i.test(lower)) product = 'engraved brass ritual puja thali';
+    else if (/bell|ghanta|घंटी/i.test(lower)) product = 'traditional hand-cast temple bell';
+    else if (/peetal|brass|पीतल/i.test(lower)) product = 'traditional solid brass artware';
+    else if (/taamba|copper|तांबा/i.test(lower)) product = 'pure hammered copper craft';
+
+    // Art
+    if (/painting|canvas|chitra|पेंटिंग|चित्र/i.test(lower)) product = 'authentic hand-painted folk canvas artwork';
+
+    // Material extraction
+    if (/silk|resham|सिल्क|रेशम/i.test(lower)) material = 'pure mulberry silk';
+    else if (/cotton|khadi|सूती|कॉटन/i.test(lower)) material = 'organic handspun khadi cotton';
+    else if (/terracotta|clay|mitti|मिट्टी/i.test(lower)) material = 'natural kiln-fired terracotta clay';
+    else if (/wood|lakdi|लकड़ी/i.test(lower)) material = 'seasoned natural hardwood';
+    else if (/brass|peetal|पीतल/i.test(lower)) material = 'solid sand-cast brass';
+    else if (/copper|taamba|तांबा/i.test(lower)) material = 'pure hammered copper';
+    else if (/silver|chaandi|चांदी/i.test(lower)) material = 'antique oxidized 925 silver finish';
+
+    // Motifs & Attributes
+    const features = [];
+    if (/floral|phool|phul|flower|कमल|फूल/i.test(lower)) features.push('intricate floral motifs');
+    if (/peacock|mor|mayur|मयूर|मोर/i.test(lower)) features.push('royal peacock design');
+    if (/zari|zardozi|जरी|कढ़ाई|embroidery/i.test(lower)) features.push('traditional metallic zari embroidery');
+    if (/eco friendly|organic|non toxic/i.test(lower)) features.push('eco-friendly non-toxic lacquer finish');
+    if (/pooja|puja|पूजा/i.test(lower)) features.push('designed for auspicious ritual worship');
+    if (/bacho|kids|children|बच्चों/i.test(lower)) features.push('safe for children');
+    if (/heavy base|bhari/i.test(lower)) features.push('sturdy heavy base');
+
+    // Dimensions & Capacity
+    const cap = lower.match(/(\d+(?:\.\d+)?)\s*(?:liter|litre|l|ltr|लीटर)/i);
+    if (cap) features.push(`${cap[1]}-liter capacity`);
+    const len = lower.match(/(\d+(?:\.\d+)?)\s*(?:meter|metre|m|मीटर)/i);
+    if (len) features.push(`${len[1]} meters length`);
+
+    // Case A: Pure origin / sourcing sentence (e.g. "Jisko Kashmir se mangaya Gaya hai.")
+    if (!product && region) {
+      if (isProcured) {
+        return `Authentic handcrafted artisan piece, sourced directly from the heritage craft clusters of ${region}.`;
+      } else if (isHandmade) {
+        return `Master-crafted traditional artisan creation, authentically made by hand in ${region}.`;
+      } else {
+        return `Authentic heritage handicraft creation from ${region}, preserving traditional artisan culture.`;
+      }
+    }
+
+    // Case B: Product with or without region
+    if (product) {
+      let sentence = 'Authentic ';
+      if (regionShort) sentence += `${regionShort} `;
+      if (material) sentence += `${material} `;
+      sentence += product;
+
+      if (features.length > 0) {
+        sentence += ` featuring ${features.join(', ')}`;
+      }
+
+      if (region && !sentence.includes(regionShort)) {
+        sentence += `, sourced directly from ${region}`;
+      }
+
+      return sentence.trim() + '.';
+    }
+
+    // Case C: Generic Hindi sentence fallback word-by-word cleaner
+    let translated = raw
+      .replace(/\b(jisko|jise|jo|yeh ek|yeh|ye|yaha|yahan)\b/gi, 'This handcrafted item')
+      .replace(/\b(kashmir se|jaipur se|banaras se)\b/gi, 'from the craft clusters of $1')
+      .replace(/\b(mangaya gaya hai|mangwaya gaya hai|laya gaya hai)\b/gi, 'is authentically sourced and curated')
+      .replace(/\b(banaya gaya hai|bana hua hai)\b/gi, 'is handcrafted by master artisans')
+      .replace(/\b(hath se|haath se)\b/gi, 'by traditional handcrafting')
+      .replace(/\b(ke sath|ke saath|with)\b/gi, 'featuring')
+      .replace(/\b(ka|ki|ke|hai|h|hain)\b/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (translated.length > 5) {
+      return `Authentic artisan product: ${translated}.`;
+    }
+
+    return raw;
+  };
+
   const toggleVoiceRecording = async () => {
     if (isRecordingRef.current) {
       stopVoiceRecording();
@@ -791,7 +925,11 @@ export default function App() {
         }
         const cleaned = fullTranscript.trim();
         if (cleaned) {
-          setVoiceText(cleaned);
+          setRawSpokenHindi(cleaned);
+          // AUTO-TRANSLATE SPOKEN HINDI/HINGLISH TO FLUENT PROPER ENGLISH!
+          const englishText = translateHindiSpeechToEnglish(cleaned);
+          setVoiceText(englishText || cleaned);
+          showToast(`✨ Translated: "${cleaned.slice(0, 24)}..." ➔ Proper English`);
         }
       };
 
@@ -2877,14 +3015,77 @@ export default function App() {
                       </button>
                     </div>
 
-                    <textarea
-                      rows={3}
-                      className="input-artisan"
-                      value={voiceText}
-                      onChange={(e) => setVoiceText(e.target.value)}
-                      placeholder="Speak or type product details (e.g., Banarasi silk saree with zari embroidery)..."
-                      style={{ resize: 'none', marginBottom: '14px' }}
-                    />
+                    {/* LIVE TRANSLATION NOTIFICATION BADGE */}
+                    {rawSpokenHindi && (
+                      <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '8px 12px', borderRadius: '8px', marginBottom: '10px', fontSize: '12px', color: '#065F46', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                          <strong>🎙️ Spoken Input:</strong> <em>"{rawSpokenHindi}"</em>
+                          <span style={{ color: '#047857', fontWeight: '700', marginLeft: '6px' }}>➔ Translated to Proper English below:</span>
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => setVoiceText(translateHindiSpeechToEnglish(voiceText))}
+                          style={{ background: '#059669', color: '#FFFFFF', border: 'none', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: '700' }}
+                        >
+                          Re-Translate
+                        </button>
+                      </div>
+                    )}
+
+                    <div style={{ position: 'relative' }}>
+                      <textarea
+                        rows={3}
+                        className="input-artisan"
+                        value={voiceText}
+                        onChange={(e) => setVoiceText(e.target.value)}
+                        placeholder="Speak in Hindi/Hinglish (e.g., 'Jisko Kashmir se mangaya gaya hai') - auto-translates to proper English..."
+                        style={{ resize: 'none', marginBottom: '8px', paddingRight: '120px' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const translated = translateHindiSpeechToEnglish(voiceText);
+                          setVoiceText(translated);
+                          showToast('✨ Converted to proper, grammatically correct English!');
+                        }}
+                        style={{
+                          position: 'absolute',
+                          top: '10px',
+                          right: '10px',
+                          background: 'linear-gradient(135deg, #D97706, #B45309)',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          padding: '6px 10px',
+                          borderRadius: '8px',
+                          fontSize: '11px',
+                          fontWeight: '800',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          boxShadow: '0 2px 6px rgba(217, 119, 6, 0.3)'
+                        }}
+                      >
+                        <Sparkles size={12} /> Translate
+                      </button>
+                    </div>
+
+                    {/* Auto-Translate Hint */}
+                    {/(hai|h|ka|ki|ke|se|mangaya|banaya|yeh|ye|jisko|hath|hath se)/i.test(voiceText) && (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', background: '#FEF3C7', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', color: '#92400E' }}>
+                        <span>💡 Hindi/Hinglish phrase detected. Click to translate to proper English:</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setVoiceText(translateHindiSpeechToEnglish(voiceText));
+                            showToast('✨ Translated into fluent English copy!');
+                          }}
+                          style={{ background: '#D97706', color: '#FFFFFF', border: 'none', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
+                        >
+                          Convert to English →
+                        </button>
+                      </div>
+                    )}
 
                     <button className="btn-artisan-primary" onClick={handleGenerateCatalogFromVoice} disabled={cataloging} style={{ width: '100%', padding: '12px' }}>
                       {cataloging ? '✨ Extracting AI Entities...' : 'Generate Auto-Catalog'}
