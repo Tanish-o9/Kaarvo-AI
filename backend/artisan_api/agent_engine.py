@@ -103,32 +103,157 @@ class SupervisorAgent:
         return state
 
 
+import re
+
+def parse_hindi_craft_to_english(text, craft_hint=""):
+    raw = (text or '').strip()
+    lower = raw.lower()
+
+    # 1. Region Detection
+    region = 'Jaipur, Rajasthan'
+    if re.search(r'banaras|varanasi|बनारस|वाराणसी|काशी', lower):
+        region = 'Varanasi, Uttar Pradesh'
+    elif re.search(r'channapatna|karnataka|चन्नापटना|कर्नाटक', lower):
+        region = 'Channapatna, Karnataka'
+    elif re.search(r'kanchipuram|tamil|कांचीपुरम', lower):
+        region = 'Kanchipuram, Tamil Nadu'
+    elif re.search(r'khurja|खुर्जा', lower):
+        region = 'Khurja, Uttar Pradesh'
+    elif re.search(r'madhubani|mithila|bihar|मधुबनी|मिथिला', lower):
+        region = 'Mithila, Bihar'
+    elif re.search(r'kashmir|srinagar|कश्मीर', lower):
+        region = 'Srinagar, Kashmir'
+    elif re.search(r'bengal|kolkata|shantiniketan|बंगाल', lower):
+        region = 'Kolkata, West Bengal'
+    elif re.search(r'kutch|gujarat|कच्छ|गुजरात', lower):
+        region = 'Kutch, Gujarat'
+    elif re.search(r'jaipur|rajasthan|जयपुर|राजस्थान', lower):
+        region = 'Jaipur, Rajasthan'
+
+    # 2. Product Type & Material Detection
+    category = 'Artisanal Handicrafts'
+    product_en = 'Heritage Craft Item'
+    material = 'Natural Artisan Material'
+    technique = 'Master Handcrafted Artisan Technique'
+    care = 'Wipe gently with a clean dry microfiber cloth.'
+
+    if re.search(r'matka|ghada|kalash|surahi|pot|pottery|terracotta|clay|miti|mitti|ceramic|vase|planter|kulhad|handi|pitcher|घड़ा|मटका|मिट्टी|सुराही|गमला', lower):
+        category = 'Pottery / Terracotta'
+        material = 'Natural Kiln-Fired Terracotta Clay'
+        technique = 'Traditional Potter Wheel Turning & Hand-Burnishing'
+        care = 'Rinse with fresh water; sun dry naturally. Do not use synthetic detergents.'
+        if re.search(r'vase|फूलदान', lower):
+            product_en = 'Ceramic Floral Decorative Vase'
+        elif re.search(r'surahi|सुराही', lower):
+            product_en = 'Earthen Long-Neck Water Flask (Surahi)'
+        elif re.search(r'planter|gamla|गमला', lower):
+            product_en = 'Artisanal Terracotta Planter Pot'
+        elif re.search(r'kulhad|cup|कुल्हड़|कुल्हड़', lower):
+            product_en = 'Traditional Clay Chai Kulhads'
+        else:
+            product_en = 'Terracotta Clay Water Pot (Matka)'
+    elif re.search(r'saree|sari|shawl|stole|dupatta|kurta|kurti|handloom|silk|cotton|fabric|cloth|weaving|zari|saadi|साड़ी|दुपट्टा|शॉल|सिल्क|रेशम|हथकरघा|कुर्ता', lower):
+        category = 'Textiles / Handloom'
+        material = 'Pure Mulberry Handloom Silk with Natural Dyes'
+        technique = 'Interlocking Heritage Handloom Weaving'
+        care = 'Dry clean recommended to preserve handwoven weave and zari sheen.'
+        if re.search(r'saree|sari|साड़ी', lower):
+            product_en = 'Heritage Handloom Saree'
+        elif re.search(r'dupatta|chunni|दुपट्टा', lower):
+            product_en = 'Artisanal Woven Dupatta Stole'
+        elif re.search(r'shawl|stole|शॉल', lower):
+            product_en = 'Fine Artisan Handwoven Shawl'
+        else:
+            product_en = 'Handloom Artisan Textile'
+    elif re.search(r'wood|wooden|lakdi|timber|teak|sheesham|toy|khilona|carving|carved|channapatna|लकड़ी|खिलौना|नक्काशी', lower):
+        category = 'Woodwork'
+        material = 'Natural Seasoned Hardwood with Plant-Based Organic Lacquer'
+        technique = 'Hand-Lathe Turning & Fine Chisel Relief Carving'
+        care = 'Wipe with soft dry cloth. Keep away from excessive moisture.'
+        if re.search(r'toy|khilona|elephant|हाथी|खिलौना', lower):
+            product_en = 'Eco-Friendly Hand-Carved Wooden Toy'
+        elif re.search(r'box|dabba|sandook|डिब्बा', lower):
+            product_en = 'Intricately Carved Wooden Keepsake Box'
+        else:
+            product_en = 'Hand-Carved Hardwood Artifact'
+    elif re.search(r'diya|deepak|peetal|brass|copper|taamba|thali|statue|idol|bell|metal|दीया|दीपक|पीतल|तांबा|मूर्ति', lower):
+        category = 'Metal craft'
+        material = 'Solid Sand-Cast Brass with Antique Luster'
+        technique = 'Traditional Lost-Wax Sand Casting & Hand Chisel Engraving'
+        care = 'Clean gently using traditional pitambari or brass polish paste.'
+        if re.search(r'diya|deepak|दीया', lower):
+            product_en = 'Hand-Cast Solid Brass Oil Diya Lamp'
+        elif re.search(r'thali|थाली', lower):
+            product_en = 'Engraved Brass Ritual Puja Thali'
+        else:
+            product_en = 'Traditional Cast Brass Artware'
+
+    # 3. Motifs
+    motif = ''
+    if re.search(r'floral|phool|phul|flower|फूल', lower):
+        motif = 'Intricate Floral & Botanical Motifs'
+    elif re.search(r'peacock|mor|mayur|मयूर|मोर', lower):
+        motif = 'Graceful Royal Peacock Motifs'
+    elif re.search(r'elephant|haathi|gaj|हाथी', lower):
+        motif = 'Royal Heritage Elephant Engravings'
+    elif re.search(r'zari|zardozi|जरी|कढ़ाई|embroidery', lower):
+        motif = 'Opulent Metallic Zari Embroidery'
+
+    # 4. Dimension / Capacity
+    dim = ''
+    cap = re.search(r'(\d+(?:\.\d+)?)\s*(?:liter|litre|l|ltr|लीटर)', lower)
+    if cap:
+        dim = f"({cap.group(1)}L)"
+    length = re.search(r'(\d+(?:\.\d+)?)\s*(?:meter|metre|m|मीटर)', lower)
+    if length:
+        dim = f"({length.group(1)}m)"
+
+    # 5. English Title
+    reg_short = region.split(',')[0].strip()
+    parts = ['Handcrafted', reg_short, product_en]
+    if motif:
+        parts.append(f"with {motif}")
+    if dim:
+        parts.append(dim)
+    title = ' '.join(parts)
+
+    # 6. Grammatically Correct English Description
+    description = (
+        f"This {title} is authentically handcrafted by master artisan families in {region}. "
+        f"Expertly shaped and perfected using {material} with {technique}"
+        f"{', highlighting ' + motif if motif else ''}. "
+        f"Every piece preserves generations of living Indian craft heritage, offering 100% eco-friendly utility "
+        f"and fair-wage empowerment under verified ONDC standards. Care: {care}"
+    )
+
+    return {
+        'title': title,
+        'description': description,
+        'category': category,
+        'material': material,
+        'craft_origin': region,
+        'technique': technique,
+        'care_instructions': care
+    }
+
+
 class VoiceAgent:
-    """Extracts facts from spoken natural language or transcribed voice text."""
+    """Extracts facts from spoken natural language or transcribed Hindi/Hinglish voice text into clean English attributes."""
     def run(self, voice_text: str, craft_hint: str = ""):
         start = time.time()
         text = voice_text.strip() or f"Handmade {craft_hint or 'Artisan Product'} crafted with care and traditional skills."
+        parsed = parse_hindi_craft_to_english(text, craft_hint)
 
-        # Heuristic/NLU fact extraction
         facts = {
-            'craft_origin': 'Jaipur, Rajasthan',
-            'material': 'Natural Silk / Terracotta Ceramic',
-            'craftsmanship': 'Handcrafted using traditional technique',
-            'care_instructions': 'Gentle handwash / Wipe with soft dry cloth',
-            'authenticity': '100% Genuine Handloom / Handicraft'
+            'craft_origin': parsed['craft_origin'],
+            'material': parsed['material'],
+            'craftsmanship': parsed['technique'],
+            'care_instructions': parsed['care_instructions'],
+            'authenticity': '100% Genuine Handloom / Handicraft',
+            'parsed_title': parsed['title'],
+            'parsed_description': parsed['description'],
+            'parsed_category': parsed['category']
         }
-
-        if 'terracotta' in text.lower() or 'pot' in text.lower() or 'pottery' in text.lower():
-            facts['material'] = 'Natural Red Clay / Terracotta'
-            facts['craft_origin'] = 'Khurja / Bankura'
-            facts['care_instructions'] = 'Clean with dry damp cloth, avoid chemical detergent'
-        elif 'silk' in text.lower() or 'saree' in text.lower() or 'weave' in text.lower():
-            facts['material'] = 'Pure Mulberry Silk'
-            facts['craft_origin'] = 'Varanasi / Chanderi'
-            facts['care_instructions'] = 'Dry clean only'
-        elif 'wood' in text.lower() or 'carving' in text.lower():
-            facts['material'] = 'Sheesham / Teak Wood'
-            facts['craft_origin'] = 'Saharanpur, UP'
 
         latency = int((time.time() - start) * 1000)
         return {
@@ -160,21 +285,20 @@ class VisionAgent:
 
 
 class CatalogAgent:
-    """Generates rich, high-converting product title, description, category, and tags."""
+    """Generates rich, high-converting product title, description, category, and tags in proper English."""
     def run(self, facts: dict, craft_hint: str = ""):
         start = time.time()
-        material = facts.get('material', 'Artisan Material')
-        origin = facts.get('craft_origin', 'India')
         
-        title = f"Exquisite Handcrafted {material} {craft_hint or 'Artisan Masterpiece'}"
-        description = (
+        title = facts.get('parsed_title') or f"Exquisite Handcrafted {facts.get('material', 'Artisan Material')} {craft_hint or 'Masterpiece'}"
+        description = facts.get('parsed_description') or (
             f"Embrace the timeless elegance of authentic Indian craftsmanship with this {title}. "
-            f"Handmade by traditional artisans in {origin} using premium {material}. "
+            f"Handmade by traditional artisans in {facts.get('craft_origin', 'India')} using premium {facts.get('material', 'Artisan Material')}. "
             f"Each piece represents generations of heritage, intricate detailing, and artisanal passion. "
-            f"Perfect as a statement decor, heirloom gift, or luxury addition to your collection."
+            f"Care: {facts.get('care_instructions', 'Gentle handwash / Wipe with soft cloth')}."
         )
-        category = "Home & Living / Decor" if "pottery" in title.lower() or "wood" in title.lower() else "Apparel & Fashion"
-        tags = ["Handmade", "IndianArtisan", "AuthenticCraft", "EthicalShopping", origin.replace(" ", ""), "VocalForLocal"]
+        category = facts.get('parsed_category') or ("Pottery / Terracotta" if "pottery" in title.lower() or "clay" in title.lower() else "Artisanal Handicrafts")
+        origin = facts.get('craft_origin', 'India')
+        tags = ["Handmade", "IndianArtisan", "AuthenticCraft", "EthicalShopping", origin.replace(" ", "").replace(",", ""), "VocalForLocal"]
 
         latency = int((time.time() - start) * 1000)
         return {

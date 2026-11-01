@@ -14,8 +14,28 @@ from artisan_api.models import (
 
 def seed():
     print("Seeding Prompt #3 Agentic Infrastructure Data...")
-    user = User.objects.get(username='artisan_demo')
+    user, _ = User.objects.get_or_create(username='artisan_demo', defaults={'email': 'demo@artisan.in'})
+    if not user.has_usable_password():
+        user.set_password('demo123')
+        user.save()
+    ArtisanProfile.objects.get_or_create(user=user, defaults={'craft_type': 'Handloom', 'region': 'Varanasi'})
     product = Product.objects.filter(artisan=user).first()
+    if not product:
+        product = Product.objects.create(
+            artisan=user,
+            title='Handcrafted Blue Pottery Ceramic Vase',
+            description='Authentic handcrafted ceramic vase featuring traditional Jaipur blue pottery floral motifs.',
+            category='Pottery & Ceramics',
+            price=1850.00,
+            status=ProductStatus.PUBLISHED,
+            material_cost=450.00,
+            labor_cost=500.00,
+            packaging_cost=100.00,
+            margin_percent=30.00,
+            suggested_min_price=1600.00,
+            suggested_max_price=2200.00
+        )
+        Inventory.objects.get_or_create(product=product, defaults={'quantity': 25})
 
     # 1. Agent Identity
     AgentIdentity.objects.get_or_create(

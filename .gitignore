@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 *.sqlite3
 *.db
+*.log
+backend_debug.log
 .venv/
 env/
 venv/

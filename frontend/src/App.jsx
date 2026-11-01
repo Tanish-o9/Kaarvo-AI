@@ -7,7 +7,7 @@ import {
   Truck, ShieldAlert, Zap, Compass, Store, Settings, PieChart, Tag, RefreshCcw, Home, Trash2
 } from 'lucide-react';
 
-const API_BASE = 'http://127.0.0.1:8000/api/v1';
+const API_BASE = 'http://127.0.0.1:8001/api/v1';
 
 export default function App() {
   // Tab Persistence: Customer vs Artisan views
@@ -80,8 +80,9 @@ export default function App() {
   const [rawImageFile, setRawImageFile] = useState(null);
   const [enhancedImage, setEnhancedImage] = useState(null);
   const [imageEnhancing, setImageEnhancing] = useState(false);
+  const [imageLightingInfo, setImageLightingInfo] = useState(null);
 
-  // Process image on HTML5 canvas with AI Photo Super-Enhancement & Exposure/Color Boost
+  // Process image on HTML5 canvas with Adaptive AI Lighting & Photo Super-Enhancement
   const processCanvasImage = (rawUrl) => {
     if (!rawUrl) return;
     setImageEnhancing(true);
@@ -103,13 +104,68 @@ export default function App() {
           }
         }
 
+        // 1. Analyze initial photo brightness (luminance) from downsampled sample
+        const sampleSize = 120;
+        const sampleCanvas = document.createElement('canvas');
+        sampleCanvas.width = sampleSize;
+        sampleCanvas.height = sampleSize;
+        const sCtx = sampleCanvas.getContext('2d');
+        sCtx.drawImage(img, 0, 0, sampleSize, sampleSize);
+        const imgData = sCtx.getImageData(0, 0, sampleSize, sampleSize).data;
+
+        let totalLuminance = 0;
+        const totalPixels = sampleSize * sampleSize;
+        for (let i = 0; i < imgData.length; i += 4) {
+          totalLuminance += 0.299 * imgData[i] + 0.587 * imgData[i + 1] + 0.114 * imgData[i + 2];
+        }
+        const avgLuminance = Math.round(totalLuminance / totalPixels);
+
+        // 2. Intelligent Adaptive Lighting Calibration
+        // Requirement: agar photo ki brightness pehle se badiya hai, to over-brighten nahi karna
+        let filterStr = '';
+        let assessment = '';
+        let badgeColor = '';
+        let toastMsg = '';
+
+        if (avgLuminance >= 165) {
+          // High Key / Very Bright Daylight
+          filterStr = 'contrast(1.02) brightness(0.99) saturate(1.03)';
+          assessment = 'High Brightness Detected: Original exposure preserved (no artificial brightening)';
+          badgeColor = '#059669';
+          toastMsg = '✨ High brightness detected! Original exposure preserved without washout.';
+        } else if (avgLuminance >= 115) {
+          // Well-lit / Balanced Lighting (Good brightness initially)
+          filterStr = 'contrast(1.05) brightness(1.01) saturate(1.07)';
+          assessment = 'Optimal Natural Brightness: Micro-contrast & edge clarity enhanced (brightness kept natural)';
+          badgeColor = '#10B981';
+          toastMsg = '✨ Photo has great natural brightness! Enhanced clarity without over-exposure.';
+        } else if (avgLuminance >= 75) {
+          // Moderate indoor lighting
+          filterStr = 'contrast(1.11) brightness(1.08) saturate(1.15)';
+          assessment = 'Indoor Lighting Detected: Applied gentle shadow recovery & warm craft saturation';
+          badgeColor = '#D97706';
+          toastMsg = '✨ Mild indoor lighting: lifted shadows & boosted craft texture.';
+        } else {
+          // Underexposed / Dim photo
+          filterStr = 'contrast(1.18) brightness(1.18) saturate(1.22)';
+          assessment = 'Low-Light Photo Detected: Enhanced exposure, shadow detail & craft vibrance';
+          badgeColor = '#DC2626';
+          toastMsg = '✨ Low-light detected: boosted exposure, clarity & vibrant craft tones.';
+        }
+
+        setImageLightingInfo({
+          luminance: avgLuminance,
+          assessment: assessment,
+          badgeColor: badgeColor
+        });
+
         const canvas = document.createElement('canvas');
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext('2d');
 
-        // AI PHOTO SUPER-ENHANCER: Keeps photo & background intact, boosts exposure, color vibrance, clarity & contrast
-        ctx.filter = 'contrast(1.22) brightness(1.08) saturate(1.28)';
+        // Apply calibrated adaptive filter
+        ctx.filter = filterStr;
         ctx.drawImage(img, 0, 0, w, h);
 
         // Soft studio sharpening vignette frame
@@ -118,13 +174,14 @@ export default function App() {
         const ry = h / 2;
         const vig = ctx.createRadialGradient(rx, ry, Math.min(w, h) * 0.45, rx, ry, Math.max(w, h) * 0.85);
         vig.addColorStop(0, 'rgba(255, 255, 255, 0)');
-        vig.addColorStop(1, 'rgba(30, 20, 10, 0.05)');
+        vig.addColorStop(1, 'rgba(30, 20, 10, 0.04)');
         ctx.fillStyle = vig;
         ctx.fillRect(0, 0, w, h);
 
         const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
         setEnhancedImage(dataUrl);
         setImageEnhancing(false);
+        showToast(toastMsg);
       } catch (err) {
         console.error(err);
         setEnhancedImage(rawUrl);
@@ -450,75 +507,129 @@ export default function App() {
     const raw = (text || '').trim();
     const lower = raw.toLowerCase();
 
-    // 1. Detect Category (Supports Hinglish, English, Devanagari Hindi, Bengali, Tamil)
-    let category = 'Artisanal Handicrafts';
-    if (/(saree|shawl|stole|dupatta|handloom|cloth|fabric|silk|cotton|weave|weaving|kurta|khadi|embroidery|zari|साड़ी|साड़ी|सिल्क|रेशम|कपड़ा|कपड़ा|हथकरघा|सलवार|कुर्ता)/i.test(lower)) {
-      category = 'Textiles / Handloom';
-    } else if (/(pottery|terracotta|clay|jug|pot|matka|miti|mitti|vase|pitcher|planter|ceramic|मिट्टी|घड़ा|मटका|बर्तन|कुम्हार|सुराही)/i.test(lower)) {
-      category = 'Pottery / Terracotta';
-    } else if (/(wood|wooden|carving|carved|channapatna|timber|teak|sheesham|toy|sculpture|furniture|लकड़ी|लकड़ी|खिलौना|नक्काशी)/i.test(lower)) {
-      category = 'Woodwork';
-    } else if (/(brass|copper|silver|metal|diya|statue|bell|idol|bronze|oxidized|jewelry|jewel|necklace|ring|bangle|earring|पीतल|तांबा|ताम्बा|चांदी|चाँदी|मूर्ति|दीया|दिया|आभूषण|गहने|हार|झुमके)/i.test(lower)) {
-      category = (/(jewelry|jewel|necklace|ring|bangle|earring|आभूषण|गहने|हार|झुमके)/i.test(lower))
-        ? 'Jewelry (traditional)'
-        : 'Metal craft';
-    } else if (/(painting|canvas|art|madhubani|warli|pattachitra|miniature|tanjore|चित्रकारी|पेंटिंग|चित्र)/i.test(lower)) {
-      category = 'Folk Paintings & Art';
-    }
-
-    // 2. Detect Materials
-    const foundMaterials = [];
-    if (/terracotta|red clay|miti|mitti|clay|मिट्टी|घड़ा/i.test(lower)) foundMaterials.push('Pure Red Clay');
-    if (/silk|mulberry|tussar|banarasi|सिल्क|रेशम/i.test(lower)) foundMaterials.push('Pure Mulberry Silk');
-    if (/cotton|khadi|कॉटन|सूती/i.test(lower)) foundMaterials.push('Organic Cotton');
-    if (/wood|wooden|teak|sheesham|लकड़ी|लकड़ी/i.test(lower)) foundMaterials.push('Natural Hardwood');
-    if (/brass|पीतल/i.test(lower)) foundMaterials.push('Solid Brass');
-    if (/copper|तांबा|ताम्बा/i.test(lower)) foundMaterials.push('Pure Copper');
-    if (/silver|oxidized|चांदी|चाँदी/i.test(lower)) foundMaterials.push('925 Silver');
-    if (/zari|gold|ज़री|जरी/i.test(lower)) foundMaterials.push('Zari Metallic Thread');
-    if (/paint|dye|vegetable dye|रंग/i.test(lower)) foundMaterials.push('Natural Organic Pigments');
-    const materials = foundMaterials.length > 0 ? foundMaterials.join(' & ') : 'Authentic Natural Artisan Materials';
-
-    // 3. Detect Craft Technique
-    let technique = 'Handcrafted Execution';
-    if (/hand-carved|carved|carving|नक्काशी/i.test(lower)) technique = 'Hand-Carved Relief & Detailed Shaping';
-    else if (/handloom|woven|weaving|हथकरघा|बुनाई/i.test(lower)) technique = 'Traditional Handloom Weaving';
-    else if (/hand-painted|painted|painting|चित्रकारी/i.test(lower)) technique = 'Hand-Painted Folk Motif Art';
-    else if (/block-print|printed|छपाई/i.test(lower)) technique = 'Hand Block Printing';
-    else if (/lathe|lacquer|channapatna/i.test(lower)) technique = 'Lathe Turning & Eco Lacquer Polish';
-    else if (/embossed|engraved|embroidery|कढ़ाई|कढाई/i.test(lower)) technique = 'Hand Embossing & Needle Work';
-    else if (/wheel|potter|चाक/i.test(lower)) technique = 'Potter Wheel Turning & Kiln Firing';
-
-    // 4. Detect Region
-    let region = 'Artisan Guild, India';
+    // 1. Heritage Region Detection (Hindi, Hinglish & Devanagari)
+    let region = 'Artisan Heritage Cluster, India';
     if (/jaipur|rajasthan|जयपुर|राजस्थान/i.test(lower)) region = 'Jaipur, Rajasthan';
-    else if (/banaras|varanasi|बनारस|वाराणसी/i.test(lower)) region = 'Varanasi, Uttar Pradesh';
+    else if (/banaras|varanasi|बनारस|वाराणसी|काशी/i.test(lower)) region = 'Varanasi, Uttar Pradesh';
     else if (/channapatna|karnataka|चन्नापटना|कर्नाटक/i.test(lower)) region = 'Channapatna, Karnataka';
-    else if (/kanchipuram|tamil|कांचीपुरम|तमिलनाडु/i.test(lower)) region = 'Kanchipuram, Tamil Nadu';
-    else if (/bengal|kolkata|बंगाल|कोलकाता/i.test(lower)) region = 'Kolkata, West Bengal';
-    else if (/kashmir|srinagar|कश्मीर|श्रीनगर/i.test(lower)) region = 'Srinagar, Kashmir';
-    else if (/madhubani|bihar|मधुबनी|बिहार/i.test(lower)) region = 'Madhubani, Bihar';
-    else if (/odisha|puri|ओडिशा|पुरी/i.test(lower)) region = 'Puri, Odisha';
-    else if (/gujarat|kutch|गुजरात|कच्छ/i.test(lower)) region = 'Kutch, Gujarat';
+    else if (/kanchipuram|tamil|कांचीपुरम/i.test(lower)) region = 'Kanchipuram, Tamil Nadu';
+    else if (/khurja|खुर्जा/i.test(lower)) region = 'Khurja, Uttar Pradesh';
+    else if (/madhubani|mithila|bihar|मधुबनी|मिथिला/i.test(lower)) region = 'Mithila, Bihar';
+    else if (/kashmir|srinagar|कश्मीर/i.test(lower)) region = 'Srinagar, Kashmir';
+    else if (/bengal|kolkata|shantiniketan|बंगाल/i.test(lower)) region = 'Kolkata, West Bengal';
+    else if (/kutch|gujarat|कच्छ|गुजरात/i.test(lower)) region = 'Kutch, Gujarat';
+    else if (/moradabad|मुरादाबाद/i.test(lower)) region = 'Moradabad, Uttar Pradesh';
+    else if (/saharanpur|सहारनपुर/i.test(lower)) region = 'Saharanpur, Uttar Pradesh';
+    else if (/puri|odisha|ओडिशा|पुरी/i.test(lower)) region = 'Puri, Odisha';
 
-    // 5. Generate Dynamic Product Title
-    let clean = raw
-      .replace(/^(yeh|yeh ek|this is|isme|is me|ye|yaha|aapka|यह|यह एक|इसमे)\s+/i, '')
-      .replace(/\s+(hai|h|he|hsth|ke sath|with|ka|ki|ke|for sell|for sale|है|का|की|के)\b/gi, '')
-      .trim();
+    // 2. Category, Material, Technique & Standard English Product Name
+    let category = 'Artisanal Handicrafts';
+    let englishProduct = 'Artisan Heritage Craft Item';
+    let primaryMaterial = 'Authentic Eco-Friendly Natural Material';
+    let technique = 'Master Handcrafted Artisan Technique';
+    let careInstructions = 'Wipe gently with a soft dry or slightly damp cloth. Avoid harsh chemical cleaners.';
 
-    let title = '';
-    if (clean.length > 5 && clean.length < 90) {
-      title = clean.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-      if (!/(handcrafted|authentic|handwoven|handmade)/i.test(title)) {
-        title = `Handcrafted ${title}`;
-      }
-    } else {
-      title = `Handcrafted ${category.split('/')[0].trim()} — ${region.split(',')[0]} Edition`;
+    if (/(matka|ghada|kalash|surahi|pot|pottery|terracotta|clay|miti|mitti|ceramic|vase|planter|kulhad|handi|pitcher|घड़ा|घड़ा|मटका|कलश|मिट्टी|सुराही|गमला|कुल्हड़|कुल्हड़)/i.test(lower)) {
+      category = 'Pottery / Terracotta';
+      primaryMaterial = /ceramic|चीनी मिट्टी/i.test(lower) ? 'High-Grade Kiln-Fired Glazed Ceramic' : 'Natural Kiln-Fired Terracotta Clay';
+      technique = 'Traditional Potter Wheel Shaping, Hand-Burnishing & Kiln Baking';
+      careInstructions = 'Rinse with fresh water; sun dry naturally. Do not wash with harsh synthetic soaps or wire scrubbers.';
+
+      if (/vase|फूलदान/i.test(lower)) englishProduct = 'Ceramic Floral Decorative Vase';
+      else if (/surahi|सुराही/i.test(lower)) englishProduct = 'Earthen Long-Neck Water Flask (Surahi)';
+      else if (/planter|gamla|गमला/i.test(lower)) englishProduct = 'Artisanal Terracotta Planter Pot';
+      else if (/kulhad|cup|कुल्हड़|कुल्हड़/i.test(lower)) englishProduct = 'Traditional Clay Chai Kulhads';
+      else if (/handi|हांडी/i.test(lower)) englishProduct = 'Clay Cooking Handi Pot';
+      else englishProduct = 'Terracotta Clay Water Pot (Matka)';
+    } else if (/(saree|sari|shawl|stole|dupatta|kurta|kurti|handloom|silk|cotton|fabric|cloth|weaving|zari|saadi|poshak|साड़ी|साड़ी|दुपट्टा|शॉल|सिल्क|रेशम|हथकरघा|कुर्ता|कपड़ा|कपड़ा)/i.test(lower)) {
+      category = 'Textiles / Handloom';
+      primaryMaterial = /cotton|khadi|सूती|कॉटन/i.test(lower) ? '100% Organic Handspun Khadi Cotton' : 'Pure Mulberry Handloom Silk with Natural Dyes';
+      technique = 'Interlocking Pit-Loom / Shuttle Handloom Weaving';
+      careInstructions = 'Dry clean recommended for silk and zari. Hand wash separately in cold water with mild detergent for organic cotton.';
+
+      if (/saree|sari|साड़ी|साड़ी/i.test(lower)) englishProduct = 'Heritage Handloom Saree';
+      else if (/dupatta|chunni|दुपट्टा/i.test(lower)) englishProduct = 'Artisanal Woven Dupatta Stole';
+      else if (/shawl|stole|शॉल/i.test(lower)) englishProduct = 'Fine Artisan Winter Shawl';
+      else if (/kurta|kurti|कुर्ता/i.test(lower)) englishProduct = 'Handwoven Tunic Kurta';
+      else englishProduct = 'Handloom Woven Textile';
+    } else if (/(wood|wooden|lakdi|timber|teak|sheesham|toy|khilona|carving|carved|channapatna|लकड़ी|लकड़ी|खिलौना|नक्काशी|शीशम)/i.test(lower)) {
+      category = 'Woodwork';
+      primaryMaterial = 'Natural Seasoned Hardwood (Teak / Sheesham) with Plant-Based Organic Lacquer';
+      technique = 'Hand-Lathe Turning, Chisel Relief Carving & Natural Polish';
+      careInstructions = 'Wipe with a clean dry microfiber cloth. Keep away from direct excessive moisture and prolonged sunlight.';
+
+      if (/toy|khilona|elephant|हाथी|खिलौना/i.test(lower)) englishProduct = 'Eco-Friendly Hand-Carved Wooden Toy';
+      else if (/box|dabba|sandook|डिब्बा/i.test(lower)) englishProduct = 'Intricately Carved Wooden Keepsake Box';
+      else if (/stool|chowki|चौकी/i.test(lower)) englishProduct = 'Hand-Carved Traditional Wooden Chowki Stool';
+      else englishProduct = 'Hand-Carved Hardwood Artifact';
+    } else if (/(diya|deepak|peetal|brass|copper|taamba|thali|statue|idol|bell|metal|दीया|दिया|दीपक|पीतल|तांबा|मूर्ति|थाली|घंटी)/i.test(lower)) {
+      category = 'Metal craft';
+      primaryMaterial = /copper|तांबा/i.test(lower) ? 'Pure Hammered Copper' : 'Solid Sand-Cast Brass with Antique Luster';
+      technique = 'Traditional Lost-Wax Sand Casting & Hand Chisel Engraving';
+      careInstructions = 'Clean gently using pitambari powder, lemon juice, or salt-flour paste. Wipe dry immediately with cotton.';
+
+      if (/diya|deepak|दीया|दीपक/i.test(lower)) englishProduct = 'Hand-Cast Solid Brass Oil Diya Lamp';
+      else if (/thali|थाली/i.test(lower)) englishProduct = 'Engraved Brass Ritual Puja Thali';
+      else if (/bell|ghanta|घंटी/i.test(lower)) englishProduct = 'Traditional Temple Gong Bell';
+      else if (/idol|murti|statue|मूर्ति/i.test(lower)) englishProduct = 'Handcrafted Deity Brass Sculpture';
+      else englishProduct = 'Traditional Cast Brass Artware';
+    } else if (/(painting|canvas|madhubani|warli|pattachitra|art|चित्र|पेंटिंग|मधुबनी|वारली|चित्रकारी)/i.test(lower)) {
+      category = 'Folk Paintings & Art';
+      primaryMaterial = 'Handmade Cotton Rag Canvas & Mineral / Botanical Pigments';
+      technique = 'Fine Bamboo Twig Nib Drawing & Natural Folk Brushwork';
+      careInstructions = 'Frame under UV-resistant museum glass. Keep in a dry, ventilated indoor space.';
+
+      if (/madhubani|मधुबनी/i.test(lower)) englishProduct = 'Authentic Madhubani Folk Art Painting';
+      else if (/warli|वारली/i.test(lower)) englishProduct = 'Traditional Warli Tribal Canvas Art';
+      else englishProduct = 'Hand-Painted Traditional Folk Painting';
+    } else if (/(jhumka|jhumki|earring|necklace|haar|bangle|kangan|churi|silver|jewel|jewelry|झुमका|गहने|चांदी|कंगन|चूड़ी)/i.test(lower)) {
+      category = 'Jewelry (traditional)';
+      primaryMaterial = '925 Sterling Silver Finish / Antique Oxidized Alloy with Semi-Precious Stones';
+      technique = 'Hand-Twisted Wire Filigree, Bezel Setting & Hand Stamping';
+      careInstructions = 'Store in an airtight pouch away from perfumes and moisture. Polish with a soft jewelry cloth.';
+
+      if (/jhumka|jhumki|earring|झुमका/i.test(lower)) englishProduct = 'Handcrafted Filigree Jhumka Earrings';
+      else if (/necklace|haar|हार/i.test(lower)) englishProduct = 'Artisan Beaded Statement Necklace';
+      else if (/bangle|kangan|churi|कंगन/i.test(lower)) englishProduct = 'Traditional Lac & Metal Bangles';
+      else englishProduct = 'Handmade Traditional Ethnic Jewelry';
     }
 
-    // 6. Build Detailed Description & Use Case
-    const long_desc = `Authentic ${title} handcrafted by master artisans in ${region}. Expertly constructed using ${materials} with traditional ${technique}. 100% eco-friendly, sustainable, and directly linked to verified heritage craftsman families.`;
+    // 3. Motif & Embellishment Extraction
+    let motif = '';
+    if (/floral|phool|phul|flower|कमल|फूल/i.test(lower)) motif = 'Intricate Floral & Botanical Motifs';
+    else if (/peacock|mor|mayur|मयूर|मोर/i.test(lower)) motif = 'Graceful Royal Peacock Motifs';
+    else if (/elephant|haathi|gaj|हाथी/i.test(lower)) motif = 'Royal Heritage Elephant Engravings';
+    else if (/zari|zardozi|जरी|कढ़ाई|embroidery/i.test(lower)) motif = 'Opulent Metallic Zari Embroidery';
+    else if (/fish|machli|मछली/i.test(lower)) motif = 'Traditional Auspicious Fish Motifs';
+    else if (/geometric|jaali|jali|जाली/i.test(lower)) motif = 'Fine Geometric Jaali Lattice Work';
+    else if (/carved|nakshi|carving|नक्काशी/i.test(lower)) motif = 'Hand-Carved Relief Accents';
+
+    // 4. Capacity / Dimension Extraction
+    let dimensionStr = '';
+    const capMatch = lower.match(/(\d+(?:\.\d+)?)\s*(?:liter|litre|l|ltr|लीटर)/i);
+    if (capMatch) dimensionStr = `(${capMatch[1]}L)`;
+    const lenMatch = lower.match(/(\d+(?:\.\d+)?)\s*(?:meter|metre|m|मीटर)/i);
+    if (lenMatch) dimensionStr = `(${lenMatch[1]}m)`;
+    const wtMatch = lower.match(/(\d+(?:\.\d+)?)\s*(?:kg|kilo|gram|gm|g|किलो|ग्राम)/i);
+    if (wtMatch && !dimensionStr) dimensionStr = `(${wtMatch[1]}${wtMatch[0].includes('k') ? 'kg' : 'g'})`;
+
+    // 5. Build English Title (grammatically correct, clean standard ecommerce title)
+    const regionName = region.split(',')[0].trim();
+    const titleParts = ['Handcrafted'];
+    if (regionName && regionName !== 'Artisan Heritage Cluster') {
+      titleParts.push(regionName);
+    }
+    titleParts.push(englishProduct);
+    if (motif) {
+      titleParts.push(`with ${motif}`);
+    }
+    if (dimensionStr) {
+      titleParts.push(dimensionStr);
+    }
+    const title = titleParts.join(' ');
+
+    // 6. Build Grammatically Correct, Professional English Description
+    const long_desc = `This ${title} is authentically handcrafted by master artisan families in ${region}. Expertly shaped and finished using ${primaryMaterial} with ${technique}${motif ? `, highlighting ${motif}` : ''}. Every piece preserves generations of living Indian craft heritage, offering 100% eco-friendly utility and fair-wage empowerment under verified ONDC standards. Care: ${careInstructions}`;
 
     // 7. Dynamic Pricing Calculation
     let minPrice = pricingResult?.min;
@@ -534,9 +645,11 @@ export default function App() {
     }
 
     const entities = {
-      material: materials,
+      material: primaryMaterial,
       technique: technique,
       region: region,
+      motif: motif || 'Traditional Heritage Design',
+      care: careInstructions,
       use_case: `${category} Heritage Craft`
     };
 
@@ -2290,6 +2403,21 @@ export default function App() {
                       <div style={{ textAlign: 'center', color: 'var(--primary)', fontSize: '13px', padding: '16px', background: 'var(--primary-light)', borderRadius: '12px' }}>
                         <RefreshCw size={20} className="animate-spin" style={{ display: 'inline', marginRight: '8px' }} />
                         Boosting photo exposure, sharpness & color vibrance...
+                      </div>
+                    )}
+
+                    {/* INTELLIGENT LIGHTING ANALYSIS BADGE */}
+                    {imageLightingInfo && !imageEnhancing && (
+                      <div style={{ background: 'var(--bg-subtle)', border: `1px solid ${imageLightingInfo.badgeColor}`, padding: '10px 14px', borderRadius: '10px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Sparkles size={16} color={imageLightingInfo.badgeColor} />
+                        <div>
+                          <div style={{ fontSize: '12px', fontWeight: '800', color: imageLightingInfo.badgeColor }}>
+                            Lighting Calibration: {imageLightingInfo.assessment.split(':')[0]}
+                          </div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                            {imageLightingInfo.assessment.split(':')[1] || imageLightingInfo.assessment}
+                          </div>
+                        </div>
                       </div>
                     )}
 
