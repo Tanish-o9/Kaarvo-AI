@@ -281,14 +281,141 @@ export default function App() {
     showToast(`🔊 ${lang.startsWith('hi') ? 'Hindi Audio' : 'Audio Story'} playing... Tap again to pause.`);
   };
 
-  // --- FEATURE 2 HELPER: WhatsApp Artisan Bot Message Handler ---
-  // WhatsApp Voice Speech Recognition states & handlers
+// --- REAL MULTILINGUAL NEURAL & DOMAIN TRANSLATION ENGINE ---
+  const cleanOfflineDomainTranslation = (input) => {
+    const raw = (input || '').trim()
+      .replace(/^(Authentic artisan product:\s*)+/gi, '')
+      .replace(/^(Authentic:\s*)+/gi, '')
+      .trim();
+    if (!raw) return '';
+    const lower = raw.toLowerCase();
+
+    // 1. Region & Origin Detection
+    let region = '';
+    let regionShort = '';
+    if (/kashmir|srinagar|कश्मीर|श्रीनगर/i.test(lower)) { region = 'Kashmir, India'; regionShort = 'Kashmir'; }
+    else if (/jaipur|rajasthan|जयपुर|राजस्थान/i.test(lower)) { region = 'Jaipur, Rajasthan'; regionShort = 'Jaipur'; }
+    else if (/banaras|varanasi|kashi|बनारस|वाराणसी|काशी/i.test(lower)) { region = 'Varanasi, Uttar Pradesh'; regionShort = 'Varanasi'; }
+    else if (/channapatna|karnataka|चन्नापटना|कर्नाटक/i.test(lower)) { region = 'Channapatna, Karnataka'; regionShort = 'Channapatna'; }
+    else if (/kanchipuram|tamil|कांचीपुरम/i.test(lower)) { region = 'Kanchipuram, Tamil Nadu'; regionShort = 'Kanchipuram'; }
+    else if (/khurja|खुर्जा/i.test(lower)) { region = 'Khurja, Uttar Pradesh'; regionShort = 'Khurja'; }
+    else if (/madhubani|mithila|bihar|मधुबनी|मिथिला/i.test(lower)) { region = 'Mithila, Bihar'; regionShort = 'Mithila'; }
+    else if (/bengal|kolkata|shantiniketan|बंगाल/i.test(lower)) { region = 'Kolkata, West Bengal'; regionShort = 'Bengal'; }
+    else if (/kutch|gujarat|कच्छ|गुजरात/i.test(lower)) { region = 'Kutch, Gujarat'; regionShort = 'Kutch'; }
+    else if (/moradabad|मुरादाबाद/i.test(lower)) { region = 'Moradabad, Uttar Pradesh'; regionShort = 'Moradabad'; }
+    else if (/saharanpur|सहारनपुर/i.test(lower)) { region = 'Saharanpur, Uttar Pradesh'; regionShort = 'Saharanpur'; }
+
+    const isProcured = /mangaya|mangwaya|laya|procured|sourced|आयात|मंगाया|लाया/i.test(lower);
+    const isHandmade = /banaya|bana hua|hath se|handcrafted|handmade|बनाया|हाथ से/i.test(lower);
+
+    // 2. Product Detection
+    let product = '';
+    if (/matka|ghada|kalash|घड़ा|घड़ा|मटका|कलश/i.test(lower)) product = 'earthen terracotta water pot (matka)';
+    else if (/surahi|सुराही/i.test(lower)) product = 'traditional long-neck earthen water flask (surahi)';
+    else if (/saree|sari|साड़ी|साड़ी/i.test(lower)) product = 'heritage handloom saree';
+    else if (/shawl|stole|pashmina|शॉल|पश्मीना/i.test(lower)) product = 'warm handwoven artisan shawl';
+    else if (/toy|khilona|खिलौना/i.test(lower)) product = 'hand-carved wooden toy';
+    else if (/diya|deepak|दीया|दीपक/i.test(lower)) product = 'hand-cast solid brass oil diya lamp';
+
+    if (product) {
+      let sentence = 'Authentic ';
+      if (regionShort) sentence += `${regionShort} `;
+      sentence += product;
+      if (isProcured && region) sentence += `, sourced directly from ${region}`;
+      return sentence.trim() + '.';
+    }
+
+    if (region) {
+      return `Authentic handcrafted artisan piece, sourced directly from the heritage craft clusters of ${region}.`;
+    }
+
+    return raw;
+  };
+
+  const translateHindiSpeechToEnglish = async (input) => {
+    let raw = (input || '').trim()
+      .replace(/^(Authentic artisan product:\s*)+/gi, '')
+      .replace(/^(Authentic:\s*)+/gi, '')
+      .trim();
+    if (!raw) return '';
+
+    // Preprocess speech mishearings and common Hinglish phonetic words
+    let preprocessed = raw
+      .replace(/(होटल|हॉटेल)\s*(करनी|करना)/gi, 'ऑर्डर $2')
+      .replace(/\bmangaya gaya hai\b/gi, 'mangwaya gaya hai')
+      .replace(/\blaya gaya hai\b/gi, 'laya hai');
+
+    // 1. Try Backend Translate API (127.0.0.1:8001)
+    try {
+      const res = await fetch('http://127.0.0.1:8001/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: preprocessed })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.translated) {
+          return data.translated;
+        }
+      }
+    } catch (err) {
+      console.warn('Backend /api/translate error, trying direct Google API:', err);
+    }
+
+    // 2. Direct Google GTX API (Free, fast, CORS enabled)
+    try {
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=${encodeURIComponent(preprocessed)}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data[0]) {
+          let translated = data[0].map(item => item ? item[0] : '').join('').trim();
+          if (translated) {
+            translated = translated.charAt(0).toUpperCase() + translated.slice(1);
+            if (!/[.!?]$/.test(translated)) translated += '.';
+            return translated;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Google GTX fallback error:', err);
+    }
+
+    // 3. MyMemory Free API
+    try {
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(preprocessed)}&langpair=hi|en`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.responseData && data.responseData.translatedText) {
+          let text = data.responseData.translatedText.trim();
+          text = text.charAt(0).toUpperCase() + text.slice(1);
+          if (!/[.!?]$/.test(text)) text += '.';
+          return text;
+        }
+      }
+    } catch (err) {
+      console.warn('MyMemory fallback error:', err);
+    }
+
+    // 4. Offline domain fallback
+    return cleanOfflineDomainTranslation(raw);
+  };
+
+    // --- FEATURE 2 HELPER: WhatsApp Artisan Bot Message Handler ---
+  // WhatsApp Voice Speech Recognition with Real-Time Hindi-to-English Auto-Translation
   const [isWhatsappRecording, setIsWhatsappRecording] = useState(false);
+  const [whatsappSpokenHindi, setWhatsappSpokenHindi] = useState('');
+  const [isWhatsappTranslating, setIsWhatsappTranslating] = useState(false);
+  const whatsappTranslateTimeoutRef = useRef(null);
   const whatsappSpeechRecRef = useRef(null);
   const whatsappMediaStreamRef = useRef(null);
 
-  const stopWhatsappVoiceRecording = () => {
+  const stopWhatsappVoiceRecording = async () => {
     setIsWhatsappRecording(false);
+    if (whatsappTranslateTimeoutRef.current) {
+      clearTimeout(whatsappTranslateTimeoutRef.current);
+    }
     if (whatsappSpeechRecRef.current) {
       try {
         whatsappSpeechRecRef.current.onend = null;
@@ -303,12 +430,23 @@ export default function App() {
       } catch (e) {}
       whatsappMediaStreamRef.current = null;
     }
+    showToast('🔴 WhatsApp Mic Stopped.');
+
+    // Flush final Hindi speech to proper English translation
+    if (whatsappSpokenHindi && whatsappSpokenHindi.trim()) {
+      setIsWhatsappTranslating(true);
+      const english = await translateHindiSpeechToEnglish(whatsappSpokenHindi);
+      if (english) {
+        setWhatsappInput(english);
+        showToast(`✨ Auto-translated to English: "${english.slice(0, 24)}..."`);
+      }
+      setIsWhatsappTranslating(false);
+    }
   };
 
   const toggleWhatsappVoiceRecording = async () => {
     if (isWhatsappRecording) {
       stopWhatsappVoiceRecording();
-      showToast('🔴 WhatsApp Mic band ho gaya.');
       return;
     }
 
@@ -337,24 +475,41 @@ export default function App() {
       whatsappSpeechRecRef.current = rec;
       rec.continuous = true;
       rec.interimResults = true;
-      rec.lang = selectedLanguage || 'hi-IN';
+      rec.lang = 'hi-IN'; // Speech spoken in Hindi!
 
       rec.onstart = () => {
         setIsWhatsappRecording(true);
-        showToast('🎙️ WhatsApp Mic ACTIVE! Hindi ya Hinglish me boliye...');
+        showToast('🎙️ WhatsApp Mic ACTIVE! Hindi me boliye, English me likha jayega...');
       };
 
       rec.onresult = (event) => {
         let transcript = '';
+        let isFinal = false;
         for (let i = 0; i < event.results.length; i++) {
           const item = event.results[i];
           if (item && item[0] && item[0].transcript) {
             transcript += item[0].transcript + ' ';
+            if (item.isFinal) isFinal = true;
           }
         }
         const cleaned = transcript.trim();
         if (cleaned) {
-          setWhatsappInput(cleaned);
+          setWhatsappSpokenHindi(cleaned);
+
+          if (whatsappTranslateTimeoutRef.current) {
+            clearTimeout(whatsappTranslateTimeoutRef.current);
+          }
+
+          // Debounce translation: user speaks Hindi -> input gets proper English!
+          whatsappTranslateTimeoutRef.current = setTimeout(async () => {
+            setIsWhatsappTranslating(true);
+            const english = await translateHindiSpeechToEnglish(cleaned);
+            if (english) {
+              setWhatsappInput(english);
+              showToast(`✨ Translated: "${english.slice(0, 26)}..."`);
+            }
+            setIsWhatsappTranslating(false);
+          }, isFinal ? 100 : 500);
         }
       };
 
@@ -378,10 +533,19 @@ export default function App() {
     }
   };
 
-  const handleWhatsappSend = (customText) => {
+  const handleWhatsappSend = async (customText) => {
     if (isWhatsappRecording) stopWhatsappVoiceRecording();
-    const msg = (customText || whatsappInput).trim();
+    let msg = (customText || whatsappInput).trim();
     if (!msg) return;
+
+    // Auto-translate Hindi to English if text is in Hindi/Devanagari or Hinglish
+    const hasHindi = /[\u0900-\u097F]|(\b(karni|karna|chahiye|mangaya|banaya|hai|hain|humne|hamne|hoga|karo)\b)/i.test(msg);
+    if (hasHindi) {
+      const translated = await translateHindiSpeechToEnglish(msg);
+      if (translated) {
+        msg = translated;
+      }
+    }
 
     const newMsg = {
       id: Date.now(),
@@ -850,126 +1014,6 @@ export default function App() {
       }
       setIsTranslating(false);
     }
-  };
-
-  // --- REAL MULTILINGUAL NEURAL & DOMAIN TRANSLATION ENGINE ---
-  const cleanOfflineDomainTranslation = (input) => {
-    const raw = (input || '').trim()
-      .replace(/^(Authentic artisan product:\s*)+/gi, '')
-      .replace(/^(Authentic:\s*)+/gi, '')
-      .trim();
-    if (!raw) return '';
-    const lower = raw.toLowerCase();
-
-    // 1. Region & Origin Detection
-    let region = '';
-    let regionShort = '';
-    if (/kashmir|srinagar|कश्मीर|श्रीनगर/i.test(lower)) { region = 'Kashmir, India'; regionShort = 'Kashmir'; }
-    else if (/jaipur|rajasthan|जयपुर|राजस्थान/i.test(lower)) { region = 'Jaipur, Rajasthan'; regionShort = 'Jaipur'; }
-    else if (/banaras|varanasi|kashi|बनारस|वाराणसी|काशी/i.test(lower)) { region = 'Varanasi, Uttar Pradesh'; regionShort = 'Varanasi'; }
-    else if (/channapatna|karnataka|चन्नापटना|कर्नाटक/i.test(lower)) { region = 'Channapatna, Karnataka'; regionShort = 'Channapatna'; }
-    else if (/kanchipuram|tamil|कांचीपुरम/i.test(lower)) { region = 'Kanchipuram, Tamil Nadu'; regionShort = 'Kanchipuram'; }
-    else if (/khurja|खुर्जा/i.test(lower)) { region = 'Khurja, Uttar Pradesh'; regionShort = 'Khurja'; }
-    else if (/madhubani|mithila|bihar|मधुबनी|मिथिला/i.test(lower)) { region = 'Mithila, Bihar'; regionShort = 'Mithila'; }
-    else if (/bengal|kolkata|shantiniketan|बंगाल/i.test(lower)) { region = 'Kolkata, West Bengal'; regionShort = 'Bengal'; }
-    else if (/kutch|gujarat|कच्छ|गुजरात/i.test(lower)) { region = 'Kutch, Gujarat'; regionShort = 'Kutch'; }
-    else if (/moradabad|मुरादाबाद/i.test(lower)) { region = 'Moradabad, Uttar Pradesh'; regionShort = 'Moradabad'; }
-    else if (/saharanpur|सहारनपुर/i.test(lower)) { region = 'Saharanpur, Uttar Pradesh'; regionShort = 'Saharanpur'; }
-
-    const isProcured = /mangaya|mangwaya|laya|procured|sourced|आयात|मंगाया|लाया/i.test(lower);
-    const isHandmade = /banaya|bana hua|hath se|handcrafted|handmade|बनाया|हाथ से/i.test(lower);
-
-    // 2. Product Detection
-    let product = '';
-    if (/matka|ghada|kalash|घड़ा|घड़ा|मटका|कलश/i.test(lower)) product = 'earthen terracotta water pot (matka)';
-    else if (/surahi|सुराही/i.test(lower)) product = 'traditional long-neck earthen water flask (surahi)';
-    else if (/saree|sari|साड़ी|साड़ी/i.test(lower)) product = 'heritage handloom saree';
-    else if (/shawl|stole|pashmina|शॉल|पश्मीना/i.test(lower)) product = 'warm handwoven artisan shawl';
-    else if (/toy|khilona|खिलौना/i.test(lower)) product = 'hand-carved wooden toy';
-    else if (/diya|deepak|दीया|दीपक/i.test(lower)) product = 'hand-cast solid brass oil diya lamp';
-
-    if (product) {
-      let sentence = 'Authentic ';
-      if (regionShort) sentence += `${regionShort} `;
-      sentence += product;
-      if (isProcured && region) sentence += `, sourced directly from ${region}`;
-      return sentence.trim() + '.';
-    }
-
-    if (region) {
-      return `Authentic handcrafted artisan piece, sourced directly from the heritage craft clusters of ${region}.`;
-    }
-
-    return raw;
-  };
-
-  const translateHindiSpeechToEnglish = async (input) => {
-    let raw = (input || '').trim()
-      .replace(/^(Authentic artisan product:\s*)+/gi, '')
-      .replace(/^(Authentic:\s*)+/gi, '')
-      .trim();
-    if (!raw) return '';
-
-    // Preprocess common Hinglish phonetic words
-    let preprocessed = raw
-      .replace(/\bmangaya gaya hai\b/gi, 'mangwaya gaya hai')
-      .replace(/\blaya gaya hai\b/gi, 'laya hai');
-
-    // 1. Try Backend Translate API (127.0.0.1:8001)
-    try {
-      const res = await fetch('http://127.0.0.1:8001/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: preprocessed })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.translated) {
-          return data.translated;
-        }
-      }
-    } catch (err) {
-      console.warn('Backend /api/translate error, trying direct Google API:', err);
-    }
-
-    // 2. Direct Google GTX API (Free, fast, CORS enabled)
-    try {
-      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=${encodeURIComponent(preprocessed)}`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data[0]) {
-          let translated = data[0].map(item => item ? item[0] : '').join('').trim();
-          if (translated) {
-            translated = translated.charAt(0).toUpperCase() + translated.slice(1);
-            if (!/[.!?]$/.test(translated)) translated += '.';
-            return translated;
-          }
-        }
-      }
-    } catch (err) {
-      console.warn('Google GTX fallback error:', err);
-    }
-
-    // 3. MyMemory Free API
-    try {
-      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(preprocessed)}&langpair=hi|en`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.responseData && data.responseData.translatedText) {
-          let text = data.responseData.translatedText.trim();
-          text = text.charAt(0).toUpperCase() + text.slice(1);
-          if (!/[.!?]$/.test(text)) text += '.';
-          return text;
-        }
-      }
-    } catch (err) {
-      console.warn('MyMemory fallback error:', err);
-    }
-
-    // 4. Offline domain fallback
-    return cleanOfflineDomainTranslation(raw);
   };
 
     const toggleVoiceRecording = async () => {
@@ -3788,20 +3832,27 @@ export default function App() {
             </button>
           </div>
 
-          {/* LIVE RECORDING NOTIFICATION BADGE INSIDE WHATSAPP */}
-          {isWhatsappRecording && (
-            <div style={{ padding: '6px 14px', background: '#FEF2F2', borderTop: '1px solid #FECACA', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: '#DC2626' }}>
+          {/* LIVE RECORDING & AUTO-TRANSLATION BADGE INSIDE WHATSAPP */}
+          {(isWhatsappRecording || isWhatsappTranslating || whatsappSpokenHindi) && (
+            <div style={{ padding: '8px 14px', background: '#ECFDF5', borderTop: '1px solid #A7F3D0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: '#065F46' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#DC2626', animation: 'pulse 1s infinite' }} />
-                <strong>🎙️ Sun raha hu...</strong> <span>Boliye (Hindi / Hinglish)</span>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: isWhatsappRecording ? '#DC2626' : '#059669', animation: 'pulse 1s infinite' }} />
+                <div>
+                  <strong>{isWhatsappRecording ? '🎙️ Spoken Hindi: ' : '✨ Auto-Translated: '}</strong>
+                  <span style={{ fontStyle: 'italic' }}>"{whatsappSpokenHindi || whatsappInput}"</span>
+                </div>
               </div>
-              <button 
-                type="button" 
-                onClick={stopWhatsappVoiceRecording}
-                style={{ background: '#DC2626', color: '#FFFFFF', border: 'none', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: '700' }}
-              >
-                Stop Mic
-              </button>
+              {isWhatsappRecording ? (
+                <button 
+                  type="button" 
+                  onClick={stopWhatsappVoiceRecording}
+                  style={{ background: '#DC2626', color: '#FFFFFF', border: 'none', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: '700' }}
+                >
+                  Stop Mic
+                </button>
+              ) : isWhatsappTranslating ? (
+                <span style={{ fontSize: '11px', color: '#047857', fontWeight: '700' }}>⏳ Translating...</span>
+              ) : null}
             </div>
           )}
 

@@ -823,8 +823,9 @@ class TranslateTextView(APIView):
         cleaned = re.sub(r'^(Authentic artisan product:\s*)+', '', raw_text, flags=re.IGNORECASE)
         cleaned = re.sub(r'^(Authentic:\s*)+', '', cleaned, flags=re.IGNORECASE).strip()
 
-        # Preprocess common Hinglish phrases
-        preprocessed = re.sub(r'\bmangaya gaya hai\b', 'mangwaya gaya hai', cleaned, flags=re.IGNORECASE)
+        # Preprocess common Hinglish phrases and speech mishearings
+        preprocessed = re.sub(r'(होटल|हॉटेल)\s*(करनी|करना)', r'ऑर्डर \2', cleaned)
+        preprocessed = re.sub(r'\bmangaya gaya hai\b', 'mangwaya gaya hai', preprocessed, flags=re.IGNORECASE)
         preprocessed = re.sub(r'\bmangwaya gaya hai\b', 'mangwaya gaya hai', preprocessed, flags=re.IGNORECASE)
 
         # 1. Google Translate GTX
