@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    RegisterView, LoginView, ArtisanProfileView, ProductListCreateView,
+    RegisterView, LoginView, TokenRefreshCustomView, ArtisanProfileView, ProductListCreateView,
     ProductDetailView, ProductMediaUploadView, ProductAnalyzeView,
     ProductPriceSuggestView, ProductApproveView, ProductPublishView,
     OrderListCreateView, OrderDetailPatchView, AssistantChatView, AnalyticsOverviewView,
@@ -235,6 +235,7 @@ urlpatterns = [
     # Auth & Profile
     path('auth/register', RegisterView.as_view(), name='auth-register'),
     path('auth/login', LoginView.as_view(), name='auth-login'),
+    path('auth/refresh', TokenRefreshCustomView.as_view(), name='auth-refresh'),
     path('artisan/profile', ArtisanProfileView.as_view(), name='artisan-profile'),
     
     # Products & AI Pipeline

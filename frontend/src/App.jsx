@@ -5,7 +5,8 @@ import {
   Globe, CreditCard, Check, X, Star, MapPin, Search, Filter, Heart,
   ShoppingCart, ChevronRight, MessageSquare, Award, ArrowUpRight, HelpCircle,
   Truck, ShieldAlert, Zap, Compass, Store, Settings, PieChart, Tag, RefreshCcw, Home, Trash2,
-  QrCode, Volume2, VolumeX, Download, Share2, Phone, MessageCircle, Printer, Briefcase
+  QrCode, Volume2, VolumeX, Download, Share2, Phone, MessageCircle, Printer, Briefcase,
+  Lock, Mail, User, Eye, EyeOff, LogIn, LogOut
 } from 'lucide-react';
 
 const API_BASE = 'http://127.0.0.1:8001/api/v1';
@@ -35,7 +36,178 @@ const getCraftSpecificImage = (category, title) => {
 };
 
 export default function App() {
-  // Tab Persistence: Customer vs Artisan views
+  // --- AUTHENTICATION & JWT STATE (Stitch Integration) ---
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem('kaarvo_user');
+      return stored ? JSON.parse(stored) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+  const [accessToken, setAccessToken] = useState(() => localStorage.getItem('kaarvo_access_token') || null);
+  const [refreshToken, setRefreshToken] = useState(() => localStorage.getItem('kaarvo_refresh_token') || null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
+  const [authRole, setAuthRole] = useState('artisan'); // 'artisan' | 'customer'
+  const [showPassword, setShowPassword] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
+
+  // Form states
+  const [loginUsername, setLoginUsername] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [regFullName, setRegFullName] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regUsername, setRegUsername] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+  const [regCraftType, setRegCraftType] = useState('Terracotta Pottery');
+  const [regRegion, setRegRegion] = useState('Jaipur, Rajasthan');
+
+  // Automatic Token Refresh Helper
+  const refreshAuthToken = async () => {
+    const curRefresh = localStorage.getItem('kaarvo_refresh_token');
+    if (!curRefresh) return null;
+    try {
+      const res = await fetch(`${API_BASE}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: curRefresh })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.access_token) {
+          localStorage.setItem('kaarvo_access_token', data.access_token);
+          setAccessToken(data.access_token);
+          return data.access_token;
+        }
+      }
+    } catch (err) {
+      console.warn('Token refresh notice:', err);
+    }
+    return null;
+  };
+
+  // Login Handler with Demo Credentials support
+  const handleAuthLogin = async (e, demoCreds = null) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setAuthError('');
+    setAuthLoading(true);
+
+    const payload = demoCreds || {
+      username: loginUsername.trim(),
+      password: loginPassword.trim()
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setAuthError(data.error || 'Invalid credentials. Please verify your details.');
+        setAuthLoading(false);
+        return;
+      }
+
+      localStorage.setItem('kaarvo_access_token', data.access_token);
+      localStorage.setItem('kaarvo_refresh_token', data.refresh_token);
+      localStorage.setItem('kaarvo_user', JSON.stringify(data.user));
+
+      setAccessToken(data.access_token);
+      setRefreshToken(data.refresh_token);
+      setCurrentUser(data.user);
+      setIsAuthModalOpen(false);
+      setLoginPassword('');
+
+      if (data.user.role === 'artisan') {
+        switchMode('artisan');
+      } else {
+        switchMode('customer');
+      }
+
+      showToast(`🎉 Namaste, ${data.user.full_name || data.user.username}! Signed in as ${data.user.role === 'artisan' ? 'Verified Artisan' : 'Customer'}.`);
+    } catch (err) {
+      setAuthError('Connection error. Please make sure the backend server is running on port 8001.');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  // Registration Handler
+  const handleAuthRegister = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setAuthError('');
+    setAuthLoading(true);
+
+    if (!regPassword || regPassword.length < 4) {
+      setAuthError('Password must be at least 4 characters long.');
+      setAuthLoading(false);
+      return;
+    }
+
+    const payload = {
+      full_name: regFullName.trim(),
+      email: regEmail.trim(),
+      username: regUsername.trim() || (regEmail ? regEmail.split('@')[0] : `artisan_${Date.now().toString().slice(-4)}`),
+      password: regPassword.trim(),
+      role: authRole,
+      craft_type: regCraftType,
+      region: regRegion
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setAuthError(data.error || 'Registration failed. Please check your inputs.');
+        setAuthLoading(false);
+        return;
+      }
+
+      localStorage.setItem('kaarvo_access_token', data.access_token);
+      localStorage.setItem('kaarvo_refresh_token', data.refresh_token);
+      localStorage.setItem('kaarvo_user', JSON.stringify(data.user));
+
+      setAccessToken(data.access_token);
+      setRefreshToken(data.refresh_token);
+      setCurrentUser(data.user);
+      setIsAuthModalOpen(false);
+
+      if (data.user.role === 'artisan') {
+        switchMode('artisan');
+      } else {
+        switchMode('customer');
+      }
+
+      showToast(`🎉 Welcome to Kaarvo AI, ${data.user.full_name}! Registration successful.`);
+    } catch (err) {
+      setAuthError('Connection error during registration.');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  // Logout Handler
+  const handleAuthLogout = () => {
+    localStorage.removeItem('kaarvo_access_token');
+    localStorage.removeItem('kaarvo_refresh_token');
+    localStorage.removeItem('kaarvo_user');
+    setAccessToken(null);
+    setRefreshToken(null);
+    setCurrentUser(null);
+    showToast('👋 Signed out successfully.');
+  };
+
+    // Tab Persistence: Customer vs Artisan views
   const getInitialMode = () => {
     return localStorage.getItem('kaarvo_app_mode') || 'customer';
   };
@@ -1593,10 +1765,22 @@ export default function App() {
         alignItems: 'center',
         borderBottom: '1px solid #292524'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#10B981' }}></span>
-          <span style={{ color: '#F5F5F4', fontWeight: '600' }}>Kaarvo AI Commerce OS</span>
-          <span style={{ color: '#78716C' }}>• SIH26090 MoSJE Market Linkage</span>
+          <span style={{ color: '#F5F5F4', fontWeight: '700' }}>Kaarvo AI Commerce OS</span>
+          <span style={{ color: '#A8A29E' }}>• SIH26090 ONDC MoSJE Market Linkage</span>
+          {currentUser ? (
+            <span style={{ color: '#10B981', background: 'rgba(16, 185, 129, 0.15)', padding: '2px 8px', borderRadius: '12px', fontSize: '10px', fontWeight: '800' }}>
+              👤 Signed in as {currentUser.full_name || currentUser.username} ({currentUser.role === 'artisan' ? 'Artisan' : 'Customer'})
+            </span>
+          ) : (
+            <button
+              onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
+              style={{ background: 'transparent', border: '1px solid #78716C', color: '#D6D3D1', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', cursor: 'pointer', fontWeight: '700' }}
+            >
+              Sign In
+            </button>
+          )}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#292524', padding: '3px', borderRadius: '20px' }}>
@@ -1766,6 +1950,90 @@ export default function App() {
                 >
                   Start Selling →
                 </button>
+
+                {/* USER PROFILE / SIGN IN BUTTON (Stitch Auth) */}
+                {currentUser ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: 'var(--bg-subtle)',
+                      border: '1px solid var(--border-subtle)',
+                      padding: '5px 12px',
+                      borderRadius: 'var(--radius-full)',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      color: 'var(--text-main)'
+                    }}>
+                      <div style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        background: 'var(--primary)',
+                        color: '#FFF',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '11px',
+                        fontWeight: '800'
+                      }}>
+                        {(currentUser.full_name || currentUser.username || 'U')[0].toUpperCase()}
+                      </div>
+                      <span className="hide-mobile">{currentUser.full_name || currentUser.username}</span>
+                      <span style={{
+                        fontSize: '10px',
+                        fontWeight: '800',
+                        color: currentUser.role === 'artisan' ? '#C26D47' : '#2563EB',
+                        background: currentUser.role === 'artisan' ? 'rgba(194, 109, 71, 0.12)' : 'rgba(37, 99, 235, 0.12)',
+                        padding: '2px 6px',
+                        borderRadius: '6px',
+                        textTransform: 'uppercase'
+                      }}>
+                        {currentUser.role}
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleAuthLogout}
+                      title="Sign Out"
+                      style={{
+                        background: 'transparent',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '50%',
+                        width: '34px',
+                        height: '34px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        color: '#EF4444'
+                      }}
+                    >
+                      <LogOut size={15} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
+                    style={{
+                      background: 'var(--primary)',
+                      border: 'none',
+                      color: '#FFF',
+                      padding: '8px 18px',
+                      borderRadius: 'var(--radius-full)',
+                      fontWeight: '700',
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      boxShadow: '0 2px 8px rgba(194, 109, 71, 0.25)'
+                    }}
+                  >
+                    <User size={15} />
+                    <span>Sign In</span>
+                  </button>
+                )}
               </div>
             </div>
           </header>
@@ -2893,6 +3161,63 @@ export default function App() {
                   );
                 })}
               </nav>
+            </div>
+
+            {/* ARTISAN USER CARD (Stitch Auth Profile) */}
+            <div style={{
+              background: 'var(--bg-subtle)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 'var(--radius-md)',
+              padding: '12px 14px',
+              marginBottom: '12px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '50%',
+                  background: 'var(--primary)',
+                  color: '#FFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '800',
+                  fontSize: '14px'
+                }}>
+                  {(currentUser?.full_name || currentUser?.username || 'M')[0].toUpperCase()}
+                </div>
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <div style={{ fontWeight: '800', fontSize: '13px', color: 'var(--text-main)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                    {currentUser ? (currentUser.full_name || currentUser.username) : 'Mohan Lal'}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                    {currentUser ? `${currentUser.region || 'Jaipur, Rajasthan'}` : 'Verified Master Artisan'}
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '6px', borderTop: '1px solid var(--border-subtle)' }}>
+                <span style={{ fontSize: '10px', fontWeight: '800', color: '#10B981', background: 'rgba(16, 185, 129, 0.12)', padding: '2px 6px', borderRadius: '4px' }}>
+                  ONDC Verified
+                </span>
+                {currentUser ? (
+                  <button
+                    onClick={handleAuthLogout}
+                    style={{ background: 'transparent', border: 'none', color: '#EF4444', fontSize: '11px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    <LogOut size={12} /> Sign Out
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--primary)', fontSize: '11px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    <LogIn size={12} /> Sign In
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* SWITCH BACK TO MARKETPLACE */}
@@ -4089,6 +4414,363 @@ export default function App() {
           >
             <X size={16} />
           </button>
+        </div>
+      )}
+
+
+      {/* ========================================================================= */}
+      {/* GOOGLE STITCH AUTHENTICATION MODAL: SIGN IN & SIGN UP (JWT & REFRESH)    */}
+      {/* ========================================================================= */}
+      {isAuthModalOpen && (
+        <div className="stitch-modal-backdrop" onClick={() => setIsAuthModalOpen(false)}>
+          <div className="stitch-auth-modal" onClick={(e) => e.stopPropagation()}>
+            
+            {/* CLOSE BUTTON */}
+            <button
+              onClick={() => setIsAuthModalOpen(false)}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'rgba(0,0,0,0.06)',
+                border: 'none',
+                width: '34px',
+                height: '34px',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10,
+                color: '#57534E'
+              }}
+            >
+              <X size={18} />
+            </button>
+
+            {/* LEFT HERO PANEL (STITCH ARTISAN BRANDING) */}
+            <div className="stitch-auth-hero">
+              <div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: '800', letterSpacing: '0.05em', marginBottom: '24px' }}>
+                  <Sparkles size={14} /> SIH26090 OFFICIAL PLATFORM
+                </div>
+                <h2 className="font-serif" style={{ fontSize: '32px', fontWeight: '800', lineHeight: '1.2', marginBottom: '14px' }}>
+                  Direct Market Linkage for India's Master Artisans.
+                </h2>
+                <p style={{ fontSize: '14px', opacity: 0.9, lineHeight: '1.6', marginBottom: '24px' }}>
+                  Zero-middlemen ONDC Beckn integration, automated 4K AI studio image enhancement, and voice cataloging in Indian regional languages.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
+                    <CheckCircle size={18} color="#A7F3D0" /> 100% Living-Wage Guarantee & GI Verification
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
+                    <CheckCircle size={18} color="#A7F3D0" /> Real-time Speech-to-English Auto-Cataloging
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
+                    <CheckCircle size={18} color="#A7F3D0" /> Digital Heritage Passport with Offline QR Code
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', opacity: 0.85 }}>
+                <span>Certified by ONDC & MoSJE</span>
+                <span>🇮🇳 Made with pride for Bharat</span>
+              </div>
+            </div>
+
+            {/* RIGHT FORM PANEL */}
+            <div className="stitch-auth-panel">
+              {/* TABS: SIGN IN vs CREATE ACCOUNT */}
+              <div style={{ display: 'flex', background: '#F5F5F4', padding: '4px', borderRadius: '16px', marginBottom: '24px' }}>
+                <button
+                  type="button"
+                  onClick={() => { setAuthMode('login'); setAuthError(''); }}
+                  style={{
+                    flex: 1,
+                    padding: '10px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    background: authMode === 'login' ? '#FFFFFF' : 'transparent',
+                    color: authMode === 'login' ? '#C26D47' : '#78716C',
+                    fontWeight: '800',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    boxShadow: authMode === 'login' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setAuthMode('register'); setAuthError(''); }}
+                  style={{
+                    flex: 1,
+                    padding: '10px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    background: authMode === 'register' ? '#FFFFFF' : 'transparent',
+                    color: authMode === 'register' ? '#C26D47' : '#78716C',
+                    fontWeight: '800',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    boxShadow: authMode === 'register' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Create Account
+                </button>
+              </div>
+
+              {/* DEMO 1-CLICK QUICK ACCESS PILLS */}
+              <div style={{ marginBottom: '20px', background: '#FDF4EF', border: '1px solid #F7DCD0', padding: '12px', borderRadius: '14px' }}>
+                <div style={{ fontSize: '11px', fontWeight: '800', color: '#C26D47', marginBottom: '8px' }}>
+                  ⚡ Quick Demo Access (For Evaluators & Judges):
+                </div>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="stitch-demo-chip"
+                    onClick={() => handleAuthLogin(null, { username: 'artisan_demo', password: 'demo123' })}
+                  >
+                    👤 1-Click: Artisan Demo (Mohan Lal)
+                  </button>
+                  <button
+                    type="button"
+                    className="stitch-demo-chip"
+                    onClick={() => handleAuthLogin(null, { username: 'customer_demo', password: 'demo123' })}
+                  >
+                    🛍️ 1-Click: Customer Demo (Priya)
+                  </button>
+                </div>
+              </div>
+
+              {/* ERROR ALERT */}
+              {authError && (
+                <div style={{ padding: '10px 14px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '12px', color: '#DC2626', fontSize: '13px', marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ShieldAlert size={16} />
+                  <span>{authError}</span>
+                </div>
+              )}
+
+              {/* SIGN IN FORM */}
+              {authMode === 'login' ? (
+                <form onSubmit={(e) => handleAuthLogin(e)}>
+                  <div style={{ marginBottom: '14px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#44403C', marginBottom: '6px' }}>
+                      Username or Email Address
+                    </label>
+                    <div className="stitch-input-wrapper">
+                      <User size={18} className="stitch-input-icon" />
+                      <input
+                        type="text"
+                        className="stitch-input"
+                        placeholder="Enter username (e.g. artisan_demo)"
+                        value={loginUsername}
+                        onChange={(e) => setLoginUsername(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#44403C', marginBottom: '6px' }}>
+                      Password
+                    </label>
+                    <div className="stitch-input-wrapper">
+                      <Lock size={18} className="stitch-input-icon" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        className="stitch-input"
+                        placeholder="Enter your password"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        required
+                        style={{ paddingRight: '44px' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{ position: 'absolute', right: '12px', background: 'transparent', border: 'none', color: '#A8A29E', cursor: 'pointer', padding: '4px' }}
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    className="btn-artisan-primary"
+                    style={{ width: '100%', padding: '14px', borderRadius: '14px', fontSize: '15px', fontWeight: '800', marginTop: '6px' }}
+                  >
+                    {authLoading ? '⏳ Signing in with JWT...' : 'Sign In to Kaarvo AI →'}
+                  </button>
+                </form>
+              ) : (
+                /* REGISTRATION FORM */
+                <form onSubmit={(e) => handleAuthRegister(e)}>
+                  {/* ROLE SELECTION */}
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#44403C', marginBottom: '6px' }}>
+                      I am registering as:
+                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setAuthRole('artisan')}
+                        style={{
+                          padding: '12px',
+                          borderRadius: '12px',
+                          border: `2px solid ${authRole === 'artisan' ? '#C26D47' : '#E7E5E4'}`,
+                          background: authRole === 'artisan' ? '#FDF4EF' : '#FFFFFF',
+                          color: authRole === 'artisan' ? '#C26D47' : '#57534E',
+                          fontWeight: '800',
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        🎨 Artisan / Seller
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAuthRole('customer')}
+                        style={{
+                          padding: '12px',
+                          borderRadius: '12px',
+                          border: `2px solid ${authRole === 'customer' ? '#C26D47' : '#E7E5E4'}`,
+                          background: authRole === 'customer' ? '#FDF4EF' : '#FFFFFF',
+                          color: authRole === 'customer' ? '#C26D47' : '#57534E',
+                          fontWeight: '800',
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        🛍️ Customer / Buyer
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#44403C', marginBottom: '6px' }}>Full Name</label>
+                      <div className="stitch-input-wrapper">
+                        <User size={16} className="stitch-input-icon" />
+                        <input
+                          type="text"
+                          className="stitch-input"
+                          placeholder="e.g. Ramesh Kumar"
+                          value={regFullName}
+                          onChange={(e) => setRegFullName(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#44403C', marginBottom: '6px' }}>Email Address</label>
+                      <div className="stitch-input-wrapper">
+                        <Mail size={16} className="stitch-input-icon" />
+                        <input
+                          type="email"
+                          className="stitch-input"
+                          placeholder="ramesh@artisan.in"
+                          value={regEmail}
+                          onChange={(e) => setRegEmail(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#44403C', marginBottom: '6px' }}>Choose Username</label>
+                      <div className="stitch-input-wrapper">
+                        <User size={16} className="stitch-input-icon" />
+                        <input
+                          type="text"
+                          className="stitch-input"
+                          placeholder="e.g. ramesh_pottery"
+                          value={regUsername}
+                          onChange={(e) => setRegUsername(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#44403C', marginBottom: '6px' }}>Password</label>
+                      <div className="stitch-input-wrapper">
+                        <Lock size={16} className="stitch-input-icon" />
+                        <input
+                          type="password"
+                          className="stitch-input"
+                          placeholder="Min 4 characters"
+                          value={regPassword}
+                          onChange={(e) => setRegPassword(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {authRole === 'artisan' && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#44403C', marginBottom: '6px' }}>Craft Specialization</label>
+                        <select
+                          className="stitch-input"
+                          style={{ paddingLeft: '14px', height: '48px' }}
+                          value={regCraftType}
+                          onChange={(e) => setRegCraftType(e.target.value)}
+                        >
+                          <option value="Terracotta Pottery">🏺 Terracotta Pottery</option>
+                          <option value="Handloom Silk Weaving">🥻 Handloom Silk Weaving</option>
+                          <option value="Woodcraft & Toys">🐘 Woodcraft & Channapatna</option>
+                          <option value="Brass & Metal Casting">🪔 Brass & Metal Casting</option>
+                          <option value="Folk & Tribal Painting">🎨 Folk & Tribal Painting</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#44403C', marginBottom: '6px' }}>Heritage Cluster Region</label>
+                        <select
+                          className="stitch-input"
+                          style={{ paddingLeft: '14px', height: '48px' }}
+                          value={regRegion}
+                          onChange={(e) => setRegRegion(e.target.value)}
+                        >
+                          <option value="Jaipur, Rajasthan">Jaipur, Rajasthan</option>
+                          <option value="Varanasi, Uttar Pradesh">Varanasi, Uttar Pradesh</option>
+                          <option value="Kashmir, India">Kashmir, India</option>
+                          <option value="Channapatna, Karnataka">Channapatna, Karnataka</option>
+                          <option value="Kutch, Gujarat">Kutch, Gujarat</option>
+                          <option value="Kolkata, West Bengal">Kolkata, West Bengal</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    className="btn-artisan-primary"
+                    style={{ width: '100%', padding: '14px', borderRadius: '14px', fontSize: '15px', fontWeight: '800', marginTop: '10px' }}
+                  >
+                    {authLoading ? '⏳ Creating Account...' : 'Complete Registration & Get Started →'}
+                  </button>
+                </form>
+              )}
+            </div>
+
+          </div>
         </div>
       )}
 

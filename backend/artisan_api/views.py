@@ -1,3 +1,4 @@
+from rest_framework_simplejwt.tokens import RefreshToken
 import os
 import csv
 import io
@@ -112,34 +113,67 @@ product_trust_service = ProductTrustService()
 agent_commerce_engine = AgentCommerceEngine()
 autopilot_planner = GoalPlanExecuteEngine()
 
-# Auth Views
+# Auth Views with Full JWT & Refresh Token System
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        email = request.data.get('email', '')
-        craft_type = request.data.get('craft_type', 'Handicrafts')
-        region = request.data.get('region', 'Rajasthan, India')
+        raw_username = request.data.get('username', '').strip()
+        email = request.data.get('email', '').strip()
+        password = request.data.get('password', '').strip()
+        full_name = request.data.get('full_name', '').strip()
+        role = request.data.get('role', 'artisan')
+        craft_type = request.data.get('craft_type', 'Terracotta Pottery')
+        region = request.data.get('region', 'Jaipur, Rajasthan')
         preferred_language = request.data.get('preferred_language', 'hi')
+
+        username = raw_username or (email.split('@')[0] if email else f"artisan_{int(time.time())}")
 
         if not username or not password:
             return Response({'error': 'Username and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if User.objects.filter(username=username).exists():
-            return Response({'error': 'Username already taken.'}, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(username__iexact=username).exists():
+            return Response({'error': 'Username is already taken. Please choose another.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = User.objects.create_user(username=username, password=password, email=email)
-        ArtisanProfile.objects.create(
-            user=user,
-            craft_type=craft_type,
-            region=region,
-            preferred_language=preferred_language
+        if email and User.objects.filter(email__iexact=email).exists():
+            return Response({'error': 'An account with this email already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        first_name = full_name.split(' ')[0] if full_name else username
+        last_name = ' '.join(full_name.split(' ')[1:]) if full_name and ' ' in full_name else ''
+
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+            email=email,
+            first_name=first_name,
+            last_name=last_name
         )
+
+        if role == 'artisan':
+            ArtisanProfile.objects.create(
+                user=user,
+                craft_type=craft_type,
+                region=region,
+                preferred_language=preferred_language
+            )
+
+        refresh = RefreshToken.for_user(user)
+
         return Response({
-            'message': 'Registration successful',
-            'user': UserSerializer(user).data
+            'message': 'Registration successful! Welcome to Kaarvo AI.',
+            'access_token': str(refresh.access_token),
+            'refresh_token': str(refresh),
+            'token_type': 'Bearer',
+            'expires_in': 3600,
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'full_name': full_name or user.username,
+                'email': user.email,
+                'role': role,
+                'craft_type': craft_type,
+                'region': region
+            }
         }, status=status.HTTP_201_CREATED)
 
 
@@ -147,13 +181,27 @@ class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data.get('username', '').strip()
+        password = request.data.get('password', '').strip()
+
+        if not username or not password:
+            return Response({'error': 'Please enter both username/email and password.'}, status=status.HTTP_400_BAD_REQUEST)
+
         user = authenticate(username=username, password=password)
+        if not user and '@' in username:
+            try:
+                user_obj = User.objects.get(email__iexact=username)
+                user = authenticate(username=user_obj.username, password=password)
+            except (User.DoesNotExist, User.MultipleObjectsReturned):
+                pass
 
         if not user:
-            if username == 'artisan_demo' and password == 'demo123':
-                user, _ = User.objects.get_or_create(username='artisan_demo', defaults={'email': 'demo@artisan.in'})
+            # 1-Click Instant Demo Credentials for Hackathon Evaluators
+            if (username in ['artisan_demo', 'demo@artisan.in', 'artisan']) and password in ['demo123', 'demo']:
+                user, _ = User.objects.get_or_create(
+                    username='artisan_demo', 
+                    defaults={'email': 'demo@artisan.in', 'first_name': 'Mohan', 'last_name': 'Lal'}
+                )
                 user.set_password('demo123')
                 user.save()
                 ArtisanProfile.objects.get_or_create(user=user, defaults={
@@ -161,14 +209,56 @@ class LoginView(APIView):
                     'region': 'Jaipur, Rajasthan',
                     'preferred_language': 'hi'
                 })
+            elif (username in ['customer_demo', 'demo@customer.in', 'customer']) and password in ['demo123', 'demo']:
+                user, _ = User.objects.get_or_create(
+                    username='customer_demo', 
+                    defaults={'email': 'demo@customer.in', 'first_name': 'Priya', 'last_name': 'Sharma'}
+                )
+                user.set_password('demo123')
+                user.save()
             else:
-                return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'error': 'Invalid username or password. Please try again.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        login(request, user)
+        refresh = RefreshToken.for_user(user)
+        profile = ArtisanProfile.objects.filter(user=user).first()
+        role = 'artisan' if profile else 'customer'
+        full_name = f"{user.first_name} {user.last_name}".strip() or user.username
+
         return Response({
-            'token': f"mock-jwt-token-{user.id}",
-            'user': UserSerializer(user).data
+            'message': 'Login successful',
+            'access_token': str(refresh.access_token),
+            'refresh_token': str(refresh),
+            'token_type': 'Bearer',
+            'expires_in': 3600,
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'full_name': full_name,
+                'email': user.email,
+                'role': role,
+                'craft_type': profile.craft_type if profile else 'Heritage Craft Collector',
+                'region': profile.region if profile else 'India'
+            }
         })
+
+
+class TokenRefreshCustomView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        refresh_str = request.data.get('refresh_token') or request.data.get('refresh')
+        if not refresh_str:
+            return Response({'error': 'refresh_token parameter is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            refresh = RefreshToken(refresh_str)
+            access_token = str(refresh.access_token)
+            return Response({
+                'access_token': access_token,
+                'token_type': 'Bearer',
+                'expires_in': 3600
+            })
+        except Exception:
+            return Response({'error': 'Invalid or expired refresh token. Please sign in again.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class ArtisanProfileView(APIView):
