@@ -6,8 +6,7 @@ import {
   ShoppingCart, ChevronRight, MessageSquare, Award, ArrowUpRight, HelpCircle,
   Truck, ShieldAlert, Zap, Compass, Store, Settings, PieChart, Tag, RefreshCcw, Home, Trash2,
   QrCode, Volume2, VolumeX, Download, Share2, Phone, MessageCircle, Printer, Briefcase,
-  Lock, Mail, User, Eye, EyeOff, LogIn, LogOut, ExternalLink
-} from 'lucide-react';
+  Lock, Mail, User, Eye, EyeOff, LogIn, LogOut, ExternalLink, Plus, Bookmark } from 'lucide-react';
 
 const API_BASE = 'http://127.0.0.1:8001/api/v1';
 
@@ -37,179 +36,6 @@ const getCraftSpecificImage = (category, title) => {
 
 
 // ============================================================================
-// GOOGLE STITCH 12 CERTIFIED LIVING HERITAGE MASTERWORKS DATASET
-// ============================================================================
-const CERTIFIED_MASTERWORKS = [
-  {
-    id: 'dhokra-01',
-    title: 'Sahastradhara Dhokra Nandi',
-    price: 34800,
-    category: 'Metalcraft & Dhokra',
-    artisan: 'Mandar Baghel • Bastar Guild',
-    craft_hours: 96,
-    gi_tag: 'GI CERTIFIED #82',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDglDKiMtkskfvnEbKK-g_n-Dgiln56R1LvlyHXUWc3xoR6fl_Bkr8TXspe8FHir1kDbT1Z2-8BPfanMorTBHc_p6mSzlAgwnDH_e-pXlMCAo9lnNSncQxrmLJccQadqLB9RlbZwpo7iUENBzh6DmK5O3uJXwqqH2trzzeeWJzs_y0ZuibV8ePpi8-3pGNiYWzryia8pdiR6ib3DGter4kr8VM8EEwGxV0ddD0r6mw',
-    material: 'Bell Metal (Cu-Sn Alloy)',
-    edition: 'N° 03/12',
-    region: 'Chhattisgarh',
-    description: 'Ancestral hollow-core cire-perdue cast bell metal vessel with ceremonial horned iconography and fine spiral wirework.'
-  },
-  {
-    id: 'pottery-02',
-    title: 'Neelambari Cobalt Amphora',
-    price: 18500,
-    category: 'Pottery & Ceramics',
-    artisan: 'Leeladhar Sharma • Sanganer',
-    craft_hours: 44,
-    gi_tag: 'GI TAG #248',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDLxim86zVmb3F4TeiCLg-SUWm9Q_TjlxRGiXD9XOKV3I_Rc7FGl8_1llNSnDIJxBBkqMkrOnv-PEQHZW8bewS05YW9pgSwI86la7I87CKdZkDHhgmPE4giwaeaQd9MVjohp3fgcU9O9zB8JqNB6aICeGUbrz3cxDhNbq1peB2hrnguk-A6k71GTxDnG0j9DmZ9OOfvKTLphFWLlc84DRSwYz1AE89d8vDsPTYFLJc',
-    material: 'Egyptian Paste & Quartz',
-    edition: 'N° 04/15',
-    region: 'Rajasthan',
-    description: 'Clayless ground quartz and glass frit urn hand-painted with copper oxide and fired in ancestral single-fire wood kilns.'
-  },
-  {
-    id: 'bidri-03',
-    title: 'Tarkashi Bidri Teardrop Casket',
-    price: 42000,
-    category: 'Metalcraft & Dhokra',
-    artisan: 'M. A. Raheem • Bidar Registry',
-    craft_hours: 120,
-    gi_tag: 'GI TAG #11',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBgdah1At6YL7lU9jsaexjIkUgDGJ49OzpzECtZ7JnlzBW69fduNV7_K1SYpWxoBW0xddBLQC3CpLvRa5wP1Epu0JusgRdKg01mZATW_6p10G9h03iNzkirDRmdvHchHK91t_zutSikCMxG0ayAadvOp_HhN-fdBuZzYte3uoN51W_mRJJNFWpNZxuRDmfTJUICMyYm5kIf9pjFWXMWGIhm-8WixRgdRrosUV4yiL4',
-    material: 'Zinc & 999 Silver',
-    edition: 'N° 01/05',
-    region: 'Karnataka',
-    description: 'Hand-chiseled pure silver wire hammered into darkened non-ferrous alloy, cured with Bidar Fort subterranean soil.'
-  },
-  {
-    id: 'katan-04',
-    title: 'Zari Shikargah Katan Brocade',
-    price: 88000,
-    category: 'Textiles & Weaves',
-    artisan: 'Haji Mohammed • Varanasi Guild',
-    craft_hours: 240,
-    gi_tag: 'GI TAG #49',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBRYZFQqcAmVRE2XI4tYMwfGKEK8aBFuI3kYbomqBflwwAQW3pGFLmZNQ2So_Kobb-hK6Fatd3EnfQ00qxiWrdfF0xQkQ0THmI3M2Ew_ZkuAkpe3_hwjjKLUbQ-jJAK0OBIYT_O3bT8RjYjsVo54QI-LT7MDWshm8zsmWhLDNrzDF8ZJXWFjUm0n1WwkTz3TSt_-F71mSfuuq6wu1dm0kDSxeQfK55po2si_NAhMsk',
-    material: 'Mulberry Zari Silk',
-    edition: 'HEIRLOOM WEAVE',
-    region: 'Uttar Pradesh',
-    description: 'Hand-drawn jacquard loom pattern containing hunting narratives in genuine tested silver-gilt zari on pure mulberry silk.'
-  },
-  {
-    id: 'pashmina-05',
-    title: 'Sozni Jamawar Pashmina Shawl',
-    price: 115000,
-    category: 'Textiles & Weaves',
-    artisan: 'Ghulam Nabi • Srinagar Guild',
-    craft_hours: 310,
-    gi_tag: 'GI TAG #46',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAhjYWXvTyC4t0F5G6WgU6Rayn6RZjdTvXIUDc95VXk8fah7qVZC5iMBWGo5UohYCU1nqmfJeYSsP69nIFC-0m2zYNWAHrF2zq9JicdnWKpQAfV1Ty-wsmG4Xy9_KyMK5YwWgBBsVDttjUcvPN7XR9Hlu61G1wcP1zCC4fim8_YQvkx9GJO19zxzk1G4gr-Mp6UeDNH7BUlxSCSO994AF8XOwKEEDfAq9kPo5dOqmk',
-    material: 'Changthangi Cashmere',
-    edition: 'ONE-OF-A-KIND',
-    region: 'Kashmir',
-    description: 'Hand-combed high-altitude mountain goat fleece stitched with single-strand botanical-dyed silk needles in Jamawar paisley.'
-  },
-  {
-    id: 'molela-06',
-    title: 'Dharmaraj Votive Clay Stele',
-    price: 14200,
-    category: 'Pottery & Ceramics',
-    artisan: 'Hariram Kumbhar • Molela Cluster',
-    craft_hours: 52,
-    gi_tag: 'GI TAG #112',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBvLsFecigeafmtmRGlwxTM0QUgFK5Qixlm8IMYMtQE21Xh9agwkpjmsw187dGDnXV7Mtg0XwKnUrW15o_wp-oFyXtJnv7IxImAcx-lHRCrrkwr06ABjBbU5KdFwZRROBjQZQNz5zpoPya0_S-dtYHKKHAveAs7nc7lHYeEhARE6Yucp-7U7UwxVUWPsTi5Bmdt2mBytBkRkqUzEtyrLlVQ7ZT8EBmXD3sZgGvWJkg',
-    material: 'Alluvial River Clay',
-    edition: 'N° 07/20',
-    region: 'Rajasthan',
-    description: 'Hollow votive relief plaque hand-modeled without molds using riverbed alluvial silt and palash gum.'
-  },
-  {
-    id: 'rogan-07',
-    title: 'Tree of Life Rogan Tapestry',
-    price: 54000,
-    category: 'Textiles & Weaves',
-    artisan: 'Abdul Gafoor Khatri • Niruna',
-    craft_hours: 78,
-    gi_tag: 'GI TAG #564',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAQXz4DumlhaFtCZppYHbYtGGMO0Fe0bn3dt0DHNdMY3tvZ-vNdxg81euLVCpqbc-P750HNH74wh_k4D4xgOXTLPrjs_OoHrL4cbRh82k1YQw6HxCFpDUvyvvDJrhun5uOjLbsjnDqzFBGJqcTgh0MM9ii09z7jbCJHDUkz219RjCqB6NZP85JAC1qfkJ8aE8swchf7uqLCyo0iEKQNfN_xEyhhasmyw3xMu1OVnRw',
-    material: 'Castor Resin Filament',
-    edition: 'N° 02/08',
-    region: 'Gujarat',
-    description: 'Rare 400-year-old technique trailing boiled castor oil elastic pigment threads from palm to silk textile.'
-  },
-  {
-    id: 'sankheda-08',
-    title: 'Kalpavriksha Turned Low Stool',
-    price: 26500,
-    category: 'Wood & Lacquer',
-    artisan: 'Paresh Kharadi • Sankheda',
-    craft_hours: 68,
-    gi_tag: 'GI TAG #13',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDDci-Tib2s19iYWqd1fm-EvZPr-qPgSUJ7wP_QyCu3d3glktkONiE5pZY1GaenKWYTx9EB0aZjXm4m8FvG-wA6zxBOqs-U5vRczTla5vh2-P-19rIHFMCfIeAKRn8OMG-DydN9tzyxfG0U1bxPtcOivARFlcsDK7A09rMid-kgAA1bBupcHVCxW5NCR3AEx9P98Gw1fCn1zHEmT0jvyQlzc5cDbem1j-Lsfqs42IM',
-    material: 'Teakwood & Agate Polish',
-    edition: 'N° 11/15',
-    region: 'Gujarat',
-    description: 'Hand-lathed hardwood burnished with pewter powder and natural kewda lacquer using agate stone friction.'
-  },
-  {
-    id: 'patola-09',
-    title: 'Chhabdi Bhat Double Ikat Patola',
-    price: 245000,
-    category: 'Textiles & Weaves',
-    artisan: 'Salvi Bharatbhai • Patan Guild',
-    craft_hours: 480,
-    gi_tag: 'GI TAG #232',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDBmdFAuW2QQde5IGbtoCAhTXq29tixvX8jJbCRpAlm5L_7AnUcBjw3Adgs7dOuX7VQSKNtkW52dxIS79WIuS93Fax-g2H-BSdTC7sH5q45L8Hi_YyDxYx-jDAwkqmv5kaQpJo0CFY2GEIOvs_GHSFkynktRxSN4fHksb0C1EDrTiWa9GrHHpX0h9IeKg3s_r_Jir1lkC8sdAcU0endKc5aijP2986h1OiYv5AsiB4',
-    material: 'Double-Ikat Silk',
-    edition: 'HERITAGE VAULT',
-    region: 'Gujarat',
-    description: 'Both warp and weft individually resist-dyed before weaving; exact pattern alignment requiring mathematical harmony.'
-  },
-  {
-    id: 'channapatna-10',
-    title: 'Vajra Turned Stacking Vessel',
-    price: 11800,
-    category: 'Wood & Lacquer',
-    artisan: 'Syed Munavar • Channapatna',
-    craft_hours: 32,
-    gi_tag: 'GI TAG #16',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAOxv4qugvCgX4wbs5UH10SqOl3YGUKj9Je_RDL_6Axf3owoXfjgPx2OnuxecVzV0yDM8UE5seCSPK_Yt2G6YNUYyJHzr4irzzK0bsHyfz73-LPwpAl-bI_gb3IJNTvRhjlDW8PV7WWQnZgj9PVNmhhl1sK3M3Us0RIO2VjkOtgsmuelHufK-KDZSZviR5cZt-8hE3YCoba7pbC59YqjCqOAnQqivfHx46RsmOH7Y0',
-    material: 'Aale-Mara Wood & Veg Lac',
-    edition: 'N° 14/30',
-    region: 'Karnataka',
-    description: 'Lathe-spun sustainable Wrightia tinctoria timber polished with non-toxic lac dyed using natural mineral madder.'
-  },
-  {
-    id: 'thanjavur-11',
-    title: 'Maratha Art Plate Salver',
-    price: 38200,
-    category: 'Metalcraft & Dhokra',
-    artisan: 'S. Ramalingam • Thanjavur',
-    craft_hours: 115,
-    gi_tag: 'GI TAG #03',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBQ9_4SyZ20giyyCsQXPO7NIJ3xVt6O1hK8rO2FrKizj_5kyxDclF6SuP6bBUFEwD2rCjOW2MCr2X3S7IBSpGbdKLitWithPc_8wY8lHvP7IL27iM9lCSA022HxeW7gWITJWghYfFBbwChFAzERblBnMTHC2lVpKMu94QlzDoSCLitRGLRxcPabjYbHUAqxjNb-Jn7FhoY5ehTOIi5BwiXfRXXKc2BAEJdNKI6ob-M',
-    material: 'Tri-Metal Repoussé',
-    edition: 'N° 05/10',
-    region: 'Tamil Nadu',
-    description: 'Hand-chased silver and copper relief medallions embedded mechanically into heavy beaten brass plate.'
-  },
-  {
-    id: 'saharanpur-12',
-    title: 'Jali Pierced Rosewood Coffer',
-    price: 29000,
-    category: 'Wood & Lacquer',
-    artisan: 'Mohd. Arshad • Saharanpur',
-    craft_hours: 88,
-    gi_tag: 'GI TAG #156',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD_s9Qh01uEDkSzGul09shj2nN3kcvnubi6K539wWxPoIK2nHy-dNKLa6ZXnyRY0MIaRcK1gwc36lMU2n5JkQdyDszS7oe0VyVjbyICPRBynB1pe8RQ8fkSojoM37iLrewf7CY0iJpz-rIZXeRIIXtenIVOhdLf4pK5LXJfkp1oKUywhlZWNTX_lM2Wvfaobz1ZbjEdGgCjJehz1XJ1OVoXre4-vTP2M9S0l_-edKQ',
-    material: 'Sheesham Hardwood',
-    edition: 'N° 18/25',
-    region: 'Uttar Pradesh',
-    description: 'Monolithic aged seasoned Indian rosewood pierced using handheld fretsaws and hand-chiseled botanical arabesques.'
-  }
-];
-
 export default function App() {
   // --- AUTHENTICATION & JWT STATE (Stitch Integration) ---
   const [currentUser, setCurrentUser] = useState(() => {
@@ -389,7 +215,7 @@ export default function App() {
 
   const getInitialCustomerTab = () => {
     const hash = window.location.hash.replace('#', '');
-    const valid = ['home', 'shop', 'ai_ask', 'stories'];
+    const valid = ['home', 'shop', 'collections', 'artisans', 'ai_ask', 'stories'];
     if (valid.includes(hash)) return hash;
     return localStorage.getItem('kaarvo_customer_tab') || 'home';
   };
@@ -420,11 +246,15 @@ export default function App() {
   });
   const [wishlist, setWishlist] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [isProvenanceModalOpen, setIsProvenanceModalOpen] = useState(false);
+  const [provenanceModalTitle, setProvenanceModalTitle] = useState('Guild Charter & GI Provenance');
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   // Customer AI Search & Shopping State
   const [customerSearchQuery, setCustomerSearchQuery] = useState('');
   const [activeCategoryFilter, setActiveCategoryFilter] = useState('All');
+  const [customerCategory, setCustomerCategory] = useState('all');
   const [aiShoppingInput, setAiShoppingInput] = useState('');
   const [aiShoppingHistory, setAiShoppingHistory] = useState([
     {
@@ -1282,6 +1112,9 @@ export default function App() {
     setCustomerTab(tab);
     localStorage.setItem('kaarvo_customer_tab', tab);
     window.location.hash = tab;
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) {}
   };
 
   const switchArtisanTab = (tab) => {
@@ -1301,6 +1134,14 @@ export default function App() {
       return [...prev, { ...product, quantity: 1 }];
     });
     showToast(`Added "${product.title.slice(0, 25)}..." to Cart!`);
+  };
+
+  const updateQuantity = (id, newQty) => {
+    if (newQty <= 0) {
+      removeFromCart(id);
+    } else {
+      setCartItems(prev => prev.map(item => item.id === id ? { ...item, quantity: newQty } : item));
+    }
   };
 
   const updateCartQty = (id, delta) => {
@@ -2013,168 +1854,228 @@ export default function App() {
       {/* ========================================================================= */}
       {/* MODE 1: CUSTOMER MARKETPLACE & SHOPPING EXPERIENCE                        */}
       {/* ========================================================================= */}
-      {mode === 'customer' && (
-        <>
+            {mode === 'customer' && (
+        <div className="min-h-screen bg-[#141313] text-[#e5e2e1] flex flex-col font-sans selection:bg-[#e2e2e2] selection:text-[#141313]">
+
           {/* ========================================================================= */}
-          {/* GOOGLE STITCH LUXURY EDITORIAL HEADER                                    */}
+          {/* HEADER: STITCH HAUTE HORLOGERIE LUXURY ATELIER BAR                        */}
           {/* ========================================================================= */}
-          <header className="sticky top-0 left-0 w-full z-50 bg-[#141313]/95 backdrop-blur-md border-b border-[#444748]/30">
-            {/* Top Micro Archival Ticker */}
-            <div className="w-full bg-[#0e0e0e] border-b border-[#444748]/30 py-1.5 px-4 lg:px-12">
-              <div className="max-w-7xl mx-auto flex items-center justify-between text-[9px] uppercase tracking-[0.18em] text-[#c4c7c8] font-bold">
+          <header className="sticky top-0 z-50 w-full bg-[#141313]/95 backdrop-blur-md border-b border-[#353434]/40">
+            {/* Top Micro-Bar */}
+            <div className="w-full bg-[#0e0e0e] border-b border-[#353434]/30 py-1.5 px-4 lg:px-12">
+              <div className="max-w-7xl mx-auto flex items-center justify-between text-[10px] uppercase font-bold text-[#8e9192] tracking-[0.2em]">
                 <span className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-white inline-block"></span>
+                  <span className="w-1.5 h-1.5 bg-amber-400 inline-block animate-pulse"></span>
                   Curated Masterpieces from 28 Indian Craft Clusters
                 </span>
-                <span className="hidden md:inline tracking-widest text-white">Free Global Insured Shipping</span>
+                <span className="hidden md:inline tracking-[0.2em] text-white">
+                  Direct Artisan Fair Trade (ONDC Protocol)
+                </span>
               </div>
             </div>
 
-            {/* Main Navigation Bar */}
-            <div className="h-20">
-              <div className="max-w-7xl mx-auto h-full px-4 lg:px-12 flex items-center justify-between gap-4">
-                
-                {/* Brand Logo & Name */}
-                <div 
-                  onClick={() => switchCustomerTab('home')}
-                  className="flex items-center gap-3 cursor-pointer group"
-                >
-                  <img
-                    alt="KAARVO Luxury Logo"
-                    className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
-                    src="https://lh3.googleusercontent.com/aida/AEtjO1Uhs93tN5Vdr6hc1UEwSALe4SxN2jM7MAWTO06wrU6kabT4FGtTQWfdiy9tbQ63qIPO-dpLgZ3ZivuBJ9iX0PlSzf8BhTtHyKmNQLpse_GSfDb8aVY9qItgKBCSlGodxdKuR4S8WE2n0S5WXYRSfUhpa8KusB3qLRM5wnoy4ZFj6I5fNXG0sq5XTt6w5Df6E64Y6SJ5T0bXiiZlQrEgi0Tl5Ey0XfRDaxvLNu6-1cQG"
-                  />
-                  <span className="font-serif text-[20px] font-bold tracking-[0.2em] uppercase text-white hidden sm:inline">
-                    KAARVO
-                  </span>
-                </div>
-
-                {/* Primary Editorial Navigation Links */}
-                <nav className="hidden xl:flex items-center gap-7 text-[11px] font-semibold uppercase tracking-[0.15em]">
-                  <button
-                    onClick={() => switchCustomerTab('home')}
-                    className={`transition-all py-1 cursor-pointer ${
-                      customerTab === 'home'
-                        ? 'text-white border-b-2 border-white font-bold'
-                        : 'text-[#c4c7c8] hover:text-white'
-                    }`}
-                  >
-                    Home
-                  </button>
-                  <button
-                    onClick={() => switchCustomerTab('shop')}
-                    className={`transition-all py-1 cursor-pointer ${
-                      customerTab === 'shop'
-                        ? 'text-white border-b-2 border-white font-bold'
-                        : 'text-[#c4c7c8] hover:text-white'
-                    }`}
-                  >
-                    Explore Crafts
-                  </button>
-                  <button
-                    onClick={() => switchCustomerTab('collections')}
-                    className={`transition-all py-1 cursor-pointer ${
-                      customerTab === 'collections'
-                        ? 'text-white border-b-2 border-white font-bold'
-                        : 'text-[#c4c7c8] hover:text-white'
-                    }`}
-                  >
-                    Collections
-                  </button>
-                  <button
-                    onClick={() => switchCustomerTab('artisans')}
-                    className={`transition-all py-1 cursor-pointer ${
-                      customerTab === 'artisans'
-                        ? 'text-white border-b-2 border-white font-bold'
-                        : 'text-[#c4c7c8] hover:text-white'
-                    }`}
-                  >
-                    Artisans
-                  </button>
-                  <button
-                    onClick={() => switchCustomerTab('ai_ask')}
-                    className={`transition-all py-1 cursor-pointer flex items-center gap-1 ${
-                      customerTab === 'ai_ask'
-                        ? 'text-white border-b-2 border-white font-bold'
-                        : 'text-[#c4c7c8] hover:text-white'
-                    }`}
-                  >
-                    <Sparkles size={13} className="text-amber-400" />
-                    AI Copilot
-                  </button>
-                </nav>
-
-                {/* Right Interactive Action Controls */}
-                <div className="flex items-center gap-3 sm:gap-4">
-                  {/* Search Icon */}
-                  <button
-                    onClick={() => switchCustomerTab('shop')}
-                    aria-label="Search"
-                    className="p-2 text-[#c4c7c8] hover:text-white transition-colors cursor-pointer"
-                    type="button"
-                  >
-                    <Search size={18} />
-                  </button>
-
-                  {/* Cart Icon with Counter */}
-                  <button
-                    onClick={() => setIsCartOpen(true)}
-                    aria-label="Cart"
-                    className="p-2 text-[#c4c7c8] hover:text-white transition-colors relative cursor-pointer"
-                    type="button"
-                  >
-                    <ShoppingBag size={18} />
-                    {cartItems.length > 0 && (
-                      <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-white rounded-full"></span>
-                    )}
-                  </button>
-
-                  {/* User Account / Sign In */}
-                  {currentUser ? (
-                    <div className="flex items-center gap-2 bg-[#201f1f] px-3 py-1.5 rounded-full border border-[#353434]">
-                      <div className="w-5 h-5 rounded-full bg-white text-[#141313] flex items-center justify-center text-[10px] font-extrabold">
-                        {(currentUser.full_name || currentUser.username || 'U')[0].toUpperCase()}
-                      </div>
-                      <span className="text-[11px] font-bold text-white uppercase tracking-wider hidden sm:inline">
-                        {currentUser.full_name || currentUser.username}
-                      </span>
-                      <button
-                        onClick={handleAuthLogout}
-                        title="Sign Out"
-                        className="text-[#8e9192] hover:text-red-400 ml-1 cursor-pointer"
-                      >
-                        <LogOut size={13} />
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
-                      className="hidden sm:inline text-[11px] font-bold text-[#c4c7c8] hover:text-white uppercase tracking-[0.15em] transition-colors cursor-pointer"
-                    >
-                      Login
-                    </button>
-                  )}
-
-                  {/* Switch to Artisan Studio */}
-                  <button
-                    onClick={() => switchMode('artisan')}
-                    className="border border-[#e2e2e2] text-white text-[11px] font-bold uppercase tracking-[0.15em] px-4 py-2 hover:bg-white hover:text-[#141313] transition-all cursor-pointer"
-                  >
-                    Start Selling
-                  </button>
-
-                  {/* Master Artisan Avatar */}
-                  <div className="flex items-center pl-1">
-                    <img
-                      alt="Profile"
-                      className="w-8 h-8 rounded-full object-cover border border-[#444748]/60 cursor-pointer"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuALfOFj7XjcnfofzZz2EQCPzpY0eOLUjFj9gqBAZ6bXDSa0GRxats1_rooKzbCwxNIuCkAxxlYFE_V-SLZZdIF-JEm1TNlx68D4X1BoD9_W37SnX-X8Cv7G2UaebRLs1vpv1fm6k5OJy--9vTzGba0PbiYG8I70_6m2VZubbJzSnWuY7PjI9t1Z_p8HAm9rwjuvbGlmEnW404ydG-vrOM2DctDZ4puIyLhSugh4bsQ"
-                      onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
-                    />
-                  </div>
-                </div>
-
+            {/* Main Luxury Nav */}
+            <div className="h-20 max-w-7xl mx-auto px-4 lg:px-12 flex items-center justify-between gap-4">
+              {/* Brand Logo & Name */}
+              <div 
+                onClick={() => switchCustomerTab('home')}
+                className="flex items-center gap-3 cursor-pointer group"
+              >
+                <img
+                  alt="KAARVO Luxury Logo"
+                  className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
+                  src="https://lh3.googleusercontent.com/aida/AEtjO1Uhs93tN5Vdr6hc1UEwSALe4SxN2jM7MAWTO06wrU6kabT4FGtTQWfdiy9tbQ63qIPO-dpLgZ3ZivuBJ9iX0PlSzf8BhTtHyKmNQLpse_GSfDb8aVY9qItgKBCSlGodxdKuR4S8WE2n0S5WXYRSfUhpa8KusB3qLRM5wnoy4ZFj6I5fNXG0sq5XTt6w5Df6E64Y6SJ5T0bXiiZlQrEgi0Tl5Ey0XfRDaxvLNu6-1cQG"
+                />
+                <span className="font-serif text-[20px] font-bold tracking-[0.2em] uppercase text-white hidden sm:inline">
+                  KAARVO
+                </span>
               </div>
+
+              {/* Primary Navigation Links (Desktop & Tablet) */}
+              <nav className="hidden md:flex items-center gap-5 lg:gap-8 text-[11px] font-semibold uppercase tracking-[0.15em]">
+                <button
+                  onClick={() => switchCustomerTab('home')}
+                  className={`transition-all py-1 cursor-pointer ${
+                    customerTab === 'home'
+                      ? 'text-white border-b-2 border-white font-bold'
+                      : 'text-[#c4c7c8] hover:text-white'
+                  }`}
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => switchCustomerTab('shop')}
+                  className={`transition-all py-1 cursor-pointer ${
+                    customerTab === 'shop'
+                      ? 'text-white border-b-2 border-white font-bold'
+                      : 'text-[#c4c7c8] hover:text-white'
+                  }`}
+                >
+                  Explore Crafts
+                </button>
+                <button
+                  onClick={() => switchCustomerTab('collections')}
+                  className={`transition-all py-1 cursor-pointer ${
+                    customerTab === 'collections'
+                      ? 'text-white border-b-2 border-white font-bold'
+                      : 'text-[#c4c7c8] hover:text-white'
+                  }`}
+                >
+                  Collections
+                </button>
+                <button
+                  onClick={() => switchCustomerTab('artisans')}
+                  className={`transition-all py-1 cursor-pointer ${
+                    customerTab === 'artisans'
+                      ? 'text-white border-b-2 border-white font-bold'
+                      : 'text-[#c4c7c8] hover:text-white'
+                  }`}
+                >
+                  Artisans
+                </button>
+                <button
+                  onClick={() => switchCustomerTab('ai_ask')}
+                  className={`transition-all py-1 cursor-pointer flex items-center gap-1.5 ${
+                    customerTab === 'ai_ask'
+                      ? 'text-white border-b-2 border-white font-bold'
+                      : 'text-[#c4c7c8] hover:text-white'
+                  }`}
+                >
+                  <Sparkles size={13} className="text-amber-400" />
+                  AI Copilot
+                </button>
+              </nav>
+
+              {/* Right Action Controls */}
+              <div className="flex items-center gap-2 sm:gap-4">
+                {/* Search Icon */}
+                <button
+                  onClick={() => switchCustomerTab('shop')}
+                  aria-label="Search"
+                  title="Search Craft Vault"
+                  className="p-2 text-[#c4c7c8] hover:text-white transition-colors cursor-pointer"
+                  type="button"
+                >
+                  <Search size={18} />
+                </button>
+
+                {/* Wishlist Icon */}
+                <button
+                  onClick={() => setIsWishlistOpen(true)}
+                  aria-label="Wishlist"
+                  title="Saved Heirlooms"
+                  className="p-2 text-[#c4c7c8] hover:text-white transition-colors relative cursor-pointer"
+                  type="button"
+                >
+                  <Heart size={18} />
+                  {wishlist.length > 0 && (
+                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-amber-400 rounded-full"></span>
+                  )}
+                </button>
+
+                {/* Cart Icon with Counter */}
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  aria-label="Cart"
+                  title="Shopping Bag"
+                  className="p-2 text-[#c4c7c8] hover:text-white transition-colors relative cursor-pointer"
+                  type="button"
+                >
+                  <ShoppingBag size={18} />
+                  {cartItems.length > 0 && (
+                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-white rounded-full"></span>
+                  )}
+                </button>
+
+                {/* User Account / Sign In */}
+                {currentUser ? (
+                  <div className="flex items-center gap-2 bg-[#201f1f] px-3 py-1.5 rounded-full border border-[#353434]">
+                    <div className="w-5 h-5 rounded-full bg-white text-[#141313] flex items-center justify-center text-[10px] font-extrabold">
+                      {(currentUser.full_name || currentUser.username || 'U')[0].toUpperCase()}
+                    </div>
+                    <span className="text-[11px] font-bold text-white uppercase tracking-wider hidden sm:inline">
+                      {currentUser.full_name || currentUser.username}
+                    </span>
+                    <button
+                      onClick={handleAuthLogout}
+                      title="Sign Out"
+                      className="text-[#8e9192] hover:text-red-400 ml-1 cursor-pointer"
+                    >
+                      <LogOut size={13} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
+                    className="hidden sm:inline text-[11px] font-bold text-[#c4c7c8] hover:text-white uppercase tracking-[0.15em] transition-colors cursor-pointer"
+                  >
+                    Login
+                  </button>
+                )}
+
+                {/* Switch to Artisan Studio */}
+                <button
+                  onClick={() => switchMode('artisan')}
+                  className="border border-[#e2e2e2] text-white text-[11px] font-bold uppercase tracking-[0.15em] px-3 sm:px-4 py-2 hover:bg-white hover:text-[#141313] transition-all cursor-pointer whitespace-nowrap"
+                >
+                  Start Selling
+                </button>
+
+                {/* Master Artisan Avatar */}
+                <div className="flex items-center pl-1">
+                  <img
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full object-cover border border-[#444748]/60 cursor-pointer"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuALfOFj7XjcnfofzZz2EQCPzpY0eOLUjFj9gqBAZ6bXDSa0GRxats1_rooKzbCwxNIuCkAxxlYFE_V-SLZZdIF-JEm1TNlx68D4X1BoD9_W37SnX-X8Cv7G2UaebRLs1vpv1fm6k5OJy--9vTzGba0PbiYG8I70_6m2VZubbJzSnWuY7PjI9t1Z_p8HAm9rwjuvbGlmEnW404ydG-vrOM2DctDZ4puIyLhSugh4bsQ"
+                    onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile / Small Screen Navigation Tab Strip */}
+            <div className="md:hidden w-full bg-[#0e0e0e] border-t border-[#353434]/50 px-3 py-2 overflow-x-auto flex items-center justify-around gap-2 text-[10px] font-bold uppercase tracking-[0.12em]">
+              <button
+                onClick={() => switchCustomerTab('home')}
+                className={`py-1 px-2.5 rounded transition-colors whitespace-nowrap ${
+                  customerTab === 'home' ? 'bg-white text-[#141313]' : 'text-[#c4c7c8]'
+                }`}
+              >
+                Home
+              </button>
+              <button
+                onClick={() => switchCustomerTab('shop')}
+                className={`py-1 px-2.5 rounded transition-colors whitespace-nowrap ${
+                  customerTab === 'shop' ? 'bg-white text-[#141313]' : 'text-[#c4c7c8]'
+                }`}
+              >
+                Explore Crafts
+              </button>
+              <button
+                onClick={() => switchCustomerTab('collections')}
+                className={`py-1 px-2.5 rounded transition-colors whitespace-nowrap ${
+                  customerTab === 'collections' ? 'bg-white text-[#141313]' : 'text-[#c4c7c8]'
+                }`}
+              >
+                Collections
+              </button>
+              <button
+                onClick={() => switchCustomerTab('artisans')}
+                className={`py-1 px-2.5 rounded transition-colors whitespace-nowrap ${
+                  customerTab === 'artisans' ? 'bg-white text-[#141313]' : 'text-[#c4c7c8]'
+                }`}
+              >
+                Artisans
+              </button>
+              <button
+                onClick={() => switchCustomerTab('ai_ask')}
+                className={`py-1 px-2.5 rounded transition-colors whitespace-nowrap flex items-center gap-1 ${
+                  customerTab === 'ai_ask' ? 'bg-white text-[#141313]' : 'text-amber-400'
+                }`}
+              >
+                <Sparkles size={11} />
+                AI Copilot
+              </button>
             </div>
           </header>
 
@@ -2199,7 +2100,7 @@ export default function App() {
                       {/* Left Editorial Meta & Copy */}
                       <div className="lg:col-span-6 flex flex-col items-start space-y-6">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#2a2a2a] border border-[#353434]">
-                          <span className="w-1.5 h-1.5 bg-white"></span>
+                          <span className="w-1.5 h-1.5 bg-amber-400"></span>
                           <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white">
                             AUTHENTIC INDIAN CRAFTSMANSHIP
                           </span>
@@ -2219,83 +2120,56 @@ export default function App() {
                             onClick={() => switchCustomerTab('shop')}
                             className="inline-flex items-center justify-center bg-[#494949] text-white px-8 py-3.5 text-[11px] font-bold uppercase tracking-[0.18em] hover:bg-white hover:text-[#141313] transition-all cursor-pointer"
                           >
-                            EXPLORE CRAFTS
+                            Explore Crafts
                           </button>
                           <button
-                            onClick={() => switchMode('artisan')}
-                            className="inline-flex items-center justify-center bg-transparent border border-white text-white px-8 py-3.5 text-[11px] font-bold uppercase tracking-[0.18em] hover:bg-white hover:text-[#141313] transition-all cursor-pointer"
+                            onClick={() => switchCustomerTab('artisans')}
+                            className="inline-flex items-center justify-center border border-[#e2e2e2] text-white px-8 py-3.5 text-[11px] font-bold uppercase tracking-[0.18em] hover:bg-white hover:text-[#141313] transition-all cursor-pointer"
                           >
-                            START SELLING
+                            Living Artisans
                           </button>
                         </div>
 
-                        {/* Swiss Precision Micro Ledger Index */}
-                        <div className="pt-4 grid grid-cols-3 gap-4 w-full max-w-md bg-[#1c1b1b] p-4 border border-[#353434]">
+                        {/* Provenance Micro-Meta */}
+                        <div className="pt-4 border-t border-[#353434]/40 w-full flex items-center gap-8 text-[11px] text-[#8e9192]">
                           <div>
-                            <span className="block text-[9px] font-bold uppercase text-[#8e9192] tracking-widest">REGISTRY NO.</span>
-                            <span className="text-[11px] font-bold text-white tracking-wider">IND-G28-409</span>
+                            <span className="text-white font-bold block">28 HUBS</span>
+                            <span>Certified GI Clusters</span>
                           </div>
+                          <div className="w-px h-7 bg-[#353434]"></div>
                           <div>
-                            <span className="block text-[9px] font-bold uppercase text-[#8e9192] tracking-widest">GUILD CERTIFIED</span>
-                            <span className="text-[11px] font-bold text-[#e5e2e1] tracking-wider">100% SECURE</span>
+                            <span className="text-white font-bold block">100% DIRECT</span>
+                            <span>Zero Broker Markups</span>
                           </div>
+                          <div className="w-px h-7 bg-[#353434]"></div>
                           <div>
-                            <span className="block text-[9px] font-bold uppercase text-[#8e9192] tracking-widest">METALLURGY</span>
-                            <span className="text-[11px] font-bold text-white tracking-wider">PVD BRONZE / SILK</span>
+                            <span className="text-white font-bold block">ONDC COMPLIANT</span>
+                            <span>Digital Heritage Passport</span>
                           </div>
                         </div>
                       </div>
 
-                      {/* Right Focal Masterpiece Showcase (Dhokra Lost-Wax Vase with Horological Crosshair) */}
-                      <div className="lg:col-span-6 relative flex justify-center">
-                        <div className="relative w-full max-w-md lg:max-w-lg aspect-square bg-[#201f1f] p-4 flex flex-col justify-between group shadow-2xl border border-[#353434]">
+                      {/* Right Chiaroscuro Hero Visual Asset */}
+                      <div className="lg:col-span-6 relative">
+                        <div className="relative aspect-[4/5] max-w-md mx-auto overflow-hidden bg-[#201f1f] border border-[#353434]">
+                          <img
+                            alt="Master Artisan Crafting"
+                            className="w-full h-full object-cover object-center grayscale contrast-125 hover:grayscale-0 transition-all duration-700"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFXW6930yF8eI_529eT2Q1a7Zc5V1r0-F9JgqQO8gYl7e1E0L6r7fP7m1Q"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-transparent to-transparent opacity-80"></div>
                           
-                          {/* Dial Glare Overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-tr from-[#0e0e0e]/80 via-transparent to-white/10 pointer-events-none"></div>
-
-                          {/* Top Spec Ledger */}
-                          <div className="relative z-10 flex items-center justify-between pb-2">
-                            <span className="text-[9px] font-bold text-white uppercase tracking-[0.22em] flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 bg-white"></span> PIECE N° 01/40 • BASTAR
+                          <div className="absolute bottom-6 left-6 right-6 p-4 bg-[#141313]/90 backdrop-blur-md border border-[#353434] space-y-1">
+                            <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest block">
+                              GI CLUSTER REGISTRY #28
                             </span>
-                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">
-                              CHHATTISGARH CLUSTER
+                            <span className="font-serif text-lg text-white block">
+                              Ancestral Handloom & Kiln Metallurgy
+                            </span>
+                            <span className="text-[12px] text-[#8e9192] block">
+                              Direct from Living Heritage Artisans across India
                             </span>
                           </div>
-
-                          {/* Center Artwork Container with Precision Crosshairs */}
-                          <div className="relative my-auto flex items-center justify-center py-4">
-                            <div className="relative w-64 h-64 sm:w-72 sm:h-72 overflow-hidden bg-[#0e0e0e] flex items-center justify-center">
-                              <img
-                                alt="Dhokra Vase Masterpiece"
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7owgjKgr-k4As1OoxxwRAxypiyws-9A9UiEG97mFkzW56TRuhWJI1DSSdOqsyYVmyX-RYE0x1bJ3DRNe6U6SlHND4OBj75rc2GSd13nz77z9P9sdwdTAYFCiYIhkS7iyTaSen8okfXeaI9WmBVZnPGCzClN7am18pk2GGz0Eg5IOFlgkFoBoLwK9c9vwWc6ERgLY4tLYj-lnGsX4Ux40DlgmIGNubeXid2R8Dc2k"
-                              />
-                              {/* Radial Precision Crosshair Overlay */}
-                              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                <div className="w-full h-[1px] bg-white/20"></div>
-                                <div className="h-full w-[1px] bg-white/20 absolute"></div>
-                                <div className="w-24 h-24 rounded-full border border-white/20 absolute"></div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Bottom Caliber Spec Grid */}
-                          <div className="relative z-10 grid grid-cols-3 gap-2 pt-2 bg-[#1c1b1b] p-3 text-center border border-[#353434]/50">
-                            <div>
-                              <span className="block text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">CADENCE</span>
-                              <span className="text-[11px] font-bold text-white">84 HRS HAND-CAST</span>
-                            </div>
-                            <div>
-                              <span className="block text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">ALLOY</span>
-                              <span className="text-[11px] font-bold text-white">BELL METAL C260</span>
-                            </div>
-                            <div>
-                              <span className="block text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">ATELIER</span>
-                              <span className="text-[11px] font-bold text-white">BAGHEL GUILD</span>
-                            </div>
-                          </div>
-
                         </div>
                       </div>
 
@@ -2303,223 +2177,80 @@ export default function App() {
                   </div>
                 </section>
 
-                {/* SECTION B: ASYMMETRICAL PROMOTIONAL BANNERS */}
-                <section className="w-full bg-[#141313] py-16 border-b border-[#353434]/40">
-                  <div className="max-w-7xl mx-auto px-4 lg:px-12 space-y-8">
-                    
-                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-[#353434]/50">
-                      <div>
-                        <span className="text-[9px] font-bold text-white uppercase tracking-[0.2em] block mb-1">
-                          CURATED ATELIERS
+                {/* SECTION B: DIRECT COMMERCE PROTOCOL BANNER */}
+                <section className="w-full bg-[#1c1b1b] border-b border-[#353434] py-8">
+                  <div className="max-w-7xl mx-auto px-4 lg:px-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                      <div className="lg:col-span-8 space-y-2">
+                        <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest">
+                          DIRECT COMMERCE PROTOCOL
                         </span>
-                        <h2 className="font-serif text-2xl sm:text-3xl text-white">Private Gallery Series</h2>
+                        <h3 className="font-serif text-2xl sm:text-3xl text-white">
+                          Zero Broker Markup. Total Lineage Ownership.
+                        </h3>
+                        <p className="text-[14px] text-[#c4c7c8] leading-relaxed max-w-2xl">
+                          Every Indian rupee transacted delivers immediate, cryptographically registered liquidity directly into verified artisan bank accounts via ONDC.
+                        </p>
                       </div>
-                      <button
-                        onClick={() => switchCustomerTab('shop')}
-                        className="text-[11px] font-bold text-white uppercase tracking-widest hover:underline flex items-center gap-1 cursor-pointer"
-                      >
-                        VIEW ALL COMPLICATIONS <ExternalLink size={14} />
-                      </button>
+
+                      <div className="lg:col-span-4 flex items-center justify-end">
+                        <button
+                          onClick={() => switchMode('artisan')}
+                          className="bg-white text-[#141313] hover:bg-amber-400 px-6 py-3.5 text-[11px] font-bold uppercase tracking-[0.18em] transition-all cursor-pointer shadow-lg"
+                        >
+                          + List As Artisan
+                        </button>
+                      </div>
                     </div>
-
-                    {/* Asymmetrical 3-block grid matching Stitch */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                      
-                      {/* Large Wide Block: The Heritage Collection (Banarasi Zari) */}
-                      <div className="lg:col-span-8 bg-[#201f1f] border border-[#353434] relative flex flex-col justify-between overflow-hidden group min-h-[380px] p-6 lg:p-8">
-                        <div
-                          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-35 mix-blend-luminosity"
-                          style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuCXzQRCTJRyOv7lxExPiTIH82UJKKnkEbxSv-2qCCgMGBAagJ-6Guzsf1gggdKrNTyz7oXvCAGTgnh2cY-iT3ArL9Ju5wvJhZ20hHhgTl19s41OCgK75LaSbhN1xzIPO13KEhhQClx1jyN9Tys54psQnm_mcYZd3G1yBrY68c2jM1DXoBy4_fjdgFv1an0CNNK00yxChJ43jE8GiCCVr5d6MU4KkB33tjag3tryHmE')` }}
-                        ></div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-[#201f1f]/80 to-transparent pointer-events-none"></div>
-                        
-                        <div className="relative z-10 flex items-center justify-between">
-                          <span className="bg-[#0e0e0e] text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 border border-[#353434]">
-                            LIMITED SERIES • 12 PIECES
-                          </span>
-                          <span className="text-[11px] font-bold text-[#c4c7c8] uppercase tracking-widest">
-                            VARANASI CADENCE
-                          </span>
-                        </div>
-
-                        <div className="relative z-10 max-w-lg space-y-3 pt-24">
-                          <h3 className="font-serif text-3xl sm:text-4xl text-white leading-tight">
-                            The Heritage Collection
-                          </h3>
-                          <p className="text-[14px] text-[#c4c7c8] leading-relaxed">
-                            Centuries-old jacquard patterns calibrated with 24-karat gold warp leaf. Handcrafted across 90 weaving days per drape.
-                          </p>
-                          <div className="pt-2">
-                            <button
-                              onClick={() => switchCustomerTab('shop')}
-                              className="inline-flex items-center gap-2 bg-white text-[#141313] text-[11px] font-bold uppercase tracking-[0.18em] px-6 py-3 hover:bg-[#c8c6c6] transition-colors cursor-pointer"
-                            >
-                              DISCOVER COLLECTION <ArrowRight size={14} />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Medium Block: Handcrafted Home Decor (Channapatna) */}
-                      <div className="lg:col-span-4 bg-[#201f1f] border border-[#353434] relative flex flex-col justify-between overflow-hidden group min-h-[380px] p-6 lg:p-8">
-                        <div
-                          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-30"
-                          style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuBy9AlAaF-Yo3DEQYO2S7DfV0Ewk8ZLA8-qViWai8FXVl3SnZDhfOuYCQ4H6hFdmKPwqj1OpQFHw3PV77qpi067mTjN0qi5yiacZFPR_wfBdM_S46xjh9NeTfNmzCdimDhQiFHAzkY6Ms5uERh-d8AZ6RHL8ILvRbEN3J1fjVxV7UG_XZgN5JOLrI7tZyM7EZcEUaJmJZ1hbxNg2NpR9zIhxEAQ8jIA67gXYs2JjgU')` }}
-                        ></div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-[#201f1f]/70 to-transparent pointer-events-none"></div>
-
-                        <div className="relative z-10 flex items-center justify-between">
-                          <span className="bg-[#0e0e0e] text-[#c8c6c6] text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 border border-[#353434]">
-                            GEOMETRIC OBJECTS
-                          </span>
-                          <span className="text-white text-xs">🏛️</span>
-                        </div>
-
-                        <div className="relative z-10 space-y-3 pt-24">
-                          <h3 className="font-serif text-2xl text-white">Handcrafted Home Decor</h3>
-                          <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
-                            Turned teakwood, lost-wax bell metal fixtures, and hand-chiseled sandstone totems.
-                          </p>
-                          <div className="pt-2">
-                            <button
-                              onClick={() => switchCustomerTab('shop')}
-                              className="inline-flex items-center gap-2 bg-[#2a2a2a] text-white text-[11px] font-bold uppercase tracking-[0.18em] px-5 py-2.5 hover:bg-white hover:text-[#141313] transition-colors cursor-pointer"
-                            >
-                              SHOP PIECES
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                    </div>
-
-                    {/* Lower Split Banner (Textiles & Zero Broker Markup Protocol) */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                      
-                      {/* Left Pashmina Block */}
-                      <div className="lg:col-span-4 bg-[#201f1f] border border-[#353434] relative flex flex-col justify-between p-6 lg:p-8 min-h-[320px] overflow-hidden group">
-                        <div
-                          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-30"
-                          style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuCXPsZ07doy8wEcazxryIgOZEIQMChIwdDMiV65XOQaxa81mhcfELuST-1SXS6xtulLO7BjyTp6g5ZPFWS_nCYR3Yc35GazHTQDUe57bhzdJE-lU8lkZD-riJlWVbzhBmGNq8sw2XoPfAtwV8wPf4gyRtSOg_iRWqQf2-CEsl0fMKXsMbsbf_XSpUy4grKnsrMWWy-gHTaBs0T4WYt6oMc5pIU8_5Khob9FMkGSOOM')` }}
-                        ></div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-[#201f1f]/80 to-transparent pointer-events-none"></div>
-
-                        <div className="relative z-10 flex items-center justify-between">
-                          <span className="text-[9px] font-bold text-white uppercase tracking-widest bg-[#0e0e0e] px-2 py-0.5 border border-[#353434]">
-                            GI SEAL VERIFIED
-                          </span>
-                          <span className="text-[9px] font-bold text-[#8e9192] uppercase">SRINAGAR</span>
-                        </div>
-
-                        <div className="relative z-10 space-y-2">
-                          <h3 className="font-serif text-2xl text-white">The Art of Textiles</h3>
-                          <p className="text-[12px] text-[#c4c7c8]">
-                            Grade-A Himalayan Changthangi spun cashmere with needlework certified under GI protocol.
-                          </p>
-                          <button
-                            onClick={() => switchCustomerTab('shop')}
-                            className="inline-flex items-center gap-1 text-[11px] font-bold text-white uppercase tracking-widest pt-2 hover:underline cursor-pointer"
-                          >
-                            EXPLORE WEAVES <ArrowRight size={13} />
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Right Protocol Ledger Block */}
-                      <div className="lg:col-span-8 bg-[#2a2a2a] border border-[#353434] relative flex flex-col md:flex-row items-center justify-between p-6 lg:p-8 overflow-hidden gap-6">
-                        <div className="relative z-10 space-y-3 max-w-md">
-                          <span className="text-[9px] font-bold text-white uppercase tracking-widest">
-                            DIRECT COMMERCE PROTOCOL
-                          </span>
-                          <h3 className="font-serif text-2xl sm:text-3xl text-white">
-                            Zero Broker Markup. Total Lineage Ownership.
-                          </h3>
-                          <p className="text-[14px] text-[#c4c7c8] leading-relaxed">
-                            Every Indian rupee transacted delivers immediate, cryptographically registered liquidity directly into verified artisan bank accounts via ONDC.
-                          </p>
-                          <div className="pt-2 flex items-center gap-4">
-                            <span className="font-serif text-3xl font-bold text-white">88.4%</span>
-                            <span className="text-[12px] text-[#c4c7c8] leading-tight">
-                              Average gross proceeds directly received by artisan cooperatives
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="relative z-10 w-full md:w-64 bg-[#0e0e0e] p-5 border border-[#353434] flex flex-col justify-between">
-                          <div className="flex items-center justify-between pb-3">
-                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">SETTLEMENT ENGINE</span>
-                            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-[10px] font-bold text-[#c4c7c8]">
-                              <span>ARTISAN SHARE</span>
-                              <span className="text-white font-extrabold">₹28,500</span>
-                            </div>
-                            <div className="w-full bg-[#201f1f] h-2 overflow-hidden">
-                              <div className="bg-white h-full w-[88.4%]"></div>
-                            </div>
-                            <div className="flex justify-between text-[10px] font-bold text-[#8e9192] pt-1">
-                              <span>LOGISTICS & TAX</span>
-                              <span>₹3,500</span>
-                            </div>
-                          </div>
-                          <div className="text-[10px] font-bold text-white text-center uppercase tracking-widest pt-4 border-t border-[#353434] mt-3">
-                            ESCROW CLEAR: INSTANT (ONDC)
-                          </div>
-                        </div>
-                      </div>
-
-                    </div>
-
                   </div>
                 </section>
 
-                {/* SECTION C: 4 HOROLOGICAL VALUE STANDARDS */}
+                {/* SECTION C: 4 HOROLOGICAL CRAFT VALUE STANDARDS */}
                 <section className="w-full bg-[#0e0e0e] py-12 border-b border-[#353434]/40">
                   <div className="max-w-7xl mx-auto px-4 lg:px-12">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                       
                       <div className="p-6 bg-[#201f1f] border border-[#353434] flex flex-col space-y-3 hover:bg-[#2a2a2a] transition-colors">
                         <div className="flex items-center justify-between">
-                          <CheckCircle size={22} className="text-white" />
-                          <span className="text-[10px] font-bold text-[#8e9192]">01</span>
+                          <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">CRITERION 01</span>
+                          <span className="w-1.5 h-1.5 bg-white"></span>
                         </div>
-                        <h4 className="font-serif text-[16px] text-white font-bold">Direct From Master Artisans</h4>
+                        <h4 className="font-serif text-lg text-white">Cire-Perdue Metallurgy</h4>
                         <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
-                          100% direct studio provenance. Zero commercial brokers, dealers, or opaque middle tier.
+                          Lost-wax bronze and bell-metal alloy casting without seam or welding, ensuring multi-generational endurance.
                         </p>
                       </div>
 
                       <div className="p-6 bg-[#201f1f] border border-[#353434] flex flex-col space-y-3 hover:bg-[#2a2a2a] transition-colors">
                         <div className="flex items-center justify-between">
-                          <CreditCard size={22} className="text-white" />
-                          <span className="text-[10px] font-bold text-[#8e9192]">02</span>
+                          <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">CRITERION 02</span>
+                          <span className="w-1.5 h-1.5 bg-white"></span>
                         </div>
-                        <h4 className="font-serif text-[16px] text-white font-bold">Fair & Transparent Pricing</h4>
+                        <h4 className="font-serif text-lg text-white">Pure Handloom Silks</h4>
                         <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
-                          Immutable smart payouts logged on public ledgers with audited artisan living wage royalty structures.
+                          Chanderi, Banarasi, and Patola silks woven on manual pit looms using verified unadulterated zari thread.
                         </p>
                       </div>
 
                       <div className="p-6 bg-[#201f1f] border border-[#353434] flex flex-col space-y-3 hover:bg-[#2a2a2a] transition-colors">
                         <div className="flex items-center justify-between">
-                          <Award size={22} className="text-white" />
-                          <span className="text-[10px] font-bold text-[#8e9192]">03</span>
+                          <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">CRITERION 03</span>
+                          <span className="w-1.5 h-1.5 bg-white"></span>
                         </div>
-                        <h4 className="font-serif text-[16px] text-white font-bold">Authentic GI Heritage</h4>
+                        <h4 className="font-serif text-lg text-white">Natural Mineral Glazes</h4>
                         <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
-                          Every artifact dispatched carries its authentic Geographical Indication stamp and genealogy ledger.
+                          Lead-free quartz, fuller’s earth, and cobalt oxide mixtures hand-painted and fired in traditional wood kilns.
                         </p>
                       </div>
 
                       <div className="p-6 bg-[#201f1f] border border-[#353434] flex flex-col space-y-3 hover:bg-[#2a2a2a] transition-colors">
                         <div className="flex items-center justify-between">
-                          <Sparkles size={22} className="text-white" />
-                          <span className="text-[10px] font-bold text-[#8e9192]">04</span>
+                          <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">CRITERION 04</span>
+                          <span className="w-1.5 h-1.5 bg-white"></span>
                         </div>
-                        <h4 className="font-serif text-[16px] text-white font-bold">AI-Powered Cataloging</h4>
+                        <h4 className="font-serif text-lg text-white">Aged Seasoned Hardwood</h4>
                         <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
-                          Smartphone AI assistant converts workshop voice in Indian languages into museum-grade 4K listings instantly.
+                          Naturally seasoned Sheesham and Walnut carved with handheld chisels and finished with natural lac resins.
                         </p>
                       </div>
 
@@ -2527,599 +2258,31 @@ export default function App() {
                   </div>
                 </section>
 
-                {/* SECTION D: SHOP BY COLLECTION */}
+                {/* SECTION D: INDIAN CRAFT CLUSTERS & MASTERPIECES */}
                 <section className="w-full bg-[#141313] py-16 border-b border-[#353434]/40">
-                  <div className="max-w-7xl mx-auto px-4 lg:px-12 space-y-12">
+                  <div className="max-w-7xl mx-auto px-4 lg:px-12 space-y-10">
                     
-                    <div className="text-center max-w-xl mx-auto space-y-2">
-                      <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-white block">
-                        CURATION BY MEDIUM
-                      </span>
-                      <h2 className="font-serif text-3xl sm:text-4xl text-white">Shop By Collection</h2>
-                      <p className="text-[14px] text-[#c4c7c8]">
-                        Handcrafted lineages categorized by their geological and mineral foundations.
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      
-                      {/* Collection 1: Pottery & Ceramics */}
-                      <div 
-                        onClick={() => { setCustomerCategory('pottery'); switchCustomerTab('shop'); }}
-                        className="bg-[#201f1f] border border-[#353434] flex flex-col overflow-hidden group hover:bg-[#2a2a2a] transition-all cursor-pointer"
-                      >
-                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
-                          <img
-                            alt="Pottery & Ceramics Collection"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8J9qQ8F6XPoZlY8ZkXiIxAYRw-R9wy8ELozin0L3d2AsR1cYCFVU8VZ4nzVPZsSCzwQv6ZQmCbapNuHomiWLsfQA-2628ITqHRxoh0QoGFqY8QsqDdzb411L8P6sxbKzah7v3vuzoCwCURk9DJYQ-e5icaBoIW44WHLgUSxN8p65FWjhBR0P_xHm6cDJFLs5MZNS7qdy1znqCyIU1E6fIWg8qz6TOY8oaJuBVTz4"
-                          />
-                          <div className="absolute top-4 left-4 bg-[#0e0e0e]/90 px-3 py-1 border border-[#353434]">
-                            <span className="text-[9px] font-bold text-white uppercase tracking-widest">142 MASTERWORKS</span>
-                          </div>
-                        </div>
-                        <div className="p-6 flex flex-col justify-between flex-grow space-y-4">
-                          <div>
-                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block mb-1">
-                              MINERAL GLAZE & CLAY
-                            </span>
-                            <h3 className="font-serif text-xl text-white">Pottery & Ceramics</h3>
-                            <p className="text-[12px] text-[#c4c7c8] mt-1">
-                              Jaipur Egyptian-paste Blue Pottery, Molela terracotta votives, and Khurja stoneware.
-                            </p>
-                          </div>
-                          <div className="pt-2 flex items-center justify-between text-[11px] font-bold text-white uppercase tracking-widest">
-                            <span className="group-hover:underline">VIEW COLLECTION</span>
-                            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Collection 2: Textiles & Fabrics */}
-                      <div 
-                        onClick={() => { setCustomerCategory('textiles'); switchCustomerTab('shop'); }}
-                        className="bg-[#201f1f] border border-[#353434] flex flex-col overflow-hidden group hover:bg-[#2a2a2a] transition-all cursor-pointer"
-                      >
-                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
-                          <img
-                            alt="Textiles & Fabrics Collection"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFlKCXXQ_JaLnFPtIyyCBfr9UCl287bu_JXPWczmOwbJM0w36f19IM5Bqx_96RaNg1dqhxleTBxtnjvq6zrgQw-H_cFM4WR993-TvyN-5KEMK_UUSHhHGs4UV2fFT9dGXWtz84LREkviNMbdr0oQVX1Cuwsv3hI9RainhdG6aY_ZeKd7LZSAC8v_TU_GYWt5shgoHiE7DijTa-zaxwGNFKjzx-LXwCSmZ4IzDXO7c"
-                          />
-                          <div className="absolute top-4 left-4 bg-[#0e0e0e]/90 px-3 py-1 border border-[#353434]">
-                            <span className="text-[9px] font-bold text-white uppercase tracking-widest">88 MASTERWORKS</span>
-                          </div>
-                        </div>
-                        <div className="p-6 flex flex-col justify-between flex-grow space-y-4">
-                          <div>
-                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block mb-1">
-                              DOUBLE IKAT & CASHMERE
-                            </span>
-                            <h3 className="font-serif text-xl text-white">Textiles & Fabrics</h3>
-                            <p className="text-[12px] text-[#c4c7c8] mt-1">
-                              Patan Patola looms, Varanasi Katan brocades, and Chanderi gossamer cottons.
-                            </p>
-                          </div>
-                          <div className="pt-2 flex items-center justify-between text-[11px] font-bold text-white uppercase tracking-widest">
-                            <span className="group-hover:underline">VIEW COLLECTION</span>
-                            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Collection 3: Home Decor & Woodcraft */}
-                      <div 
-                        onClick={() => { setCustomerCategory('woodwork'); switchCustomerTab('shop'); }}
-                        className="bg-[#201f1f] border border-[#353434] flex flex-col overflow-hidden group hover:bg-[#2a2a2a] transition-all cursor-pointer"
-                      >
-                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
-                          <img
-                            alt="Home Decor & Woodcraft Collection"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqmymwXinYA329bej5AmsBAMHPJURViNADkX6FXC5IAZF4BZ3qWc_vSShNB4AfELSE1efFjlnKtOOPuRsntXoFdVJKDU7ZrdH353sNchrN5N-Cc7_Oxr9II3pzAjsgCe5aSkEvqT5icS9W7LzFaHAk-j6cnouvU7-z9DUdef7YneXkrcpcAxxlmx7mvdnuvNM8FJ1LIE1FwzumWH9aNnCqEzjlditFMJlhRd_JcNc"
-                          />
-                          <div className="absolute top-4 left-4 bg-[#0e0e0e]/90 px-3 py-1 border border-[#353434]">
-                            <span className="text-[9px] font-bold text-white uppercase tracking-widest">210 MASTERWORKS</span>
-                          </div>
-                        </div>
-                        <div className="p-6 flex flex-col justify-between flex-grow space-y-4">
-                          <div>
-                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block mb-1">
-                              CARVED HARDWOOD & METALS
-                            </span>
-                            <h3 className="font-serif text-xl text-white">Home Decor & Woodcraft</h3>
-                            <p className="text-[12px] text-[#c4c7c8] mt-1">
-                              Saharanpur hand-carvings, Sankheda lacquer furniture, and Bidriware silver inlay.
-                            </p>
-                          </div>
-                          <div className="pt-2 flex items-center justify-between text-[11px] font-bold text-white uppercase tracking-widest">
-                            <span className="group-hover:underline">VIEW COLLECTION</span>
-                            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                          </div>
-                        </div>
-                      </div>
-
-                    </div>
-
-                  </div>
-                </section>
-
-                {/* SECTION E: TRENDING CERTIFIED MASTERWORKS (LIVE PRODUCTS + STITCH PIECES) */}
-                <section className="w-full bg-[#0e0e0e] py-16 border-b border-[#353434]/40">
-                  <div className="max-w-7xl mx-auto px-4 lg:px-12 space-y-8">
-                    
-                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-[#353434]/50">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                       <div>
-                        <span className="text-[9px] font-bold text-white uppercase tracking-[0.2em] block mb-1">
-                          PROVENANCE SELECTIONS
+                        <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest block">
+                          ATELIER SHOWCASE
                         </span>
-                        <h2 className="font-serif text-2xl sm:text-3xl text-white">
-                          Trending Certified Masterworks
+                        <h2 className="font-serif text-3xl sm:text-4xl text-white">
+                          Curated Craft Traditions & Masterworks
                         </h2>
                       </div>
                       <button
                         onClick={() => switchCustomerTab('shop')}
-                        className="text-[11px] font-bold text-white uppercase tracking-widest hover:underline flex items-center gap-1 cursor-pointer"
+                        className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-white hover:text-amber-400 transition-colors cursor-pointer"
                       >
                         VIEW COMPLETE VITRINE <ArrowRight size={14} />
                       </button>
                     </div>
 
-                    {/* 4-column Luxury Vitrine Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                      
-                      {/* Item 1: Bastar Dhokra */}
-                      <div className="bg-[#201f1f] border border-[#353434] flex flex-col group hover:bg-[#2a2a2a] transition-all">
-                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
-                          <img
-                            alt="Sahasrara Dhokra Brass Vessel"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgERiqwe-jJ4j-wXH_3Mlw0DbHukdEwqkxTh9jzjALKWrKQolJ33n1rN8fRQTHWOUKeJIZcFzlPLv5rnC79GKmOABdzWbpIv3CSB8e9JBY1znBQ2dVYJemnhm8uW8JdeMLbq9HpqXtm-CVo88gZ1d6vzOxleOvkfnodF14UxQ2a2RO-s6BXWscY_2cWjr0AykijbCWZZPXC5uqZR-tPpz0zrAwsMqWvy4pMR00t3A"
-                          />
-                          <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2 py-0.5 border border-[#353434]">
-                            <span className="text-[9px] font-bold text-white uppercase">GI CERTIFIED</span>
-                          </div>
-                        </div>
-                        <div className="p-4 flex flex-col justify-between flex-grow space-y-3">
-                          <div>
-                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block">
-                              DEVENDRA BAGHEL • BASTAR
-                            </span>
-                            <h3 className="font-serif text-[17px] text-white line-clamp-1 group-hover:text-amber-200 transition-colors">
-                              Sahasrara Dhokra Brass Vessel
-                            </h3>
-                            <p className="text-[12px] text-[#8e9192] mt-0.5 line-clamp-1">
-                              Lost-wax bronze alloy casting • 72 hrs
-                            </p>
-                          </div>
-                          <div className="pt-2 flex items-center justify-between border-t border-[#353434]/60">
-                            <span className="font-serif text-lg font-bold text-white">₹18,500</span>
-                            <button
-                              onClick={() => {
-                                addToCart({
-                                  id: 'dhokra-top-01',
-                                  title: 'Sahasrara Dhokra Brass Vessel',
-                                  price: 18500,
-                                  image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBgERiqwe-jJ4j-wXH_3Mlw0DbHukdEwqkxTh9jzjALKWrKQolJ33n1rN8fRQTHWOUKeJIZcFzlPLv5rnC79GKmOABdzWbpIv3CSB8e9JBY1znBQ2dVYJemnhm8uW8JdeMLbq9HpqXtm-CVo88gZ1d6vzOxleOvkfnodF14UxQ2a2RO-s6BXWscY_2cWjr0AykijbCWZZPXC5uqZR-tPpz0zrAwsMqWvy4pMR00t3A',
-                                  category: 'Metalcraft & Dhokra'
-                                });
-                              }}
-                              className="bg-[#353434] text-white hover:bg-white hover:text-[#141313] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
-                              type="button"
-                            >
-                              ACQUIRE
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Item 2: Neelambari Blue Glaze Jar */}
-                      <div className="bg-[#201f1f] border border-[#353434] flex flex-col group hover:bg-[#2a2a2a] transition-all">
-                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
-                          <img
-                            alt="Neelambari Blue Glaze Jar"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmAHqpENVakqXswpvUEKTejh05201o6Q0g6JoWY0IBk_E43l2h21DZu5ItYGaTm7bKmj2sX_6G9yeigqZfSSkDMs3SEJRBWgHJFoqCYPHMKgrmVQNnIhXvcUru4O6MIMJLSYit2baHZEy_m-LJGyJ7vDHnXnxHA5vCmV5ElHJg6DbvlUr5HjQM85izdUV3xdrlpCv2IxXEiu6rYPLxn8zq24A3IKJCnM5gX3sVxKo"
-                          />
-                          <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2 py-0.5 border border-[#353434]">
-                            <span className="text-[9px] font-bold text-white uppercase">KRIPAL STUDIO</span>
-                          </div>
-                        </div>
-                        <div className="p-4 flex flex-col justify-between flex-grow space-y-3">
-                          <div>
-                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block">
-                              KRIPAL KUMBH • JAIPUR
-                            </span>
-                            <h3 className="font-serif text-[17px] text-white line-clamp-1 group-hover:text-amber-200 transition-colors">
-                              Neelambari Blue Glaze Jar
-                            </h3>
-                            <p className="text-[12px] text-[#8e9192] mt-0.5 line-clamp-1">
-                              Quartz & fuller's earth fired amphora
-                            </p>
-                          </div>
-                          <div className="pt-2 flex items-center justify-between border-t border-[#353434]/60">
-                            <span className="font-serif text-lg font-bold text-white">₹12,200</span>
-                            <button
-                              onClick={() => {
-                                addToCart({
-                                  id: 'pottery-top-02',
-                                  title: 'Neelambari Blue Glaze Jar',
-                                  price: 12200,
-                                  image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDmAHqpENVakqXswpvUEKTejh05201o6Q0g6JoWY0IBk_E43l2h21DZu5ItYGaTm7bKmj2sX_6G9yeigqZfSSkDMs3SEJRBWgHJFoqCYPHMKgrmVQNnIhXvcUru4O6MIMJLSYit2baHZEy_m-LJGyJ7vDHnXnxHA5vCmV5ElHJg6DbvlUr5HjQM85izdUV3xdrlpCv2IxXEiu6rYPLxn8zq24A3IKJCnM5gX3sVxKo',
-                                  category: 'Pottery & Ceramics'
-                                });
-                              }}
-                              className="bg-[#353434] text-white hover:bg-white hover:text-[#141313] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
-                              type="button"
-                            >
-                              ACQUIRE
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Item 3: Shikargah Banarasi Katan Silk */}
-                      <div className="bg-[#201f1f] border border-[#353434] flex flex-col group hover:bg-[#2a2a2a] transition-all">
-                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
-                          <img
-                            alt="Shikargah Banarasi Katan Silk"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmI2nVu2NB_RhbcBe0IQyshk9r-gE449ZW1jIbcb-o8c4_sXppvDEyC3CWU5Bb5JHHH4lDUq4k3ocbu3vfGx8EV2cm3PT6ELBHfUg9lLHnM0ROvZidtAguxdeHuYxGmLfu9cy2tLYZU6241CEjA58BlsOFU_y1j-7JCNQEJWyak6HR34NlgeWnTrqD4yM-kxiwaygKMJcUpKF_UMIYb_Jjkl-oQZBq8cCHcGAEKWg"
-                          />
-                          <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2 py-0.5 border border-[#353434]">
-                            <span className="text-[9px] font-bold text-white uppercase">LIMITED WEAVE</span>
-                          </div>
-                        </div>
-                        <div className="p-4 flex flex-col justify-between flex-grow space-y-3">
-                          <div>
-                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block">
-                              RASHID ANSARI • VARANASI
-                            </span>
-                            <h3 className="font-serif text-[17px] text-white line-clamp-1 group-hover:text-amber-200 transition-colors">
-                              Shikargah Banarasi Katan Silk
-                            </h3>
-                            <p className="text-[12px] text-[#8e9192] mt-0.5 line-clamp-1">
-                              Pure mulberry silk with antique gold zari
-                            </p>
-                          </div>
-                          <div className="pt-2 flex items-center justify-between border-t border-[#353434]/60">
-                            <span className="font-serif text-lg font-bold text-white">₹34,000</span>
-                            <button
-                              onClick={() => {
-                                addToCart({
-                                  id: 'silk-top-03',
-                                  title: 'Shikargah Banarasi Katan Silk',
-                                  price: 34000,
-                                  image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAmI2nVu2NB_RhbcBe0IQyshk9r-gE449ZW1jIbcb-o8c4_sXppvDEyC3CWU5Bb5JHHH4lDUq4k3ocbu3vfGx8EV2cm3PT6ELBHfUg9lLHnM0ROvZidtAguxdeHuYxGmLfu9cy2tLYZU6241CEjA58BlsOFU_y1j-7JCNQEJWyak6HR34NlgeWnTrqD4yM-kxiwaygKMJcUpKF_UMIYb_Jjkl-oQZBq8cCHcGAEKWg',
-                                  category: 'Textiles & Weaves'
-                                });
-                              }}
-                              className="bg-[#353434] text-white hover:bg-white hover:text-[#141313] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
-                              type="button"
-                            >
-                              ACQUIRE
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Item 4: Bhakti Rosewood Intarsia Box */}
-                      <div className="bg-[#201f1f] border border-[#353434] flex flex-col group hover:bg-[#2a2a2a] transition-all">
-                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
-                          <img
-                            alt="Bhakti Rosewood Intarsia Box"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtlYs0CKotoqzgOsaf_BTiLGipkSP_yavVegMyCBqm7Lfo0u0NGdsC1_VTumxLptyRNJr0UNMgVq_hcUfXEMDyVDM_hvI0J0iO_XVq-o5BXWCMggEvJESS4m2V9-v7Ie8sKTCP4EpCqczHM-S8MT51rrmjwztXqQYTya7QNleTSq_gJoeZMIA12ciW7Wxc6tPpvD1yPNYJch04MBZVwkKMRoRN10PcmpvDuzEM7KA"
-                          />
-                          <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2 py-0.5 border border-[#353434]">
-                            <span className="text-[9px] font-bold text-white uppercase">INTARSIA SEAL</span>
-                          </div>
-                        </div>
-                        <div className="p-4 flex flex-col justify-between flex-grow space-y-3">
-                          <div>
-                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block">
-                              M. RAMACHANDRA • MYSURU
-                            </span>
-                            <h3 className="font-serif text-[17px] text-white line-clamp-1 group-hover:text-amber-200 transition-colors">
-                              Bhakti Rosewood Intarsia Box
-                            </h3>
-                            <p className="text-[12px] text-[#8e9192] mt-0.5 line-clamp-1">
-                              Seasoned rosewood & brass joinery
-                            </p>
-                          </div>
-                          <div className="pt-2 flex items-center justify-between border-t border-[#353434]/60">
-                            <span className="font-serif text-lg font-bold text-white">₹15,800</span>
-                            <button
-                              onClick={() => {
-                                addToCart({
-                                  id: 'wood-top-04',
-                                  title: 'Bhakti Rosewood Intarsia Box',
-                                  price: 15800,
-                                  image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAtlYs0CKotoqzgOsaf_BTiLGipkSP_yavVegMyCBqm7Lfo0u0NGdsC1_VTumxLptyRNJr0UNMgVq_hcUfXEMDyVDM_hvI0J0iO_XVq-o5BXWCMggEvJESS4m2V9-v7Ie8sKTCP4EpCqczHM-S8MT51rrmjwztXqQYTya7QNleTSq_gJoeZMIA12ciW7Wxc6tPpvD1yPNYJch04MBZVwkKMRoRN10PcmpvDuzEM7KA',
-                                  category: 'Wood & Lacquer'
-                                });
-                              }}
-                              className="bg-[#353434] text-white hover:bg-white hover:text-[#141313] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
-                              type="button"
-                            >
-                              ACQUIRE
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                    </div>
-
-                  </div>
-                </section>
-
-                {/* SECTION F: FEATURED ARTISAN (MASTER HARIRAM) */}
-                <section className="w-full bg-[#141313] py-16 border-b border-[#353434]/40">
-                  <div className="max-w-7xl mx-auto px-4 lg:px-12">
-                    <div className="bg-[#201f1f] border border-[#353434] overflow-hidden">
-                      <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
-                        
-                        {/* Portrait */}
-                        <div className="lg:col-span-6 relative min-h-[440px] lg:min-h-[540px] bg-[#0e0e0e]">
-                          <img
-                            alt="Master Hariram Portrait"
-                            className="w-full h-full object-cover object-center"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuALfOFj7XjcnfofzZz2EQCPzpY0eOLUjFj9gqBAZ6bXDSa0GRxats1_rooKzbCwxNIuCkAxxlYFE_V-SLZZdIF-JEm1TNlx68D4X1BoD9_W37SnX-X8Cv7G2UaebRLs1vpv1fm6k5OJy--9vTzGba0PbiYG8I70_6m2VZubbJzSnWuY7PjI9t1Z_p8HAm9rwjuvbGlmEnW404ydG-vrOM2DctDZ4puIyLhSugh4bsQ"
-                          />
-                          <div className="absolute bottom-4 left-4 bg-[#0e0e0e]/90 px-4 py-2 border border-[#353434]">
-                            <span className="text-[9px] font-bold text-white uppercase tracking-[0.2em] block">
-                              MOLELA CLAY GUILD • RAJASTHAN
-                            </span>
-                            <span className="text-[11px] font-semibold text-[#e5e2e1]">
-                              MASTER SCULPTOR ATELIER
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Narrative & Metrics */}
-                        <div className="lg:col-span-6 p-6 lg:p-12 flex flex-col justify-between space-y-6">
-                          <div className="space-y-4">
-                            <div className="inline-flex items-center gap-2">
-                              <span className="w-2 h-2 bg-[#c8c6c6] rounded-full"></span>
-                              <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#c8c6c6]">
-                                MASTER OF THE MONTH
-                              </span>
-                            </div>
-
-                            <h2 className="font-serif text-3xl sm:text-4xl text-white">
-                              Master Hariram — 4th Generation Terracotta Sculptor
-                            </h2>
-
-                            <p className="text-[15px] text-[#c4c7c8] leading-relaxed">
-                              For thirty-eight uninterrupted years, Hariram has shaped the alluvial riverbed clay of the Banas river into monumental, unglazed bas-relief plaques. Working without casting molds, every curve is finger-carved from sacred ancestral memory.
-                            </p>
-
-                            {/* Metrics */}
-                            <div className="grid grid-cols-2 gap-4 pt-2">
-                              <div className="bg-[#1c1b1b] p-4 border border-[#353434]">
-                                <span className="font-serif text-2xl font-bold text-white block">46 YRS</span>
-                                <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">
-                                  GUILD HERITAGE RECORD
-                                </span>
-                              </div>
-                              <div className="bg-[#1c1b1b] p-4 border border-[#353434]">
-                                <span className="font-serif text-2xl font-bold text-white block">2,400+</span>
-                                <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">
-                                  HEIRLOOMS DISPATCHED GLOBALLY
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-4 pt-4">
-                            <button
-                              onClick={() => { setCustomerCategory('pottery'); switchCustomerTab('shop'); }}
-                              className="inline-flex items-center gap-2 bg-white text-[#141313] text-[11px] font-bold uppercase tracking-[0.18em] px-6 py-3.5 hover:bg-[#c8c6c6] transition-all cursor-pointer"
-                            >
-                              MEET THE ARTISAN <ArrowRight size={14} />
-                            </button>
-                            <button
-                              onClick={() => switchCustomerTab('artisans')}
-                              className="inline-flex items-center gap-2 bg-[#2a2a2a] text-white text-[11px] font-bold uppercase tracking-[0.18em] px-6 py-3.5 hover:bg-white hover:text-[#141313] transition-all cursor-pointer"
-                            >
-                              EXPLORE HARIRAM’S ATELIER
-                            </button>
-                          </div>
-                        </div>
-
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-                {/* SECTION G: CLOSING HOROLOGICAL BANNER */}
-                <section className="w-full bg-[#0e0e0e] relative py-20 overflow-hidden border-b border-[#353434]/40">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center opacity-25 mix-blend-luminosity scale-105"
-                    style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuAlwwlQYZPAIH_6AZYW_m605-xc4ztYLs_p1mL7ehPOQ_Lb6HuLp1fgFyq6MI7C7YqfT3iYoidChFDY9Ora2pc_rBMFuGC3I8qACUpvkG3A-xUlgrT7pHcOky-B4eab6f7xIITKyBqH8bJsOPZ3zsTSV5nS3hH0F2AJIw4XK010pO4uxm3kaGrI3-4B6O-5verJf8LnMz2BM1mUfDkNPbQpi8p1wbCqLr99__TFlN4')` }}
-                  ></div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-[#0e0e0e]/80 to-[#0e0e0e] pointer-events-none"></div>
-
-                  <div className="relative z-10 max-w-4xl mx-auto px-4 lg:px-12 text-center space-y-4">
-                    <span className="text-[9px] font-bold text-white uppercase tracking-[0.3em] block">
-                      EXTRAORDINARY LIVING ANTIQUITIES
-                    </span>
-                    <h2 className="font-serif text-3xl sm:text-5xl text-white">
-                      World-Class Artisan Collections
-                    </h2>
-                    <p className="text-[15px] text-[#c4c7c8] max-w-2xl mx-auto leading-relaxed">
-                      Join the private ledger of patrons, curators, and collectors investing directly in the sustained legacy of India’s finest master creators.
-                    </p>
-                    <div className="pt-4 flex justify-center items-center">
-                      <button
-                        onClick={() => switchCustomerTab('shop')}
-                        className="bg-[#494949] text-white hover:bg-white hover:text-[#141313] px-10 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
-                      >
-                        BROWSE VAULT
-                      </button>
-                    </div>
-                  </div>
-                </section>
-
-              </div>
-            )}
-
-            {/* --------------------------------------------------------------------- */}
-            {/* VIEW 2: EXPLORE CRAFTS / SHOP                                         */}
-            {/* --------------------------------------------------------------------- */}
-            {customerTab === 'shop' && (
-              <div className="flex flex-col w-full text-[#e5e2e1]">
-                
-                {/* Sub-Hero Header */}
-                <section className="relative bg-[#0e0e0e] px-4 lg:px-12 pt-12 pb-8 border-b border-[#353434]/40">
-                  <div className="max-w-7xl mx-auto relative z-10 flex flex-col gap-6">
-                    
-                    {/* Breadcrumbs & Cluster Metadata */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-[9px] font-bold uppercase tracking-widest text-[#8e9192]">
-                      <div className="flex items-center gap-2">
-                        <span className="text-white">REGISTRY ARCHIVE</span>
-                        <span>/</span>
-                        <span className="text-white">28 GI CERTIFIED CRAFT CLUSTERS</span>
-                      </div>
-                      <div className="flex items-center gap-2 bg-[#201f1f] px-3 py-1 border border-[#353434]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                        <span className="text-[#e5e2e1]">184 MASTERWORKS RECORDED IN LEDGER</span>
-                      </div>
-                    </div>
-
-                    {/* Display Title & Direct Guild Ratio */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
-                      <div className="lg:col-span-8 space-y-2">
-                        <h1 className="font-serif text-4xl sm:text-5xl text-white uppercase tracking-tight">
-                          Discover Handmade.
-                        </h1>
-                        <p className="text-[15px] text-[#c4c7c8] max-w-3xl leading-relaxed">
-                          Explore certified heirloom creations curated directly from India’s living ancestral lineages. Every artifact carries cryptographically verifiable GI origin records, material assay telemetry, and direct smart settlements to master artisan guilds.
-                        </p>
-                      </div>
-                      <div className="lg:col-span-4 flex flex-col lg:items-end justify-end">
-                        <div className="bg-[#201f1f] p-4 space-y-2 w-full lg:max-w-xs border border-[#353434]">
-                          <span className="text-[9px] font-bold uppercase tracking-widest text-[#c4c7c8] block">DIRECT GUILD RATIO</span>
-                          <div className="flex items-baseline justify-between">
-                            <span className="font-serif text-2xl font-bold text-white">89.4%</span>
-                            <span className="text-[11px] font-bold text-[#c4c7c8] uppercase">To Master Craftsmen</span>
-                          </div>
-                          <div className="w-full bg-[#353434] h-1.5">
-                            <div className="bg-white h-1.5 w-[89.4%]"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Search Bar & Suggestion Chips */}
-                    <div className="bg-[#201f1f] p-3 sm:p-4 space-y-3 border border-[#353434] shadow-xl">
-                      <div className="relative flex items-center bg-[#0e0e0e] border border-[#353434]">
-                        <Search size={18} className="absolute left-4 text-[#8e9192]" />
-                        <input
-                          aria-label="Search artisan crafts"
-                          className="w-full bg-transparent pl-12 pr-28 py-3.5 text-[14px] text-white placeholder:text-[#8e9192] focus:outline-none"
-                          value={customerSearchQuery}
-                          onChange={(e) => setCustomerSearchQuery(e.target.value)}
-                          placeholder="Search by craft lineage, metallurgy, artisan master, or GI cluster (e.g. Molela Terracotta, Rogan, Dhokra)..."
-                          type="text"
-                        />
-                        <div className="absolute right-4 hidden sm:flex items-center gap-1 pointer-events-none">
-                          <kbd className="px-2 py-0.5 text-[9px] font-bold text-[#c4c7c8] bg-[#201f1f] border border-[#353434] tracking-wider">⌘ K</kbd>
-                        </div>
-                      </div>
-
-                      {/* Cluster Suggestion Chips */}
-                      <div className="flex flex-wrap items-center gap-2 pt-1 text-[9px] font-bold uppercase tracking-widest">
-                        <span className="text-[#8e9192] mr-1">Cluster Indices:</span>
-                        {[
-                          'Jaipur Blue Pottery',
-                          'Changthang Pashmina',
-                          'Bidriware Inlay',
-                          'Dhokra Lost-Wax',
-                          'Patan Patola Silk',
-                          'Molela Clay Stele'
-                        ].map((chip) => (
-                          <button
-                            key={chip}
-                            onClick={() => setCustomerSearchQuery(chip)}
-                            className="bg-[#1c1b1b] hover:bg-[#353434] text-[#c4c7c8] hover:text-white px-2.5 py-1 border border-[#353434] transition-colors cursor-pointer"
-                            type="button"
-                          >
-                            {chip}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                  </div>
-                </section>
-
-                {/* Filter & Category Bar */}
-                <section className="sticky top-20 z-40 bg-[#141313]/95 backdrop-blur-md px-4 lg:px-12 py-3 border-b border-[#353434]">
-                  <div className="max-w-7xl mx-auto flex flex-col gap-3">
-                    
-                    {/* Category Tabs */}
-                    <div className="flex items-center justify-between overflow-x-auto pb-1">
-                      <div className="flex items-center gap-2 flex-nowrap">
-                        {[
-                          { id: 'all', label: 'All Masterworks (184)' },
-                          { id: 'pottery', label: 'Pottery & Ceramics (42)' },
-                          { id: 'textiles', label: 'Textiles & Weaves (56)' },
-                          { id: 'metalcraft', label: 'Metalcraft & Dhokra (38)' },
-                          { id: 'woodwork', label: 'Wood & Lacquer (32)' },
-                          { id: 'jewelry', label: 'Jewellery & Stones (16)' }
-                        ].map((cat) => (
-                          <button
-                            key={cat.id}
-                            onClick={() => setCustomerCategory(cat.id)}
-                            className={`px-4 py-2 text-[11px] font-bold uppercase tracking-[0.15em] whitespace-nowrap transition-all cursor-pointer ${
-                              customerCategory === cat.id
-                                ? 'bg-white text-[#141313]'
-                                : 'bg-[#1c1b1b] text-[#c4c7c8] hover:text-white hover:bg-[#201f1f] border border-[#353434]'
-                            }`}
-                            type="button"
-                          >
-                            {cat.label}
-                          </button>
-                        ))}
-                      </div>
-
-                      <div className="hidden lg:flex items-center text-[9px] font-bold text-[#8e9192] uppercase whitespace-nowrap pl-4">
-                        <span>Displaying {products.length + 12} Verified Artifacts</span>
-                      </div>
-                    </div>
-
-                  </div>
-                </section>
-
-                {/* 4-Column Masterwork Vitrine Grid */}
-                <section className="px-4 lg:px-12 py-12 bg-[#0e0e0e]">
-                  <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                      
-                      {/* 1. Masterworks Curated List from Stitch */}
-                      {CERTIFIED_MASTERWORKS
-                        .filter((item) => {
-                          if (customerCategory !== 'all') {
-                            const cLower = item.category.toLowerCase();
-                            if (customerCategory === 'pottery' && !cLower.includes('pottery') && !cLower.includes('clay')) return false;
-                            if (customerCategory === 'textiles' && !cLower.includes('textile') && !cLower.includes('silk') && !cLower.includes('weaves')) return false;
-                            if (customerCategory === 'metalcraft' && !cLower.includes('metal') && !cLower.includes('dhokra') && !cLower.includes('brass')) return false;
-                            if (customerCategory === 'woodwork' && !cLower.includes('wood') && !cLower.includes('lacquer')) return false;
-                            if (customerCategory === 'jewelry' && !cLower.includes('jewel') && !cLower.includes('stone')) return false;
-                          }
-                          if (customerSearchQuery.trim()) {
-                            const q = customerSearchQuery.toLowerCase();
-                            return (
-                              item.title.toLowerCase().includes(q) ||
-                              item.artisan.toLowerCase().includes(q) ||
-                              item.material.toLowerCase().includes(q) ||
-                              item.region.toLowerCase().includes(q)
-                            );
-                          }
-                          return true;
-                        })
-                        .map((item) => (
+                    {/* Real Products If Created By User, Otherwise Curated Clusters */}
+                    {products.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {products.slice(0, 4).map((item) => (
                           <div
                             key={item.id}
                             className="group bg-[#1c1b1b] border border-[#353434] flex flex-col justify-between hover:bg-[#201f1f] transition-all duration-200"
@@ -3130,47 +2293,33 @@ export default function App() {
                             >
                               <img
                                 alt={item.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                                 src={item.image}
                               />
-                              <div className="absolute top-2 left-2 flex flex-col gap-1">
-                                <span className="bg-[#0e0e0e]/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white border border-[#353434]">
-                                  {item.edition}
-                                </span>
-                                <span className="bg-[#2a2a2a]/90 text-white px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-[#353434]">
-                                  {item.gi_tag}
-                                </span>
-                              </div>
-                              <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center text-[9px] font-bold bg-[#0e0e0e]/90 px-2 py-1 border border-[#353434]">
-                                <span className="text-[#c4c7c8] uppercase tracking-wider">{item.material}</span>
-                                <span className="text-white font-extrabold">{item.craft_hours} CRAFT HRS</span>
+                              <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2 py-0.5 border border-[#353434]">
+                                <span className="text-[9px] font-bold text-white uppercase">{item.badge || 'VERIFIED HERITAGE'}</span>
                               </div>
                             </div>
-
-                            <div className="p-4 flex flex-col gap-3 flex-grow justify-between">
-                              <div className="space-y-1">
-                                <span className="text-[9px] font-bold uppercase tracking-widest text-[#8e9192] block">
-                                  {item.artisan}
+                            <div className="p-4 flex flex-col justify-between flex-grow space-y-3">
+                              <div>
+                                <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block">
+                                  {item.artisan} • {item.location}
                                 </span>
-                                <h2 
+                                <h3 
                                   onClick={() => setSelectedProduct(item)}
-                                  className="font-serif text-[17px] font-bold text-white group-hover:text-amber-200 transition-colors line-clamp-1 cursor-pointer"
+                                  className="font-serif text-[17px] text-white line-clamp-1 group-hover:text-amber-200 transition-colors cursor-pointer"
                                 >
                                   {item.title}
-                                </h2>
-                                <p className="text-[12px] text-[#c4c7c8] line-clamp-2">
-                                  Ancestral museum-grade craft from {item.region}. Cryptographically attested provenance.
+                                </h3>
+                                <p className="text-[12px] text-[#8e9192] mt-0.5 line-clamp-1">
+                                  {item.materials || item.category}
                                 </p>
                               </div>
-
-                              <div className="pt-2 flex items-center justify-between border-t border-[#353434]">
-                                <div>
-                                  <span className="text-[9px] font-bold text-[#8e9192] uppercase block">VALUATION</span>
-                                  <span className="font-serif text-[18px] font-bold text-white">₹{item.price.toLocaleString()}</span>
-                                </div>
+                              <div className="pt-2 flex items-center justify-between border-t border-[#353434]/60">
+                                <span className="font-serif text-lg font-bold text-white">₹{item.price?.toLocaleString()}</span>
                                 <button
                                   onClick={() => addToCart(item)}
-                                  className="bg-white text-[#141313] hover:bg-[#c8c6c6] px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
+                                  className="bg-[#353434] text-white hover:bg-white hover:text-[#141313] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
                                   type="button"
                                 >
                                   Acquire
@@ -3179,138 +2328,127 @@ export default function App() {
                             </div>
                           </div>
                         ))}
-
-                      {/* 2. User-Created Products From Backend (Synchronized Seamlessly) */}
-                      {products
-                        .filter((p) => {
-                          if (customerCategory !== 'all') {
-                            const cLower = (p.category || '').toLowerCase();
-                            if (customerCategory === 'pottery' && !cLower.includes('pottery') && !cLower.includes('clay')) return false;
-                            if (customerCategory === 'textiles' && !cLower.includes('textile') && !cLower.includes('silk')) return false;
-                            if (customerCategory === 'metalcraft' && !cLower.includes('metal') && !cLower.includes('dhokra')) return false;
-                            if (customerCategory === 'woodwork' && !cLower.includes('wood')) return false;
-                            if (customerCategory === 'jewelry' && !cLower.includes('jewel')) return false;
-                          }
-                          if (customerSearchQuery.trim()) {
-                            const q = customerSearchQuery.toLowerCase();
-                            return (
-                              (p.title || '').toLowerCase().includes(q) ||
-                              (p.artisan || '').toLowerCase().includes(q) ||
-                              (p.category || '').toLowerCase().includes(q)
-                            );
-                          }
-                          return true;
-                        })
-                        .map((p) => (
-                          <div
-                            key={p.id}
-                            className="group bg-[#1c1b1b] border border-[#353434] flex flex-col justify-between hover:bg-[#201f1f] transition-all duration-200"
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {/* 4 Indian Craft Heritage Clusters */}
+                        <div className="p-6 bg-[#1c1b1b] border border-[#353434] flex flex-col justify-between space-y-4 hover:border-white transition-colors">
+                          <div className="space-y-2">
+                            <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest block">
+                              RAJASTHAN CLUSTER
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Jaipur Blue Pottery</h3>
+                            <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                              Quartz stone, fuller’s earth, and natural cobalt oxide glazes hand-fired without clay molds.
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => { setCustomerCategory('pottery'); switchCustomerTab('shop'); }}
+                            className="bg-[#2a2a2a] text-white hover:bg-white hover:text-[#141313] py-2 px-4 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer text-center"
                           >
-                            <div 
-                              onClick={() => setSelectedProduct(p)}
-                              className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden cursor-pointer"
-                            >
-                              <img
-                                alt={p.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                src={p.image}
-                              />
-                              <div className="absolute top-2 left-2 flex flex-col gap-1">
-                                <span className="bg-[#0e0e0e]/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-emerald-400 border border-[#353434]">
-                                  LIVE ONDC LISTING
-                                </span>
-                              </div>
-                              <button
-                                onClick={(e) => handleDeleteProduct(p.id, e)}
-                                title="Delete Product"
-                                className="absolute top-2 right-2 bg-red-600/90 text-white p-1.5 rounded-full hover:bg-red-700 transition-colors z-10"
-                              >
-                                <Trash2 size={13} />
-                              </button>
-                            </div>
+                            Explore Pottery Guild
+                          </button>
+                        </div>
 
-                            <div className="p-4 flex flex-col gap-3 flex-grow justify-between">
-                              <div className="space-y-1">
-                                <span className="text-[9px] font-bold uppercase tracking-widest text-[#8e9192] block">
-                                  {p.artisan || 'Verified Master Artisan'} • {p.location || 'India'}
-                                </span>
-                                <h2 
-                                  onClick={() => setSelectedProduct(p)}
-                                  className="font-serif text-[17px] font-bold text-white group-hover:text-amber-200 transition-colors line-clamp-1 cursor-pointer"
-                                >
-                                  {p.title}
-                                </h2>
-                                <p className="text-[12px] text-[#c4c7c8] line-clamp-2">
-                                  {p.description || 'Authentic artisan creation with digital provenance passport.'}
-                                </p>
-                              </div>
-
-                              <div className="pt-2 flex items-center justify-between border-t border-[#353434]">
-                                <div>
-                                  <span className="text-[9px] font-bold text-[#8e9192] uppercase block">VALUATION</span>
-                                  <span className="font-serif text-[18px] font-bold text-white">₹{p.price}</span>
-                                </div>
-                                <button
-                                  onClick={() => addToCart(p)}
-                                  className="bg-white text-[#141313] hover:bg-[#c8c6c6] px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
-                                  type="button"
-                                >
-                                  Acquire
-                                </button>
-                              </div>
-                            </div>
+                        <div className="p-6 bg-[#1c1b1b] border border-[#353434] flex flex-col justify-between space-y-4 hover:border-white transition-colors">
+                          <div className="space-y-2">
+                            <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest block">
+                              CHHATTISGARH CLUSTER
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Bastar Dhokra Bronze</h3>
+                            <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                              4,000-year-old cire-perdue lost-wax casting technique using brass and ancestral beeswax molds.
+                            </p>
                           </div>
-                        ))}
+                          <button
+                            onClick={() => { setCustomerCategory('metalcraft'); switchCustomerTab('shop'); }}
+                            className="bg-[#2a2a2a] text-white hover:bg-white hover:text-[#141313] py-2 px-4 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer text-center"
+                          >
+                            Explore Metalcraft Guild
+                          </button>
+                        </div>
 
+                        <div className="p-6 bg-[#1c1b1b] border border-[#353434] flex flex-col justify-between space-y-4 hover:border-white transition-colors">
+                          <div className="space-y-2">
+                            <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest block">
+                              MADHYA PRADESH CLUSTER
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Chanderi Pure Silks</h3>
+                            <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                              Gossamer-fine handloom weaves interwoven with gold and silver zari by 5th generation weaver families.
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => { setCustomerCategory('textiles'); switchCustomerTab('shop'); }}
+                            className="bg-[#2a2a2a] text-white hover:bg-white hover:text-[#141313] py-2 px-4 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer text-center"
+                          >
+                            Explore Handloom Guild
+                          </button>
+                        </div>
+
+                        <div className="p-6 bg-[#1c1b1b] border border-[#353434] flex flex-col justify-between space-y-4 hover:border-white transition-colors">
+                          <div className="space-y-2">
+                            <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest block">
+                              KASHMIR & GUJARAT
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Ancestral Hardwood</h3>
+                            <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                              Sankheda lacquered teakwood and Srinagar walnut burlwood hand-carved with ancestral chisels.
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => { setCustomerCategory('woodwork'); switchCustomerTab('shop'); }}
+                            className="bg-[#2a2a2a] text-white hover:bg-white hover:text-[#141313] py-2 px-4 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer text-center"
+                          >
+                            Explore Hardwood Guild
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Artisan Listing Prompt */}
+                    <div className="p-8 bg-[#1c1b1b] border border-[#353434] flex flex-col sm:flex-row items-center justify-between gap-6">
+                      <div className="space-y-1 text-center sm:text-left">
+                        <h4 className="font-serif text-xl text-white">Are you a Master Artisan or Craftsman?</h4>
+                        <p className="text-[13px] text-[#c4c7c8]">
+                          Aap AI Studio me jakar Voice Cataloger ya Form se apna authentic craft direct customer store me add kar sakte hain.
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => switchMode('artisan')}
+                        className="bg-white text-[#141313] hover:bg-amber-400 px-6 py-3 text-[11px] font-bold uppercase tracking-[0.18em] transition-all cursor-pointer whitespace-nowrap"
+                      >
+                        + Add Craft in Studio
+                      </button>
                     </div>
+
                   </div>
                 </section>
 
-                {/* Provenance & Direct Impact Banner */}
-                <section className="bg-[#141313] px-4 lg:px-12 py-16 border-t border-[#353434]/40">
-                  <div className="max-w-7xl mx-auto">
-                    <div className="bg-[#1c1b1b] border border-[#353434] p-8 lg:p-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-                      <div className="flex items-start gap-4">
-                        <div className="p-3 bg-[#201f1f] border border-[#353434] text-white">
-                          <CheckCircle size={24} />
-                        </div>
-                        <div className="space-y-1">
-                          <h3 className="text-[11px] font-bold uppercase tracking-widest text-white">
-                            100% Direct Guild Settlement
-                          </h3>
-                          <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
-                            Zero intermediary margins. All acquisitions clear into master artisan guild accounts under transparent ledger disbursement protocols.
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-4">
-                        <div className="p-3 bg-[#201f1f] border border-[#353434] text-white">
-                          <Award size={24} />
-                        </div>
-                        <div className="space-y-1">
-                          <h3 className="text-[11px] font-bold uppercase tracking-widest text-white">
-                            Cryptographic GI Authenticity
-                          </h3>
-                          <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
-                            Each physical artifact carries an immutable NFC-embedded certificate mapped to the Government of India Geographical Indication registry.
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-4">
-                        <div className="p-3 bg-[#201f1f] border border-[#353434] text-white">
-                          <ShieldCheck size={24} />
-                        </div>
-                        <div className="space-y-1">
-                          <h3 className="text-[11px] font-bold uppercase tracking-widest text-white">
-                            Insured White-Glove Transit
-                          </h3>
-                          <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
-                            Museum-grade crate packaging and temperature-stabilized bonded global courier logistics with comprehensive transit indemnity.
-                          </p>
-                        </div>
-                      </div>
+                {/* SECTION E: PATRON PRIVILEGES & NEWSLETTER */}
+                <section className="w-full bg-[#0e0e0e] py-16">
+                  <div className="max-w-4xl mx-auto px-4 text-center space-y-4">
+                    <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-[0.25em]">
+                      THE KAARVO GUILD GAZETTE
+                    </span>
+                    <h2 className="font-serif text-3xl sm:text-4xl text-white">
+                      Receive Direct Atelier Dispatches
+                    </h2>
+                    <p className="text-[14px] text-[#c4c7c8] max-w-xl mx-auto">
+                      Quarterly provenance briefings, private kiln openings, and direct access to rare handcrafted masterworks.
+                    </p>
+                    <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
+                      <input
+                        placeholder="Enter your email address"
+                        type="email"
+                        className="w-full bg-[#201f1f] border border-[#353434] px-4 py-3 text-[13px] text-white placeholder-[#8e9192] focus:outline-none focus:border-white"
+                      />
+                      <button
+                        onClick={() => showToast('✨ Subscribed to Kaarvo Guild Gazette')}
+                        className="w-full sm:w-auto bg-[#494949] text-white hover:bg-white hover:text-[#141313] px-8 py-3 text-[11px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer whitespace-nowrap"
+                      >
+                        Subscribe
+                      </button>
                     </div>
                   </div>
                 </section>
@@ -3319,13 +2457,235 @@ export default function App() {
             )}
 
             {/* --------------------------------------------------------------------- */}
-            {/* VIEW 3: COLLECTIONS & ARTISANS                                        */}
+            {/* VIEW 2: EXPLORE CRAFTS / SHOP CATALOG                                */}
             {/* --------------------------------------------------------------------- */}
-            {(customerTab === 'collections' || customerTab === 'artisans') && (
+            {customerTab === 'shop' && (
               <div className="flex flex-col w-full text-[#e5e2e1]">
                 
                 {/* Atelier Vitrine Cover */}
-                <section className="relative w-full h-[400px] overflow-hidden bg-[#0e0e0e] border-b border-[#353434]">
+                <section className="relative w-full h-[260px] sm:h-[320px] overflow-hidden bg-[#0e0e0e] border-b border-[#353434]">
+                  <div
+                    className="w-full h-full bg-cover bg-center opacity-30 mix-blend-luminosity"
+                    style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuDqmymwXinYA329bej5AmsBAMHPJURViNADk3f91Vz6Y2_eM9J_7uY-6n5a7Q')` }}
+                  ></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#141313] via-[#141313]/50 to-transparent"></div>
+
+                  <div className="absolute bottom-8 left-0 w-full px-4 lg:px-12">
+                    <div className="max-w-7xl mx-auto space-y-2">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-white bg-[#0e0e0e] px-3 py-1 border border-[#353434] inline-block">
+                        PROVENANCE VAULT • 28 HUBS
+                      </span>
+                      <h1 className="font-serif text-3xl sm:text-5xl text-white">
+                        Curated Indian Craft Vitrine
+                      </h1>
+                      <p className="text-[14px] text-[#c4c7c8] max-w-2xl">
+                        Handcrafted artifacts created by master artisans. Zero broker markup with direct ONDC settlement.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Filter & Search Bar */}
+                <section className="sticky top-20 z-40 bg-[#141313]/95 backdrop-blur-md border-b border-[#353434] py-3.5 px-4 lg:px-12">
+                  <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                    
+                    {/* Category Filter Pills */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none">
+                      {[
+                        { id: 'all', label: 'All Artifacts' },
+                        { id: 'pottery', label: 'Pottery / Terracotta' },
+                        { id: 'textiles', label: 'Textiles / Handloom' },
+                        { id: 'metalcraft', label: 'Metalcraft / Dhokra' },
+                        { id: 'woodwork', label: 'Woodwork' },
+                        { id: 'jewelry', label: 'Jewelry / Traditional' }
+                      ].map((cat) => (
+                        <button
+                          key={cat.id}
+                          onClick={() => setCustomerCategory(cat.id)}
+                          className={`text-[11px] font-bold uppercase tracking-[0.12em] px-3.5 py-1.5 rounded transition-all whitespace-nowrap cursor-pointer ${
+                            customerCategory === cat.id
+                              ? 'bg-white text-[#141313]'
+                              : 'bg-[#201f1f] text-[#c4c7c8] hover:text-white border border-[#353434]'
+                          }`}
+                        >
+                          {cat.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Search Input */}
+                    <div className="flex items-center gap-3 w-full md:w-auto">
+                      <div className="relative flex-grow md:w-64">
+                        <input
+                          type="text"
+                          value={customerSearchQuery}
+                          onChange={(e) => setCustomerSearchQuery(e.target.value)}
+                          placeholder="Search crafts, artisan..."
+                          className="w-full bg-[#201f1f] border border-[#353434] px-3 py-1.5 pl-8 text-[12px] text-white placeholder-[#8e9192] focus:outline-none focus:border-white"
+                        />
+                        <Search size={14} className="absolute left-2.5 top-2.5 text-[#8e9192]" />
+                        {customerSearchQuery && (
+                          <button
+                            onClick={() => setCustomerSearchQuery('')}
+                            className="absolute right-2.5 top-2 text-[#8e9192] hover:text-white"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="hidden lg:flex items-center text-[10px] font-bold text-[#8e9192] uppercase whitespace-nowrap">
+                        <span>Displaying {products.length} Artifacts</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </section>
+
+                {/* 4-Column Masterwork Vitrine Grid */}
+                <section className="px-4 lg:px-12 py-12 bg-[#0e0e0e]">
+                  <div className="max-w-7xl mx-auto">
+                    
+                    {/* Live Filtered Products from DB */}
+                    {(() => {
+                      const filtered = products.filter((item) => {
+                        if (customerCategory !== 'all') {
+                          const cLower = (item.craft_type || item.category || '').toLowerCase();
+                          if (customerCategory === 'pottery' && !cLower.includes('pottery') && !cLower.includes('clay') && !cLower.includes('terracotta')) return false;
+                          if (customerCategory === 'textiles' && !cLower.includes('textile') && !cLower.includes('silk') && !cLower.includes('handloom') && !cLower.includes('saree')) return false;
+                          if (customerCategory === 'metalcraft' && !cLower.includes('metal') && !cLower.includes('dhokra') && !cLower.includes('brass')) return false;
+                          if (customerCategory === 'woodwork' && !cLower.includes('wood') && !cLower.includes('lacquer')) return false;
+                          if (customerCategory === 'jewelry' && !cLower.includes('jewel') && !cLower.includes('silver') && !cLower.includes('gold')) return false;
+                        }
+                        if (customerSearchQuery.trim()) {
+                          const q = customerSearchQuery.toLowerCase();
+                          return (
+                            (item.title || '').toLowerCase().includes(q) ||
+                            (item.artisan || item.artisan_name || '').toLowerCase().includes(q) ||
+                            (item.materials || '').toLowerCase().includes(q) ||
+                            (item.location || '').toLowerCase().includes(q)
+                          );
+                        }
+                        return true;
+                      });
+
+                      if (filtered.length === 0) {
+                        return (
+                          <div className="col-span-full py-20 px-6 text-center border border-dashed border-[#353434] bg-[#1c1b1b]/60 max-w-2xl mx-auto my-8">
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#2a2a2a] flex items-center justify-center text-amber-400">
+                              <Sparkles size={28} />
+                            </div>
+                            <h3 className="font-serif text-2xl text-white mb-2">No Products Listed Yet</h3>
+                            <p className="text-[14px] text-[#c4c7c8] mb-6 max-w-md mx-auto leading-relaxed">
+                              Abhi koi product listed nahi hai. Aap Artisan Studio me jakar Voice Cataloger ya Form se apna pehla authentic craft manually add kar sakte hain.
+                            </p>
+                            <button
+                              onClick={() => switchMode('artisan')}
+                              className="inline-flex items-center gap-2 bg-white text-[#141313] px-6 py-3.5 text-[11px] font-bold uppercase tracking-[0.18em] hover:bg-amber-400 transition-all cursor-pointer shadow-lg"
+                            >
+                              <Plus size={16} />
+                              + Add Product in Artisan Studio
+                            </button>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                          {filtered.map((item) => (
+                            <div
+                              key={item.id}
+                              className="group bg-[#1c1b1b] border border-[#353434] flex flex-col justify-between hover:bg-[#201f1f] transition-all duration-200"
+                            >
+                              <div 
+                                onClick={() => setSelectedProduct(item)}
+                                className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden cursor-pointer"
+                              >
+                                <img
+                                  alt={item.title}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                                  src={item.image}
+                                />
+                                <div className="absolute top-2 right-2">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (wishlist.some(w => w.id === item.id)) {
+                                        setWishlist(prev => prev.filter(w => w.id !== item.id));
+                                        showToast('Removed from wishlist');
+                                      } else {
+                                        setWishlist(prev => [...prev, item]);
+                                        showToast('Added to wishlist');
+                                      }
+                                    }}
+                                    className="w-8 h-8 rounded-full bg-[#0e0e0e]/80 flex items-center justify-center text-white hover:text-amber-400 cursor-pointer"
+                                  >
+                                    <Heart size={14} className={wishlist.some(w => w.id === item.id) ? "fill-amber-400 text-amber-400" : ""} />
+                                  </button>
+                                </div>
+                                <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2 py-0.5 border border-[#353434]">
+                                  <span className="text-[9px] font-bold text-white uppercase">{item.badge || 'VERIFIED HERITAGE'}</span>
+                                </div>
+                              </div>
+
+                              <div className="p-4 flex flex-col justify-between flex-grow space-y-3">
+                                <div>
+                                  <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block">
+                                    {item.artisan} • {item.location}
+                                  </span>
+                                  <h3 
+                                    onClick={() => setSelectedProduct(item)}
+                                    className="font-serif text-[17px] text-white line-clamp-1 group-hover:text-amber-200 transition-colors cursor-pointer"
+                                  >
+                                    {item.title}
+                                  </h3>
+                                  <p className="text-[12px] text-[#8e9192] mt-0.5 line-clamp-1">
+                                    {item.materials || item.category}
+                                  </p>
+                                </div>
+
+                                <div className="pt-2 flex items-center justify-between border-t border-[#353434]/60">
+                                  <span className="font-serif text-lg font-bold text-white">₹{item.price?.toLocaleString()}</span>
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() => {
+                                        setPassportProduct(item);
+                                      }}
+                                      title="Digital Passport QR"
+                                      className="p-1.5 text-[#8e9192] hover:text-white border border-[#353434] hover:border-white transition-colors cursor-pointer"
+                                    >
+                                      <QrCode size={14} />
+                                    </button>
+                                    <button
+                                      onClick={() => addToCart(item)}
+                                      className="bg-[#353434] text-white hover:bg-white hover:text-[#141313] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
+                                      type="button"
+                                    >
+                                      Acquire
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
+
+                  </div>
+                </section>
+
+              </div>
+            )}
+
+            {/* --------------------------------------------------------------------- */}
+            {/* VIEW 3: COLLECTIONS                                                   */}
+            {/* --------------------------------------------------------------------- */}
+            {customerTab === 'collections' && (
+              <div className="flex flex-col w-full text-[#e5e2e1]">
+                
+                {/* Atelier Vitrine Cover */}
+                <section className="relative w-full h-[320px] overflow-hidden bg-[#0e0e0e] border-b border-[#353434]">
                   <div
                     className="w-full h-full bg-cover bg-center opacity-40 mix-blend-luminosity"
                     style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuD0BflBIeahEwYu-nbuhMSAcyp24GKqfl-JHtnRUykqCdK-_pow8gNa12MzZ2qAv3w7OsZ_zp1cgsD26eh-fSXJ0dD9aAJsqzyjwXs8wCR1LLLjEneshMk8bT6BVzWgd04ZFG8rATxhpJyuBK3R4Zwp0jt3I668_m7wjG4Ul2Fp5VA6vP5SAiLrV03pvb_4tUO2kOw84ZAQMGZC2Fu6NQ44x-4p14F8vJ0SH1kd_48')` }}
@@ -3334,71 +2694,205 @@ export default function App() {
 
                   <div className="absolute bottom-10 left-0 w-full px-4 lg:px-12">
                     <div className="max-w-7xl mx-auto space-y-2">
-                      <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-white bg-[#0e0e0e] px-3 py-1 border border-[#353434] inline-block">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-amber-400 bg-[#0e0e0e] px-3 py-1 border border-[#353434] inline-block">
                         ATELIER ARCHIVES • 28 HUBS
                       </span>
                       <h1 className="font-serif text-3xl sm:text-5xl text-white">
-                        {customerTab === 'collections' ? 'Curated Masterwork Collections' : 'Living Master Artisan Guilds'}
+                        Curated Masterwork Collections
                       </h1>
                       <p className="text-[14px] text-[#c4c7c8] max-w-2xl">
-                        {customerTab === 'collections'
-                          ? 'Certified mineralogy and metallurgy lineages preserving centuries of ancestral technique.'
-                          : 'Meet the 4th and 5th generation Indian craftsmen keeping endangered art forms alive.'}
+                        Certified mineralogy and metallurgy lineages preserving centuries of ancestral technique across India.
                       </p>
                     </div>
                   </div>
                 </section>
 
-                {/* Artisan Master Cards Grid */}
+                {/* 6 Craft Collections Grid */}
                 <section className="px-4 lg:px-12 py-16 bg-[#141313]">
-                  <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     
-                    {/* Master 1: Leeladhar Sharma */}
-                    <div className="bg-[#201f1f] border border-[#353434] p-6 lg:p-8 flex flex-col sm:flex-row gap-6 items-center">
-                      <img
-                        alt="Master Leeladhar Sharma"
-                        className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-2 border-white/20 shrink-0"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDonYfE4pP7xnEzbq1ogN4JdUCyGObr5GHwKA-a-Fewr7DcZxuog1aROhFCWb7hoOLEZISrT4gqnMEfW3FrIbmlyTXXHh0T4s9pK6Ym8ZwcYb-AgMsOE9pNc06FGImp0WWNvs3T7luzQ2eTa63eH4jubqY_ZUGx3imaxuDxZLYG1_Kd-z6_UqbQV4khG2vOwAmafZtksOYRKXMjveNEg3h5ZEAkUb7FZHrJ1FifJ-k"
-                      />
-                      <div className="space-y-2">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#8e9192]">SANGANER ATELIER, JAIPUR</span>
-                        <h3 className="font-serif text-2xl text-white font-bold">Master Leeladhar Sharma</h3>
-                        <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
-                          5th-generation Blue Pottery alchemist. Guarding the clay-free formulation of quartz stone, Fuller’s earth, and Persian cobalt glaze for 40 uninterrupted years.
-                        </p>
-                        <div className="pt-2 flex items-center gap-3">
+                    {/* Collection 1: Blue Pottery */}
+                    <div className="bg-[#201f1f] border border-[#353434] overflow-hidden flex flex-col justify-between group hover:border-white transition-colors">
+                      <div className="relative aspect-[16/10] overflow-hidden bg-[#0e0e0e]">
+                        <img
+                          alt="Blue Pottery"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqmymwXinYA329bej5AmsBAMHPJURViNADk3f91Vz6Y2_eM9J_7uY-6n5a7Q"
+                        />
+                        <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2.5 py-0.5 border border-[#353434]">
+                          <span className="text-[9px] font-bold text-amber-400 uppercase">GI TAG #28 • RAJASTHAN</span>
+                        </div>
+                      </div>
+                      <div className="p-6 space-y-3 flex-grow flex flex-col justify-between">
+                        <div className="space-y-2">
+                          <h3 className="font-serif text-2xl text-white">Royal Blue Pottery of Jaipur</h3>
+                          <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                            Crafted from quartz stone, fuller’s earth, and copper oxide glaze fired in single wood kilns. Ancient Turko-Persian technique practiced by Jaipur guilds.
+                          </p>
+                        </div>
+                        <div className="pt-4 border-t border-[#353434]/60 flex items-center justify-between">
                           <button
                             onClick={() => { setCustomerCategory('pottery'); switchCustomerTab('shop'); }}
-                            className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#c8c6c6] transition-colors cursor-pointer"
+                            className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-400 transition-colors cursor-pointer"
                           >
-                            View Works
+                            Explore Collection
                           </button>
-                          <span className="text-[10px] font-bold text-[#8e9192] uppercase">38 Yrs at Wheel</span>
+                          <span className="text-[10px] font-bold text-[#8e9192] uppercase">Single-Fire Quartz</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Master 2: Hariram Kumbhar */}
-                    <div className="bg-[#201f1f] border border-[#353434] p-6 lg:p-8 flex flex-col sm:flex-row gap-6 items-center">
-                      <img
-                        alt="Master Hariram"
-                        className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-2 border-white/20 shrink-0"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuALfOFj7XjcnfofzZz2EQCPzpY0eOLUjFj9gqBAZ6bXDSa0GRxats1_rooKzbCwxNIuCkAxxlYFE_V-SLZZdIF-JEm1TNlx68D4X1BoD9_W37SnX-X8Cv7G2UaebRLs1vpv1fm6k5OJy--9vTzGba0PbiYG8I70_6m2VZubbJzSnWuY7PjI9t1Z_p8HAm9rwjuvbGlmEnW404ydG-vrOM2DctDZ4puIyLhSugh4bsQ"
-                      />
-                      <div className="space-y-2">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#8e9192]">MOLELA CLUSTER, RAJASTHAN</span>
-                        <h3 className="font-serif text-2xl text-white font-bold">Master Hariram Kumbhar</h3>
-                        <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
-                          4th-generation terracotta sculptor modeling the alluvial mud of the Banas river into hollow votive stele plaques completely freehand without any molds.
-                        </p>
-                        <div className="pt-2 flex items-center gap-3">
+                    {/* Collection 2: Handloom Silks */}
+                    <div className="bg-[#201f1f] border border-[#353434] overflow-hidden flex flex-col justify-between group hover:border-white transition-colors">
+                      <div className="relative aspect-[16/10] overflow-hidden bg-[#0e0e0e]">
+                        <img
+                          alt="Chanderi Silk"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgERiqwe-jJ4j-wXH_3Mlw0DbHukdEwqkxTh9jzjALKWrKQolJ33n1rN8fRQTHWOUKeJIZcFzlPLv5rnC79GKmOABdzWbpIv3CSB8e9JBY1znBQ2dVYJemnhm8uW8JdeMLbq9HpqXtm-CVo88gZ1d6vzOxleOvkfnodF14UxQ2a2RO-s6BXWscY_2cWjr0AykijbCWZZPXC5uqZR-tPpz0zrAwsMqWvy4pMR00t3A"
+                        />
+                        <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2.5 py-0.5 border border-[#353434]">
+                          <span className="text-[9px] font-bold text-amber-400 uppercase">GI TAG #12 • MADHYA PRADESH</span>
+                        </div>
+                      </div>
+                      <div className="p-6 space-y-3 flex-grow flex flex-col justify-between">
+                        <div className="space-y-2">
+                          <h3 className="font-serif text-2xl text-white">Chanderi & Banarasi Silks</h3>
+                          <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                            Gossamer handloom sarees and textiles woven on traditional throw-shuttle pit looms with pure gold and silver electroplated zari yarn.
+                          </p>
+                        </div>
+                        <div className="pt-4 border-t border-[#353434]/60 flex items-center justify-between">
                           <button
-                            onClick={() => { setCustomerCategory('pottery'); switchCustomerTab('shop'); }}
-                            className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#c8c6c6] transition-colors cursor-pointer"
+                            onClick={() => { setCustomerCategory('textiles'); switchCustomerTab('shop'); }}
+                            className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-400 transition-colors cursor-pointer"
                           >
-                            View Works
+                            Explore Collection
                           </button>
-                          <span className="text-[10px] font-bold text-[#8e9192] uppercase">46 Yrs Guild Heritage</span>
+                          <span className="text-[10px] font-bold text-[#8e9192] uppercase">Pure Mulberry Silk</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Collection 3: Dhokra Lost Wax */}
+                    <div className="bg-[#201f1f] border border-[#353434] overflow-hidden flex flex-col justify-between group hover:border-white transition-colors">
+                      <div className="relative aspect-[16/10] overflow-hidden bg-[#0e0e0e]">
+                        <img
+                          alt="Dhokra Bronze"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDglDKiMtkskfvnEbKK-g_n-Dgiln56R1LvlyHXUWc3xoR6fl_Bkr8TXspe8FHir1kDbT1Z2-8BPfanMorTBHc_p6mSzlAgwnDH_e-pXlMCAo9lnNSncQxrmLJccQadqLB9RlbZwpo7iUENBzh6DmK5O3uJXwqqH2trzzeeWJzs_y0ZuibV8ePpi8-3pGNiYWzryia8pdiR6ib3DGter4kr8VM8EEwGxV0ddD0r6mw"
+                        />
+                        <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2.5 py-0.5 border border-[#353434]">
+                          <span className="text-[9px] font-bold text-amber-400 uppercase">GI TAG #82 • BASTAR</span>
+                        </div>
+                      </div>
+                      <div className="p-6 space-y-3 flex-grow flex flex-col justify-between">
+                        <div className="space-y-2">
+                          <h3 className="font-serif text-2xl text-white">Sahastradhara Dhokra Bronze</h3>
+                          <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                            Ancestral hollow-core cire-perdue cast bell metal sculptures with ceremonial horned iconography and hand-twisted beeswax coils.
+                          </p>
+                        </div>
+                        <div className="pt-4 border-t border-[#353434]/60 flex items-center justify-between">
+                          <button
+                            onClick={() => { setCustomerCategory('metalcraft'); switchCustomerTab('shop'); }}
+                            className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-400 transition-colors cursor-pointer"
+                          >
+                            Explore Collection
+                          </button>
+                          <span className="text-[10px] font-bold text-[#8e9192] uppercase">Bell Metal C260</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Collection 4: Hardwood */}
+                    <div className="bg-[#201f1f] border border-[#353434] overflow-hidden flex flex-col justify-between group hover:border-white transition-colors">
+                      <div className="relative aspect-[16/10] overflow-hidden bg-[#0e0e0e]">
+                        <img
+                          alt="Hardwood Craft"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFXW6930yF8eI_529eT2Q1a7Zc5V1r0-F9JgqQO8gYl7e1E0L6r7fP7m1Q"
+                        />
+                        <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2.5 py-0.5 border border-[#353434]">
+                          <span className="text-[9px] font-bold text-amber-400 uppercase">GI TAG #56 • GUJARAT</span>
+                        </div>
+                      </div>
+                      <div className="p-6 space-y-3 flex-grow flex flex-col justify-between">
+                        <div className="space-y-2">
+                          <h3 className="font-serif text-2xl text-white">Sankheda & Walnut Woodwork</h3>
+                          <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                            Hand-turned seasoned teak treated with vegetable dyes and polished with agate stones, alongside Kashmir seasoned walnut fretwork.
+                          </p>
+                        </div>
+                        <div className="pt-4 border-t border-[#353434]/60 flex items-center justify-between">
+                          <button
+                            onClick={() => { setCustomerCategory('woodwork'); switchCustomerTab('shop'); }}
+                            className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-400 transition-colors cursor-pointer"
+                          >
+                            Explore Collection
+                          </button>
+                          <span className="text-[10px] font-bold text-[#8e9192] uppercase">Natural Lac Finish</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Collection 5: Folk Painting */}
+                    <div className="bg-[#201f1f] border border-[#353434] overflow-hidden flex flex-col justify-between group hover:border-white transition-colors">
+                      <div className="relative aspect-[16/10] overflow-hidden bg-[#0e0e0e]">
+                        <img
+                          alt="Mithila Madhubani"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0BflBIeahEwYu-nbuhMSAcyp24GKqfl-JHtnRUykqCdK-_pow8gNa12MzZ2qAv3w7OsZ_zp1cgsD26eh-fSXJ0dD9aAJsqzyjwXs8wCR1LLLjEneshMk8bT6BVzWgd04ZFG8rATxhpJyuBK3R4Zwp0jt3I668_m7wjG4Ul2Fp5VA6vP5SAiLrV03pvb_4tUO2kOw84ZAQMGZC2Fu6NQ44x-4p14F8vJ0SH1kd_48"
+                        />
+                        <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2.5 py-0.5 border border-[#353434]">
+                          <span className="text-[9px] font-bold text-amber-400 uppercase">GI TAG #104 • BIHAR</span>
+                        </div>
+                      </div>
+                      <div className="p-6 space-y-3 flex-grow flex flex-col justify-between">
+                        <div className="space-y-2">
+                          <h3 className="font-serif text-2xl text-white">Mithila Madhubani Masterpieces</h3>
+                          <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                            Intricate geometric and mythological paintings rendered using twigs, nibs, matchsticks and natural mineral and plant dyes on cowdung-treated paper.
+                          </p>
+                        </div>
+                        <div className="pt-4 border-t border-[#353434]/60 flex items-center justify-between">
+                          <button
+                            onClick={() => { setCustomerCategory('all'); switchCustomerTab('shop'); }}
+                            className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-400 transition-colors cursor-pointer"
+                          >
+                            Explore Collection
+                          </button>
+                          <span className="text-[10px] font-bold text-[#8e9192] uppercase">Plant Pigments</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Collection 6: Filigree Jewelry */}
+                    <div className="bg-[#201f1f] border border-[#353434] overflow-hidden flex flex-col justify-between group hover:border-white transition-colors">
+                      <div className="relative aspect-[16/10] overflow-hidden bg-[#0e0e0e]">
+                        <img
+                          alt="Silver Filigree"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuALfOFj7XjcnfofzZz2EQCPzpY0eOLUjFj9gqBAZ6bXDSa0GRxats1_rooKzbCwxNIuCkAxxlYFE_V-SLZZdIF-JEm1TNlx68D4X1BoD9_W37SnX-X8Cv7G2UaebRLs1vpv1fm6k5OJy--9vTzGba0PbiYG8I70_6m2VZubbJzSnWuY7PjI9t1Z_p8HAm9rwjuvbGlmEnW404ydG-vrOM2DctDZ4puIyLhSugh4bsQ"
+                        />
+                        <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2.5 py-0.5 border border-[#353434]">
+                          <span className="text-[9px] font-bold text-amber-400 uppercase">GI TAG #18 • ODISHA</span>
+                        </div>
+                      </div>
+                      <div className="p-6 space-y-3 flex-grow flex flex-col justify-between">
+                        <div className="space-y-2">
+                          <h3 className="font-serif text-2xl text-white">Cuttack Silver Filigree (Tarakasi)</h3>
+                          <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                            500-year-old delicate metal art where hair-thin pure silver wires are hand-twisted, soldered, and crafted into heirloom jewelry and ceremonial artifacts.
+                          </p>
+                        </div>
+                        <div className="pt-4 border-t border-[#353434]/60 flex items-center justify-between">
+                          <button
+                            onClick={() => { setCustomerCategory('jewelry'); switchCustomerTab('shop'); }}
+                            className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-400 transition-colors cursor-pointer"
+                          >
+                            Explore Collection
+                          </button>
+                          <span className="text-[10px] font-bold text-[#8e9192] uppercase">92.5 Pure Silver</span>
                         </div>
                       </div>
                     </div>
@@ -3410,611 +2904,852 @@ export default function App() {
             )}
 
             {/* --------------------------------------------------------------------- */}
-            {/* VIEW 4: AI BUSINESS & SHOPPING COPILOT                                */}
+            {/* VIEW 4: LIVING MASTER ARTISANS                                       */}
             {/* --------------------------------------------------------------------- */}
-            {customerTab === 'ai_ask' && (
-              <div className="max-w-4xl mx-auto px-4 py-12">
-                <div className="bg-[#201f1f] border border-[#353434] p-8 space-y-6">
-                  
-                  <div className="flex items-center gap-3 pb-4 border-b border-[#353434]">
-                    <div className="w-10 h-10 rounded-full bg-white text-[#141313] flex items-center justify-center font-bold">
-                      <Sparkles size={20} />
-                    </div>
-                    <div>
-                      <h2 className="font-serif text-2xl text-white">Kaarvo AI Craft Copilot</h2>
-                      <p className="text-[12px] text-[#c4c7c8]">
-                        Ask about Indian craft heritage, custom gift recommendations, fair price audits, or speak in Hindi/regional languages.
+            {customerTab === 'artisans' && (
+              <div className="flex flex-col w-full text-[#e5e2e1]">
+                
+                {/* Atelier Vitrine Cover */}
+                <section className="relative w-full h-[320px] overflow-hidden bg-[#0e0e0e] border-b border-[#353434]">
+                  <div
+                    className="w-full h-full bg-cover bg-center opacity-40 mix-blend-luminosity"
+                    style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuDFXW6930yF8eI_529eT2Q1a7Zc5V1r0-F9JgqQO8gYl7e1E0L6r7fP7m1Q')` }}
+                  ></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#141313] via-[#141313]/60 to-transparent"></div>
+
+                  <div className="absolute bottom-10 left-0 w-full px-4 lg:px-12">
+                    <div className="max-w-7xl mx-auto space-y-2">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-amber-400 bg-[#0e0e0e] px-3 py-1 border border-[#353434] inline-block">
+                        LIVING HERITAGE GUILDS
+                      </span>
+                      <h1 className="font-serif text-3xl sm:text-5xl text-white">
+                        Living Master Artisan Guilds
+                      </h1>
+                      <p className="text-[14px] text-[#c4c7c8] max-w-2xl">
+                        Direct patronage to 4th and 5th generation Indian national awardee craftsmen keeping endangered art forms alive.
                       </p>
                     </div>
                   </div>
+                </section>
 
-                  {/* Message History */}
-                  <div className="space-y-4 max-h-[420px] overflow-y-auto pr-2">
-                    {aiShoppingMessages.map((m, idx) => (
-                      <div
-                        key={idx}
-                        className={`p-4 border ${
-                          m.sender === 'user'
-                            ? 'bg-[#2a2a2a] border-[#444748] ml-8'
-                            : 'bg-[#141313] border-[#353434] mr-8'
-                        }`}
-                      >
-                        <div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">
-                          {m.sender === 'user' ? 'You' : 'Kaarvo AI Copilot'}
+                {/* 6 Living Master Craftsmen Profiles Grid */}
+                <section className="px-4 lg:px-12 py-16 bg-[#141313]">
+                  <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    {/* Master 1: Leeladhar Sharma */}
+                    <div className="bg-[#201f1f] border border-[#353434] p-6 lg:p-8 flex flex-col justify-between hover:border-white transition-colors">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <img
+                            alt="Master Leeladhar Sharma"
+                            className="w-16 h-16 rounded-full object-cover border-2 border-white"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFXW6930yF8eI_529eT2Q1a7Zc5V1r0-F9JgqQO8gYl7e1E0L6r7fP7m1Q"
+                          />
+                          <div>
+                            <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest block">
+                              NATIONAL AWARDEE
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Master Leeladhar Sharma</h3>
+                            <span className="text-[12px] text-[#8e9192]">4th Gen Blue Pottery Patriarch</span>
+                          </div>
                         </div>
-                        <p className="text-[14px] text-[#e5e2e1] leading-relaxed whitespace-pre-wrap">
-                          {m.text}
+                        <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                          Custodial master of the historic Sanganer kiln cluster. Reintroduced genuine Persian quartz stone grinding and mineral cobalt pigment reduction techniques.
                         </p>
+                        <div className="text-[11px] font-bold text-white uppercase flex items-center gap-2">
+                          <MapPin size={13} className="text-amber-400" />
+                          Sanganer Cluster, Jaipur, Rajasthan
+                        </div>
+                      </div>
+                      <div className="pt-6 border-t border-[#353434]/60 flex items-center justify-between">
+                        <button
+                          onClick={() => { setCustomerSearchQuery('Leeladhar'); switchCustomerTab('shop'); }}
+                          className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-400 transition-colors cursor-pointer"
+                        >
+                          View Crafts
+                        </button>
+                        <button
+                          onClick={() => setIsWhatsappOpen(true)}
+                          className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
+                        >
+                          <MessageCircle size={13} /> Chat Bot
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Master 2: Shrimati Jamuna Devi */}
+                    <div className="bg-[#201f1f] border border-[#353434] p-6 lg:p-8 flex flex-col justify-between hover:border-white transition-colors">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <img
+                            alt="Shrimati Jamuna Devi"
+                            className="w-16 h-16 rounded-full object-cover border-2 border-white"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0BflBIeahEwYu-nbuhMSAcyp24GKqfl-JHtnRUykqCdK-_pow8gNa12MzZ2qAv3w7OsZ_zp1cgsD26eh-fSXJ0dD9aAJsqzyjwXs8wCR1LLLjEneshMk8bT6BVzWgd04ZFG8rATxhpJyuBK3R4Zwp0jt3I668_m7wjG4Ul2Fp5VA6vP5SAiLrV03pvb_4tUO2kOw84ZAQMGZC2Fu6NQ44x-4p14F8vJ0SH1kd_48"
+                          />
+                          <div>
+                            <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest block">
+                              PADMA SHRI RECIPIENT
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Shrimati Jamuna Devi</h3>
+                            <span className="text-[12px] text-[#8e9192]">Madhubani Heritage Guild</span>
+                          </div>
+                        </div>
+                        <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                          Pioneered natural earth pigment extraction in Mithila, training over 350 rural women artisans in traditional Kohbar and Godna line artwork.
+                        </p>
+                        <div className="text-[11px] font-bold text-white uppercase flex items-center gap-2">
+                          <MapPin size={13} className="text-amber-400" />
+                          Jitwarpur, Madhubani, Bihar
+                        </div>
+                      </div>
+                      <div className="pt-6 border-t border-[#353434]/60 flex items-center justify-between">
+                        <button
+                          onClick={() => { setCustomerSearchQuery('Jamuna'); switchCustomerTab('shop'); }}
+                          className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-400 transition-colors cursor-pointer"
+                        >
+                          View Crafts
+                        </button>
+                        <button
+                          onClick={() => setIsWhatsappOpen(true)}
+                          className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
+                        >
+                          <MessageCircle size={13} /> Chat Bot
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Master 3: Mandar Baghel */}
+                    <div className="bg-[#201f1f] border border-[#353434] p-6 lg:p-8 flex flex-col justify-between hover:border-white transition-colors">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <img
+                            alt="Master Mandar Baghel"
+                            className="w-16 h-16 rounded-full object-cover border-2 border-white"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDglDKiMtkskfvnEbKK-g_n-Dgiln56R1LvlyHXUWc3xoR6fl_Bkr8TXspe8FHir1kDbT1Z2-8BPfanMorTBHc_p6mSzlAgwnDH_e-pXlMCAo9lnNSncQxrmLJccQadqLB9RlbZwpo7iUENBzh6DmK5O3uJXwqqH2trzzeeWJzs_y0ZuibV8ePpi8-3pGNiYWzryia8pdiR6ib3DGter4kr8VM8EEwGxV0ddD0r6mw"
+                          />
+                          <div>
+                            <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest block">
+                              MASTERCRAFTSMAN
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Master Mandar Baghel</h3>
+                            <span className="text-[12px] text-[#8e9192]">Bastar Dhokra Bell-Metal Smith</span>
+                          </div>
+                        </div>
+                        <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                          Cast tribal bronze sculptures using pure beeswax ribbons and clay cores. Representing 5 generations of Ghadwa smiths honoring ancestral spirits.
+                        </p>
+                        <div className="text-[11px] font-bold text-white uppercase flex items-center gap-2">
+                          <MapPin size={13} className="text-amber-400" />
+                          Kondagaon, Bastar, Chhattisgarh
+                        </div>
+                      </div>
+                      <div className="pt-6 border-t border-[#353434]/60 flex items-center justify-between">
+                        <button
+                          onClick={() => { setCustomerSearchQuery('Baghel'); switchCustomerTab('shop'); }}
+                          className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-400 transition-colors cursor-pointer"
+                        >
+                          View Crafts
+                        </button>
+                        <button
+                          onClick={() => setIsWhatsappOpen(true)}
+                          className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
+                        >
+                          <MessageCircle size={13} /> Chat Bot
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Master 4: Hariram Kumbhar */}
+                    <div className="bg-[#201f1f] border border-[#353434] p-6 lg:p-8 flex flex-col justify-between hover:border-white transition-colors">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <img
+                            alt="Master Hariram Kumbhar"
+                            className="w-16 h-16 rounded-full object-cover border-2 border-white"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgERiqwe-jJ4j-wXH_3Mlw0DbHukdEwqkxTh9jzjALKWrKQolJ33n1rN8fRQTHWOUKeJIZcFzlPLv5rnC79GKmOABdzWbpIv3CSB8e9JBY1znBQ2dVYJemnhm8uW8JdeMLbq9HpqXtm-CVo88gZ1d6vzOxleOvkfnodF14UxQ2a2RO-s6BXWscY_2cWjr0AykijbCWZZPXC5uqZR-tPpz0zrAwsMqWvy4pMR00t3A"
+                          />
+                          <div>
+                            <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest block">
+                              SHILP GURU NOMINEE
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Master Hariram Kumbhar</h3>
+                            <span className="text-[12px] text-[#8e9192]">Terracotta Wheel Specialist</span>
+                          </div>
+                        </div>
+                        <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                          Handcrafts devotional terracotta plaques and porous drinking vessels using wild riverbed silt and ancestral straw kilns without electric wheels.
+                        </p>
+                        <div className="text-[11px] font-bold text-white uppercase flex items-center gap-2">
+                          <MapPin size={13} className="text-amber-400" />
+                          Molela, Rajsamand, Rajasthan
+                        </div>
+                      </div>
+                      <div className="pt-6 border-t border-[#353434]/60 flex items-center justify-between">
+                        <button
+                          onClick={() => { setCustomerSearchQuery('Kumbhar'); switchCustomerTab('shop'); }}
+                          className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-400 transition-colors cursor-pointer"
+                        >
+                          View Crafts
+                        </button>
+                        <button
+                          onClick={() => setIsWhatsappOpen(true)}
+                          className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
+                        >
+                          <MessageCircle size={13} /> Chat Bot
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Master 5: Abdul Rashid */}
+                    <div className="bg-[#201f1f] border border-[#353434] p-6 lg:p-8 flex flex-col justify-between hover:border-white transition-colors">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <img
+                            alt="Master Abdul Rashid"
+                            className="w-16 h-16 rounded-full object-cover border-2 border-white"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuALfOFj7XjcnfofzZz2EQCPzpY0eOLUjFj9gqBAZ6bXDSa0GRxats1_rooKzbCwxNIuCkAxxlYFE_V-SLZZdIF-JEm1TNlx68D4X1BoD9_W37SnX-X8Cv7G2UaebRLs1vpv1fm6k5OJy--9vTzGba0PbiYG8I70_6m2VZubbJzSnWuY7PjI9t1Z_p8HAm9rwjuvbGlmEnW404ydG-vrOM2DctDZ4puIyLhSugh4bsQ"
+                          />
+                          <div>
+                            <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest block">
+                              GI WEAVER CUSTODIAN
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Master Abdul Rashid</h3>
+                            <span className="text-[12px] text-[#8e9192]">Kani Pashmina Master Weaver</span>
+                          </div>
+                        </div>
+                        <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                          Weaves rare certified Changthangi goat pashmina using wooden needles (tujis) following coded talim scripts dating back to Mughal royal workshops.
+                        </p>
+                        <div className="text-[11px] font-bold text-white uppercase flex items-center gap-2">
+                          <MapPin size={13} className="text-amber-400" />
+                          Old City, Srinagar, Kashmir
+                        </div>
+                      </div>
+                      <div className="pt-6 border-t border-[#353434]/60 flex items-center justify-between">
+                        <button
+                          onClick={() => { setCustomerSearchQuery('Rashid'); switchCustomerTab('shop'); }}
+                          className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-400 transition-colors cursor-pointer"
+                        >
+                          View Crafts
+                        </button>
+                        <button
+                          onClick={() => setIsWhatsappOpen(true)}
+                          className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
+                        >
+                          <MessageCircle size={13} /> Chat Bot
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Master 6: Gajanand Prajapat */}
+                    <div className="bg-[#201f1f] border border-[#353434] p-6 lg:p-8 flex flex-col justify-between hover:border-white transition-colors">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <img
+                            alt="Master Gajanand Prajapat"
+                            className="w-16 h-16 rounded-full object-cover border-2 border-white"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqmymwXinYA329bej5AmsBAMHPJURViNADk3f91Vz6Y2_eM9J_7uY-6n5a7Q"
+                          />
+                          <div>
+                            <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest block">
+                              HERITAGE POTTER
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Master Gajanand Prajapat</h3>
+                            <span className="text-[12px] text-[#8e9192]">Terracotta Kiln Master</span>
+                          </div>
+                        </div>
+                        <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                          Over 32 years shaping water-purifying earthen cookware and amphoras. Fired using solar-dried husks for natural mineral heat distribution.
+                        </p>
+                        <div className="text-[11px] font-bold text-white uppercase flex items-center gap-2">
+                          <MapPin size={13} className="text-amber-400" />
+                          Alwar Heritage Hub, Rajasthan
+                        </div>
+                      </div>
+                      <div className="pt-6 border-t border-[#353434]/60 flex items-center justify-between">
+                        <button
+                          onClick={() => { setCustomerSearchQuery('Prajapat'); switchCustomerTab('shop'); }}
+                          className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-400 transition-colors cursor-pointer"
+                        >
+                          View Crafts
+                        </button>
+                        <button
+                          onClick={() => setIsWhatsappOpen(true)}
+                          className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase flex items-center gap-1 cursor-pointer"
+                        >
+                          <MessageCircle size={13} /> Chat Bot
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                </section>
+
+              </div>
+            )}
+
+            {/* --------------------------------------------------------------------- */}
+            {/* VIEW 5: AI COPILOT FULL PAGE                                          */}
+            {/* --------------------------------------------------------------------- */}
+            {customerTab === 'ai_ask' && (
+              <div className="max-w-4xl mx-auto px-4 py-12 space-y-8">
+                <div className="text-center space-y-2">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#201f1f] border border-[#353434] text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                    <Sparkles size={13} />
+                    Autonomous Craft Intelligence
+                  </div>
+                  <h1 className="font-serif text-3xl sm:text-4xl text-white">
+                    Kaarvo AI Craft Copilot
+                  </h1>
+                  <p className="text-[14px] text-[#c4c7c8] max-w-xl mx-auto">
+                    Aap Hindi ya English me craft heritage, materials, styling suggestions ya GI provenance ke baare me pooch sakte hain.
+                  </p>
+                </div>
+
+                {/* Suggested Prompt Chips */}
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                  {[
+                    'Explain GI Provenance of Bastar Dhokra',
+                    'How is Jaipur Blue Pottery crafted without clay?',
+                    'Suggest authentic wedding gift under ₹5,000',
+                    'Difference between Chanderi and Banarasi silk'
+                  ].map((chip, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setAiShoppingInput(chip);
+                      }}
+                      className="bg-[#201f1f] hover:bg-white hover:text-[#141313] text-[#c4c7c8] border border-[#353434] px-3.5 py-1.5 text-[11px] font-medium transition-colors cursor-pointer"
+                    >
+                      {chip}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Chat Card */}
+                <div className="bg-[#1c1b1b] border border-[#353434] p-6 space-y-6">
+                  <div className="space-y-4 max-h-[450px] overflow-y-auto pr-2">
+                    {aiShoppingHistory.map((msg, index) => (
+                      <div
+                        key={index}
+                        className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        {msg.sender === 'ai' && (
+                          <div className="w-8 h-8 rounded-full bg-white text-[#141313] flex items-center justify-center font-serif font-bold text-xs flex-shrink-0">
+                            K
+                          </div>
+                        )}
+                        <div
+                          className={`max-w-[80%] p-4 text-[13px] leading-relaxed ${
+                            msg.sender === 'user'
+                              ? 'bg-white text-[#141313] font-medium'
+                              : 'bg-[#201f1f] border border-[#353434] text-[#e5e2e1]'
+                          }`}
+                        >
+                          <p className="whitespace-pre-wrap">{msg.text}</p>
+                        </div>
                       </div>
                     ))}
                     {aiShoppingLoading && (
-                      <div className="p-4 bg-[#141313] border border-[#353434] text-center text-[#c4c7c8] text-sm flex items-center justify-center gap-2">
-                        <RefreshCw size={16} className="animate-spin text-white" />
-                        Analyzing verified craft clusters...
+                      <div className="flex gap-3 justify-start items-center">
+                        <div className="w-8 h-8 rounded-full bg-white text-[#141313] flex items-center justify-center font-serif font-bold text-xs">
+                          K
+                        </div>
+                        <div className="bg-[#201f1f] border border-[#353434] p-4 text-[12px] text-[#c4c7c8] flex items-center gap-2">
+                          <span className="w-2 h-2 bg-amber-400 rounded-full animate-ping"></span>
+                          Analyzing master artisan archives & provenance registers...
+                        </div>
                       </div>
                     )}
                   </div>
 
-                  {/* Input Form with Neural Voice Mic */}
-                  <div className="flex items-center gap-3 pt-4 border-t border-[#353434]">
+                  {/* Input Box */}
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!aiShoppingInput.trim() || aiShoppingLoading) return;
+                      handleAiShoppingQuery(aiShoppingInput);
+                    }}
+                    className="flex gap-2 border-t border-[#353434] pt-4"
+                  >
                     <input
                       type="text"
-                      className="flex-1 bg-[#0e0e0e] border border-[#353434] p-3 text-[14px] text-white focus:outline-none focus:border-white"
                       value={aiShoppingInput}
                       onChange={(e) => setAiShoppingInput(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleAiShoppingQuery()}
-                      placeholder="Ask Kaarvo AI anything e.g. 'Show me authentic Dhokra brass under ₹20,000'..."
+                      placeholder="Ask in Hindi or English (e.g. 'Muje 2000 me brass craft chahiye')..."
+                      className="flex-grow bg-[#201f1f] border border-[#353434] px-4 py-3 text-[13px] text-white placeholder-[#8e9192] focus:outline-none focus:border-white"
                     />
                     <button
-                      onClick={() => handleAiShoppingQuery()}
-                      className="bg-white text-[#141313] px-6 py-3 text-[11px] font-bold uppercase tracking-widest hover:bg-[#c8c6c6] transition-colors cursor-pointer"
+                      type="submit"
+                      disabled={aiShoppingLoading}
+                      className="bg-white text-[#141313] hover:bg-amber-400 px-6 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors cursor-pointer flex items-center gap-2"
                     >
-                      Ask
+                      <Send size={14} /> Send
                     </button>
-                  </div>
-
+                  </form>
                 </div>
               </div>
             )}
 
-            {/* --------------------------------------------------------------------- */}
-            {/* FULL STITCH PRODUCT DETAIL DOSSIER MODAL                              */}
-            {/* --------------------------------------------------------------------- */}
-            {selectedProduct && (
+          </main>
+
+          {/* ========================================================================= */}
+          {/* WISHLIST DRAWER / MODAL                                                   */}
+          {/* ========================================================================= */}
+          {isWishlistOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/80 backdrop-blur-sm animate-fade-in">
               <div 
-                className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md overflow-y-auto p-4 lg:p-12 flex justify-center items-start"
-                onClick={() => setSelectedProduct(null)}
-              >
-                <div 
-                  className="bg-[#141313] border border-[#353434] w-full max-w-6xl overflow-hidden my-auto relative shadow-2xl"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  
-                  {/* Top Archival Navigation Strip */}
-                  <div className="w-full bg-[#0e0e0e] border-b border-[#353434] px-6 py-3 flex flex-wrap items-center justify-between text-[10px] font-bold uppercase tracking-widest text-[#8e9192]">
+                onClick={() => setIsWishlistOpen(false)}
+                className="absolute inset-0"
+              ></div>
+
+              <div className="relative w-full max-w-md h-full bg-[#141313] border-l border-[#353434] flex flex-col justify-between p-6 z-10 shadow-2xl overflow-y-auto">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between border-b border-[#353434] pb-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-white">REGISTRY ARCHIVE</span>
-                      <span>/</span>
-                      <span className="text-[#c4c7c8]">{selectedProduct.category}</span>
-                      <span>/</span>
-                      <span className="text-white">{selectedProduct.title}</span>
+                      <Heart size={18} className="text-amber-400 fill-amber-400" />
+                      <h3 className="font-serif text-xl text-white">Your Saved Heirlooms</h3>
                     </div>
                     <button
-                      onClick={() => setSelectedProduct(null)}
-                      className="p-1 hover:text-white transition-colors cursor-pointer"
+                      onClick={() => setIsWishlistOpen(false)}
+                      className="p-1 text-[#8e9192] hover:text-white cursor-pointer"
                     >
                       <X size={20} />
                     </button>
                   </div>
 
-                  {/* Main 2-Column Showcase */}
-                  <div className="p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    
-                    {/* Left Column: Gallery & Telemetry (7 Cols) */}
-                    <div className="lg:col-span-7 flex flex-col gap-4">
-                      
-                      {/* Viewport Frame */}
-                      <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden border border-[#353434]">
-                        <img
-                          alt={selectedProduct.title}
-                          className="w-full h-full object-cover"
-                          src={selectedProduct.image}
-                        />
-                        <div className="absolute top-3 left-3 bg-[#0e0e0e]/90 px-3 py-1 border border-[#353434]">
-                          <span className="text-[9px] font-bold text-white uppercase tracking-widest">
-                            CRYPTOGRAPHIC GI PROVENANCE ATTESTED
-                          </span>
-                        </div>
-                        <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center text-[9px] font-bold bg-[#0e0e0e]/90 px-3 py-1.5 border border-[#353434] text-[#c4c7c8]">
-                          <span>ASSAY WEIGHT: 3.120 KG</span>
-                          <span>CRAFT HOURS: {selectedProduct.craft_hours || '44'} HRS</span>
-                        </div>
+                  {wishlist.length === 0 ? (
+                    <div className="py-20 text-center space-y-3">
+                      <div className="w-12 h-12 mx-auto rounded-full bg-[#201f1f] flex items-center justify-center text-[#8e9192]">
+                        <Heart size={20} />
                       </div>
-
-                      {/* NFC Passkey Strip */}
-                      <div className="bg-[#1c1b1b] border border-[#353434] p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <QrCode size={24} className="text-white" />
-                          <div>
-                            <p className="text-[11px] font-bold uppercase tracking-widest text-white">NFC Cryptographic Physical Twin</p>
-                            <p className="text-[12px] text-[#c4c7c8]">Tap device upon receiving to inspect immutable kiln provenance ledger.</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => setPassportProduct(selectedProduct)}
-                          className="text-[9px] font-bold text-white uppercase tracking-widest px-3 py-1.5 bg-[#2a2a2a] border border-[#353434] hover:bg-white hover:text-[#141313] transition-colors"
-                        >
-                          View Passport
-                        </button>
-                      </div>
-
-                    </div>
-
-                    {/* Right Column: Acquisition Dossier (5 Cols) */}
-                    <div className="lg:col-span-5 flex flex-col bg-[#1c1b1b] border border-[#353434] p-6 lg:p-8 space-y-6">
-                      
-                      <div>
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#8e9192] block mb-1">
-                          ORIGIN: {selectedProduct.location || selectedProduct.region || 'INDIA'} • GI CERTIFIED
-                        </span>
-                        <h1 className="font-serif text-3xl text-white tracking-tight">
-                          {selectedProduct.title}
-                        </h1>
-                        <div className="flex items-center gap-2 pt-2">
-                          <span className="text-[13px] text-white font-bold">{selectedProduct.artisan || 'Master Artisan'}</span>
-                          <CheckCircle size={14} className="text-emerald-400" />
-                        </div>
-                      </div>
-
-                      {/* Valuation Tier & 89% Guild Cut */}
-                      <div className="py-4 bg-[#0e0e0e] px-5 border border-[#353434] space-y-2">
-                        <div className="flex items-baseline justify-between">
-                          <span className="font-serif text-3xl font-bold text-white">₹{selectedProduct.price?.toLocaleString()}</span>
-                          <span className="text-[9px] font-bold uppercase px-2 py-0.5 bg-[#2a2a2a] text-white border border-[#353434]">
-                            DIRECT GUILD CUT 89%
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-[#c4c7c8]">
-                          ₹{Math.round(selectedProduct.price * 0.89).toLocaleString()} proceeds directly disbursed to verified artisan cooperative
-                        </p>
-                      </div>
-
-                      {/* Curatorial Description */}
-                      <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
-                        {selectedProduct.description || 'Museum-grade artifact engineered with centuries of ancestral mastery and verified under Government of India Geographical Indication protocols.'}
+                      <p className="text-[14px] text-white">Your Wishlist is Empty</p>
+                      <p className="text-[12px] text-[#8e9192] max-w-xs mx-auto">
+                        Save extraordinary heirloom crafts from 28 Indian clusters to your private catalog.
                       </p>
-
-                      {/* Metrology Spec Grid */}
-                      <div className="border border-[#353434] divide-y divide-[#353434] bg-[#0e0e0e] text-[11px]">
-                        <div className="flex justify-between p-2.5">
-                          <span className="text-[#8e9192] uppercase">Craft Duration</span>
-                          <span className="font-bold text-white">{selectedProduct.craft_hours || '44'} Dedicated Hours</span>
-                        </div>
-                        <div className="flex justify-between p-2.5">
-                          <span className="text-[#8e9192] uppercase">Assay Materials</span>
-                          <span className="font-bold text-white">{selectedProduct.material || 'Natural Mineral & Earth'}</span>
-                        </div>
-                        <div className="flex justify-between p-2.5">
-                          <span className="text-[#8e9192] uppercase">Lineage Ledger</span>
-                          <span className="font-bold text-white">Batch #KV-IND-{selectedProduct.id || '248'}</span>
-                        </div>
-                      </div>
-
-                      {/* Acquire Action Button */}
-                      <div className="space-y-3 pt-2">
-                        <button
-                          onClick={() => {
-                            addToCart(selectedProduct);
-                            setSelectedProduct(null);
-                            setIsCartOpen(true);
-                          }}
-                          className="w-full bg-white text-[#141313] hover:bg-[#c8c6c6] py-4 text-[12px] font-bold uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                          <ShoppingBag size={16} />
-                          <span>Acquire Masterwork</span>
-                        </button>
-                        <button
-                          onClick={() => speakText(`${selectedProduct.title}. ${selectedProduct.description || 'Authentic handcrafted artifact'}. Verified by Kaarvo Guild.`, 'en-IN')}
-                          className="w-full bg-[#2a2a2a] hover:bg-[#353434] text-white py-2.5 text-[11px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer border border-[#353434]"
-                        >
-                          <Volume2 size={14} />
-                          <span>Listen to Heritage Story</span>
-                        </button>
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                  {/* Section: Cryptographic Fair Pricing Ledger */}
-                  <div className="bg-[#0e0e0e] border-t border-[#353434] p-6 lg:p-10 space-y-4">
-                    <div className="flex justify-between items-center pb-2">
-                      <span className="text-[10px] font-bold text-white uppercase tracking-widest">
-                        AUDITED ESCROW TRANSPARENCY
-                      </span>
-                      <span className="text-[10px] font-bold text-emerald-400 uppercase">
-                        Polygon Mainnet Hash: 0x8a92f03b22...c78d1e90
-                      </span>
-                    </div>
-
-                    <div className="h-3 w-full flex overflow-hidden bg-[#201f1f]">
-                      <div className="bg-white h-full w-[89%]" title="Artisan Direct (89%)"></div>
-                      <div className="bg-[#c8c6c6] h-full w-[4.5%]" title="Guild Fund (4.5%)"></div>
-                      <div className="bg-[#8e9192] h-full w-[3.5%]" title="Logistics (3.5%)"></div>
-                      <div className="bg-[#444748] h-full w-[3%]" title="Platform (3%)"></div>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-[11px] pt-2">
-                      <div className="bg-[#1c1b1b] p-3 border border-[#353434]">
-                        <span className="text-[#8e9192] block uppercase text-[9px]">89% Direct Maker</span>
-                        <span className="text-white font-bold">₹{Math.round(selectedProduct.price * 0.89).toLocaleString()}</span>
-                      </div>
-                      <div className="bg-[#1c1b1b] p-3 border border-[#353434]">
-                        <span className="text-[#8e9192] block uppercase text-[9px]">4.5% Guild Coop</span>
-                        <span className="text-white font-bold">₹{Math.round(selectedProduct.price * 0.045).toLocaleString()}</span>
-                      </div>
-                      <div className="bg-[#1c1b1b] p-3 border border-[#353434]">
-                        <span className="text-[#8e9192] block uppercase text-[9px]">3.5% White-Glove Transit</span>
-                        <span className="text-white font-bold">₹{Math.round(selectedProduct.price * 0.035).toLocaleString()}</span>
-                      </div>
-                      <div className="bg-[#1c1b1b] p-3 border border-[#353434]">
-                        <span className="text-[#8e9192] block uppercase text-[9px]">3% Kaarvo Protocol</span>
-                        <span className="text-white font-bold">₹{Math.round(selectedProduct.price * 0.03).toLocaleString()}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            )}
-
-            {/* --------------------------------------------------------------------- */}
-            {/* CART DRAWER & CHECKOUT                                                */}
-            {/* --------------------------------------------------------------------- */}
-            {isCartOpen && (
-              <div 
-                className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex justify-end"
-                onClick={() => setIsCartOpen(false)}
-              >
-                <div 
-                  className="bg-[#1c1b1b] border-l border-[#353434] w-full max-w-md h-full p-6 flex flex-col justify-between"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="space-y-6">
-                    <div className="flex justify-between items-center pb-4 border-b border-[#353434]">
-                      <h3 className="font-serif text-2xl text-white">Your Shopping Cart ({cartItems.length})</h3>
-                      <button onClick={() => setIsCartOpen(false)} className="text-[#8e9192] hover:text-white cursor-pointer">
-                        <X size={22} />
+                      <button
+                        onClick={() => { setIsWishlistOpen(false); switchCustomerTab('shop'); }}
+                        className="bg-white text-[#141313] px-6 py-2.5 text-[11px] font-bold uppercase tracking-widest mt-2 cursor-pointer hover:bg-amber-400 transition-colors"
+                      >
+                        Explore Crafts
                       </button>
                     </div>
-
-                    {cartItems.length === 0 ? (
-                      <div className="text-center py-16 text-[#8e9192] space-y-3">
-                        <ShoppingBag size={48} className="mx-auto text-[#444748]" />
-                        <p className="text-[14px]">Your cart is currently empty.</p>
-                        <button
-                          onClick={() => { setIsCartOpen(false); switchCustomerTab('shop'); }}
-                          className="bg-white text-[#141313] px-6 py-2.5 text-[11px] font-bold uppercase tracking-widest mt-2 cursor-pointer"
+                  ) : (
+                    <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                      {wishlist.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center justify-between p-3 bg-[#1c1b1b] border border-[#353434]"
                         >
-                          Explore Masterworks
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
-                        {cartItems.map((item) => (
-                          <div key={item.id} className="flex gap-4 items-center bg-[#201f1f] border border-[#353434] p-3">
-                            <img src={item.image} alt={item.title} className="w-14 h-14 object-cover" />
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-[13px] font-bold text-white truncate">{item.title}</h4>
-                              <div className="text-[14px] font-serif font-bold text-white">₹{item.price}</div>
+                          <div className="flex items-center gap-3">
+                            <img
+                              alt={item.title}
+                              src={item.image}
+                              className="w-12 h-12 object-cover border border-[#353434]"
+                            />
+                            <div>
+                              <h4 className="text-[13px] font-serif text-white line-clamp-1">{item.title}</h4>
+                              <span className="text-[11px] font-bold text-amber-400">₹{item.price?.toLocaleString()}</span>
                             </div>
-                            <div className="flex items-center gap-2">
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => {
+                                addToCart(item);
+                                setWishlist(prev => prev.filter(w => w.id !== item.id));
+                              }}
+                              className="bg-white text-[#141313] px-3 py-1 text-[9px] font-bold uppercase tracking-wider hover:bg-amber-400 transition-colors cursor-pointer"
+                            >
+                              Add to Bag
+                            </button>
+                            <button
+                              onClick={() => setWishlist(prev => prev.filter(w => w.id !== item.id))}
+                              className="text-[#8e9192] hover:text-red-400 p-1 cursor-pointer"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-4 border-t border-[#353434]">
+                  <button
+                    onClick={() => { setIsWishlistOpen(false); switchCustomerTab('shop'); }}
+                    className="w-full bg-[#201f1f] text-white hover:bg-white hover:text-[#141313] py-3 text-[11px] font-bold uppercase tracking-widest transition-colors cursor-pointer text-center"
+                  >
+                    Continue Browsing
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* CART SLIDE-OVER DRAWER                                                    */}
+          {/* ========================================================================= */}
+          {isCartOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/80 backdrop-blur-sm animate-fade-in">
+              <div 
+                onClick={() => setIsCartOpen(false)}
+                className="absolute inset-0"
+              ></div>
+
+              <div className="relative w-full max-w-md h-full bg-[#141313] border-l border-[#353434] flex flex-col justify-between p-6 z-10 shadow-2xl overflow-y-auto">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between border-b border-[#353434] pb-4">
+                    <div className="flex items-center gap-2">
+                      <ShoppingBag size={18} className="text-white" />
+                      <h3 className="font-serif text-xl text-white">Your Shopping Bag</h3>
+                    </div>
+                    <button
+                      onClick={() => setIsCartOpen(false)}
+                      className="p-1 text-[#8e9192] hover:text-white cursor-pointer"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+
+                  {cartItems.length === 0 ? (
+                    <div className="py-20 text-center space-y-3">
+                      <div className="w-12 h-12 mx-auto rounded-full bg-[#201f1f] flex items-center justify-center text-[#8e9192]">
+                        <ShoppingBag size={20} />
+                      </div>
+                      <p className="text-[14px]">Your cart is currently empty.</p>
+                      <button
+                        onClick={() => { setIsCartOpen(false); switchCustomerTab('shop'); }}
+                        className="bg-white text-[#141313] px-6 py-2.5 text-[11px] font-bold uppercase tracking-widest mt-2 cursor-pointer hover:bg-amber-400 transition-colors"
+                      >
+                        Explore Masterworks
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
+                      {cartItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center justify-between p-3 bg-[#1c1b1b] border border-[#353434]"
+                        >
+                          <div className="flex items-center gap-3">
+                            <img
+                              alt={item.title}
+                              src={item.image}
+                              className="w-12 h-12 object-cover border border-[#353434]"
+                            />
+                            <div>
+                              <h4 className="text-[13px] font-serif text-white line-clamp-1">{item.title}</h4>
+                              <span className="text-[11px] font-bold text-white">₹{item.price?.toLocaleString()}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center border border-[#353434]">
                               <button
-                                onClick={() => updateCartQty(item.id, -1)}
-                                className="w-7 h-7 bg-[#2a2a2a] border border-[#353434] text-white flex items-center justify-center font-bold"
+                                onClick={() => updateQuantity(item.id, (item.quantity || 1) - 1)}
+                                className="px-2 py-0.5 text-xs text-[#8e9192] hover:text-white"
                               >
                                 -
                               </button>
-                              <span className="text-[12px] font-bold text-white px-1">{item.quantity}</span>
+                              <span className="px-2 text-xs text-white">{item.quantity || 1}</span>
                               <button
-                                onClick={() => updateCartQty(item.id, 1)}
-                                className="w-7 h-7 bg-[#2a2a2a] border border-[#353434] text-white flex items-center justify-center font-bold"
+                                onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
+                                className="px-2 py-0.5 text-xs text-[#8e9192] hover:text-white"
                               >
                                 +
                               </button>
                             </div>
+                            <button
+                              onClick={() => removeFromCart(item.id)}
+                              className="text-[#8e9192] hover:text-red-400 p-1"
+                            >
+                              <X size={14} />
+                            </button>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {cartItems.length > 0 && (
-                    <div className="pt-6 border-t border-[#353434] space-y-4">
-                      <div className="space-y-2 text-[13px] text-[#c4c7c8]">
-                        <div className="flex justify-between">
-                          <span>Subtotal</span>
-                          <span className="text-white font-bold">₹{cartSubtotal}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span>Global Insured Logistics</span>
-                          <span className="text-emerald-400 font-bold">FREE</span>
-                        </div>
-                        <div className="flex justify-between text-lg font-bold text-white pt-2 border-t border-[#353434]">
-                          <span>Net Escrow Total</span>
-                          <span>₹{cartTotal}</span>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() => {
-                          setIsCartOpen(false);
-                          setIsCheckoutOpen(true);
-                        }}
-                        className="w-full bg-white text-[#141313] hover:bg-[#c8c6c6] py-4 text-[12px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
-                      >
-                        Proceed to Secure Checkout →
-                      </button>
+                      ))}
                     </div>
                   )}
-
                 </div>
-              </div>
-            )}
 
-            {/* --------------------------------------------------------------------- */}
-            {/* CHECKOUT MODAL                                                        */}
-            {/* --------------------------------------------------------------------- */}
-            {isCheckoutOpen && (
-              <div 
-                className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
-                onClick={() => setIsCheckoutOpen(false)}
-              >
-                <div 
-                  className="bg-[#1c1b1b] border border-[#353434] w-full max-w-lg p-6 lg:p-8 space-y-6 shadow-2xl"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="flex justify-between items-center pb-3 border-b border-[#353434]">
-                    <h3 className="font-serif text-2xl text-white">Masterwork Acquisition Dossier</h3>
-                    <button onClick={() => setIsCheckoutOpen(false)} className="text-[#8e9192] hover:text-white">
-                      <X size={20} />
+                {cartItems.length > 0 && (
+                  <div className="space-y-4 border-t border-[#353434] pt-4">
+                    <div className="flex justify-between text-[13px] font-bold text-[#c4c7c8]">
+                      <span>SUBTOTAL</span>
+                      <span className="text-white font-serif text-lg">₹{cartSubtotal?.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-[11px] text-[#8e9192]">
+                      <span>ONDC Direct Escrow Logistics</span>
+                      <span className="text-emerald-400 font-bold">FREE INSURED</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsCartOpen(false);
+                        setIsCheckoutOpen(true);
+                      }}
+                      className="w-full bg-white text-[#141313] hover:bg-amber-400 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg"
+                    >
+                      Proceed to Secure Checkout
                     </button>
                   </div>
+                )}
+              </div>
+            </div>
+          )}
 
-                  {checkoutStep === 1 && (
-                    <div className="space-y-4">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-white block">Step 1: Shipping Address</span>
-                      <input
-                        type="text"
-                        className="w-full bg-[#0e0e0e] border border-[#353434] p-3 text-[14px] text-white focus:outline-none"
-                        value={checkoutData.name}
-                        onChange={(e) => setCheckoutData({ ...checkoutData, name: e.target.value })}
-                        placeholder="Full Legal Name / Collector Name"
-                      />
-                      <input
-                        type="text"
-                        className="w-full bg-[#0e0e0e] border border-[#353434] p-3 text-[14px] text-white focus:outline-none"
-                        value={checkoutData.phone}
-                        onChange={(e) => setCheckoutData({ ...checkoutData, phone: e.target.value })}
-                        placeholder="Contact Phone Number"
-                      />
-                      <input
-                        type="text"
-                        className="w-full bg-[#0e0e0e] border border-[#353434] p-3 text-[14px] text-white focus:outline-none"
-                        value={checkoutData.address}
-                        onChange={(e) => setCheckoutData({ ...checkoutData, address: e.target.value })}
-                        placeholder="Street Address / Vault Location"
-                      />
-                      <div className="grid grid-cols-2 gap-3">
-                        <input
-                          type="text"
-                          className="bg-[#0e0e0e] border border-[#353434] p-3 text-[14px] text-white focus:outline-none"
-                          value={checkoutData.city}
-                          onChange={(e) => setCheckoutData({ ...checkoutData, city: e.target.value })}
-                          placeholder="City"
-                        />
-                        <input
-                          type="text"
-                          className="bg-[#0e0e0e] border border-[#353434] p-3 text-[14px] text-white focus:outline-none"
-                          value={checkoutData.pincode}
-                          onChange={(e) => setCheckoutData({ ...checkoutData, pincode: e.target.value })}
-                          placeholder="Pincode / Postal"
-                        />
-                      </div>
-                      <button
-                        onClick={() => setCheckoutStep(2)}
-                        className="w-full bg-white text-[#141313] py-3.5 text-[11px] font-bold uppercase tracking-widest hover:bg-[#c8c6c6] transition-colors cursor-pointer mt-2"
-                      >
-                        Continue to Delivery →
-                      </button>
-                    </div>
-                  )}
+          {/* ========================================================================= */}
+          {/* PROVENANCE & GUILD CHARTER MODAL                                          */}
+          {/* ========================================================================= */}
+          {isProvenanceModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
+              <div 
+                onClick={() => setIsProvenanceModalOpen(false)}
+                className="absolute inset-0"
+              ></div>
 
-                  {checkoutStep === 2 && (
-                    <div className="space-y-4">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-white block">Step 2: Insured Dispatch Protocol</span>
-                      <div className="bg-[#201f1f] border border-[#353434] p-4 space-y-2">
-                        <div className="text-[13px] font-bold text-white flex items-center gap-2">
-                          <CheckCircle size={16} className="text-emerald-400" />
-                          <span>Insured Temperature-Controlled Transit</span>
-                        </div>
-                        <p className="text-[12px] text-[#c4c7c8]">
-                          Custom wooden crate with shock-sensor telemetry dispatched directly from artisan guild workshops.
-                        </p>
-                      </div>
-                      <div className="flex gap-3 pt-2">
-                        <button
-                          onClick={() => setCheckoutStep(1)}
-                          className="bg-[#2a2a2a] text-white px-6 py-3 text-[11px] font-bold uppercase tracking-widest border border-[#353434]"
-                        >
-                          Back
-                        </button>
-                        <button
-                          onClick={() => setCheckoutStep(3)}
-                          className="flex-1 bg-white text-[#141313] py-3 text-[11px] font-bold uppercase tracking-widest hover:bg-[#c8c6c6] transition-colors"
-                        >
-                          Continue to Payment →
-                        </button>
-                      </div>
-                    </div>
-                  )}
+              <div className="relative w-full max-w-2xl bg-[#141313] border border-[#353434] p-6 lg:p-8 space-y-6 z-10 shadow-2xl max-h-[85vh] overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-[#353434] pb-4">
+                  <div className="flex items-center gap-3">
+                    <Award size={22} className="text-amber-400" />
+                    <h3 className="font-serif text-2xl text-white">{provenanceModalTitle}</h3>
+                  </div>
+                  <button
+                    onClick={() => setIsProvenanceModalOpen(false)}
+                    className="p-1 text-[#8e9192] hover:text-white cursor-pointer"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
 
-                  {checkoutStep === 3 && (
-                    <div className="space-y-4">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-white block">Step 3: Escrow Payment</span>
-                      <div className="bg-[#201f1f] border border-[#353434] p-4 space-y-3">
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-[#c4c7c8]">Escrow Total</span>
-                          <span className="text-xl font-serif font-bold text-white">₹{cartTotal}</span>
-                        </div>
-                        <p className="text-[11px] text-emerald-400">
-                          89% of this amount will be immediately locked and released to the artisan cooperative via ONDC Beckn settlement.
-                        </p>
-                      </div>
-                      <button
-                        onClick={handleProcessOrder}
-                        className="w-full bg-white text-[#141313] py-4 text-[12px] font-bold uppercase tracking-[0.2em] hover:bg-[#c8c6c6] transition-colors cursor-pointer"
-                      >
-                        Confirm Acquisition & Lock Escrow
-                      </button>
-                    </div>
-                  )}
+                <div className="space-y-4 text-[13px] text-[#c4c7c8] leading-relaxed">
+                  <p>
+                    <strong className="text-white">1. Direct GI Provenance:</strong> Every Indian handicraft on Kaarvo is mapped to its government-registered Geographical Indication (GI) cluster, guaranteeing authentic heritage lineage without intermediary counterfeits.
+                  </p>
+                  <p>
+                    <strong className="text-white">2. Direct Escrow Payout (ONDC):</strong> 88.4% of transaction proceeds are cryptographically routed directly into verified master artisan bank accounts upon dispatch confirmation.
+                  </p>
+                  <p>
+                    <strong className="text-white">3. Digital Heritage Passport:</strong> Every masterwork is minted with a verifiable cryptographic QR certificate detailing craft hours, raw material mineralogy, artisan genealogy, and fair cost breakdown.
+                  </p>
+                  <p>
+                    <strong className="text-white">4. Horological Quality Assurance:</strong> Artifacts undergo physical guild inspection for material purity—ensuring zero plastic adulteration, genuine pitloom weaves, lead-free glazes, and seasoned hardwoods.
+                  </p>
+                </div>
 
-                  {checkoutStep === 4 && (
-                    <div className="text-center py-6 space-y-4">
-                      <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/40">
-                        <CheckCircle size={32} />
-                      </div>
-                      <h4 className="font-serif text-2xl text-white">Acquisition Registered</h4>
-                      <p className="text-[13px] text-[#c4c7c8] max-w-sm mx-auto">
-                        Your order has been cryptographically confirmed and dispatched to the artisan guild via ONDC Beckn gateway.
-                      </p>
-                      <button
-                        onClick={() => { setIsCheckoutOpen(false); setCheckoutStep(1); }}
-                        className="bg-white text-[#141313] px-8 py-3 text-[11px] font-bold uppercase tracking-widest hover:bg-[#c8c6c6] transition-colors cursor-pointer"
-                      >
-                        Return to Gallery
-                      </button>
-                    </div>
-                  )}
-
+                <div className="pt-4 border-t border-[#353434] flex justify-end">
+                  <button
+                    onClick={() => setIsProvenanceModalOpen(false)}
+                    className="bg-white text-[#141313] hover:bg-amber-400 px-6 py-2.5 text-[11px] font-bold uppercase tracking-widest cursor-pointer transition-colors"
+                  >
+                    Close & Continue
+                  </button>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* --------------------------------------------------------------------- */}
-            {/* GOOGLE STITCH 5-COLUMN LUXURY FOOTER                                  */}
-            {/* --------------------------------------------------------------------- */}
-            <footer className="w-full bg-[#0e0e0e] border-t border-[#353434]/40 pt-16 pb-12">
-              <div className="max-w-7xl mx-auto px-4 lg:px-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-12 border-b border-[#353434]/30">
-                  
-                  {/* Col 1: Brand & Mission */}
-                  <div className="space-y-4 lg:col-span-1">
-                    <div className="flex items-center gap-3">
-                      <img
-                        alt="KAARVO Luxury Logo"
-                        className="h-6 w-auto object-contain"
-                        src="https://lh3.googleusercontent.com/aida/AEtjO1Uhs93tN5Vdr6hc1UEwSALe4SxN2jM7MAWTO06wrU6kabT4FGtTQWfdiy9tbQ63qIPO-dpLgZ3ZivuBJ9iX0PlSzf8BhTtHyKmNQLpse_GSfDb8aVY9qItgKBCSlGodxdKuR4S8WE2n0S5WXYRSfUhpa8KusB3qLRM5wnoy4ZFj6I5fNXG0sq5XTt6w5Df6E64Y6SJ5T0bXiiZlQrEgi0Tl5Ey0XfRDaxvLNu6-1cQG"
-                      />
-                      <span className="font-serif text-[18px] text-white tracking-widest uppercase font-bold">
-                        KAARVO
-                      </span>
-                    </div>
-                    <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
-                      Haute horlogerie discipline meeting ancestral Indian artisan lineage. Monolithic gallery commerce for museum-grade artifacts.
-                    </p>
-                    <div className="flex items-center gap-2 text-[#8e9192]">
-                      <CheckCircle size={14} className="text-white" />
-                      <span className="text-[9px] font-bold uppercase tracking-widest text-[#c4c7c8]">
-                        GI Cluster Verified
-                      </span>
-                    </div>
+          {/* ========================================================================= */}
+          {/* FOOTER: STITCH EDITORIAL ATELIER DIRECTORY                                 */}
+          {/* ========================================================================= */}
+          <footer className="w-full bg-[#0e0e0e] border-t border-[#353434] text-[#8e9192]">
+            <div className="max-w-7xl mx-auto px-4 lg:px-12 py-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
+                
+                {/* Col 1: Identity & Provenance (4 cols) */}
+                <div className="lg:col-span-4 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <img
+                      alt="KAARVO Logo"
+                      className="h-7 w-auto object-contain"
+                      src="https://lh3.googleusercontent.com/aida/AEtjO1Uhs93tN5Vdr6hc1UEwSALe4SxN2jM7MAWTO06wrU6kabT4FGtTQWfdiy9tbQ63qIPO-dpLgZ3ZivuBJ9iX0PlSzf8BhTtHyKmNQLpse_GSfDb8aVY9qItgKBCSlGodxdKuR4S8WE2n0S5WXYRSfUhpa8KusB3qLRM5wnoy4ZFj6I5fNXG0sq5XTt6w5Df6E64Y6SJ5T0bXiiZlQrEgi0Tl5Ey0XfRDaxvLNu6-1cQG"
+                    />
+                    <span className="font-serif text-lg font-bold tracking-[0.2em] uppercase text-white">
+                      KAARVO
+                    </span>
                   </div>
-
-                  {/* Col 2: Explore Crafts */}
-                  <div>
-                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-white mb-4">
-                      Explore Crafts
-                    </h4>
-                    <ul className="space-y-2 text-[12px] text-[#c4c7c8]">
-                      <li><a className="hover:text-white transition-colors" href="#">Pottery & Ceramics (Jaipur Blue)</a></li>
-                      <li><a className="hover:text-white transition-colors" href="#">Handloom Textiles (Patan Patola)</a></li>
-                      <li><a className="hover:text-white transition-colors" href="#">Dhokra Brass Lost-Wax</a></li>
-                      <li><a className="hover:text-white transition-colors" href="#">Sankheda Lacquered Wood</a></li>
-                      <li><a className="hover:text-white transition-colors" href="#">Bidriware Silver Inlay</a></li>
-                    </ul>
+                  <p className="text-[13px] text-[#c4c7c8] leading-relaxed max-w-sm">
+                    Autonomous AI direct commerce platform connecting 28 Indian craft heritage clusters directly to discerning patrons worldwide. Direct artisan payouts via ONDC.
+                  </p>
+                  <div className="pt-2">
+                    <span className="text-[10px] font-bold text-white uppercase tracking-widest block">
+                      GI PROTOCOL REGISTRY #2026
+                    </span>
                   </div>
-
-                  {/* Col 3: Sell on Kaarvo */}
-                  <div>
-                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-white mb-4">
-                      Sell on Kaarvo
-                    </h4>
-                    <ul className="space-y-2 text-[12px] text-[#c4c7c8]">
-                      <li><button onClick={() => switchMode('artisan')} className="hover:text-white transition-colors cursor-pointer text-left">AI Provenance Cataloger</button></li>
-                      <li><button onClick={() => switchMode('artisan')} className="hover:text-white transition-colors cursor-pointer text-left">Master Artisan Onboarding</button></li>
-                      <li><button onClick={() => switchMode('artisan')} className="hover:text-white transition-colors cursor-pointer text-left">Transparent Smart Payouts</button></li>
-                      <li><button onClick={() => switchMode('artisan')} className="hover:text-white transition-colors cursor-pointer text-left">Guild Protection Protocol</button></li>
-                      <li><button onClick={() => switchMode('artisan')} className="hover:text-white transition-colors cursor-pointer text-left">Valuation Audits</button></li>
-                    </ul>
-                  </div>
-
-                  {/* Col 4: Guild & Registry */}
-                  <div>
-                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-white mb-4">
-                      Guild & Registry
-                    </h4>
-                    <ul className="space-y-2 text-[12px] text-[#c4c7c8]">
-                      <li><a className="hover:text-white transition-colors" href="#">Horological Certification</a></li>
-                      <li><a className="hover:text-white transition-colors" href="#">Artisan Heritage Ledger</a></li>
-                      <li><a className="hover:text-white transition-colors" href="#">Custom Concierge & Bids</a></li>
-                      <li><a className="hover:text-white transition-colors" href="#">Global Secure Logistics</a></li>
-                      <li><a className="hover:text-white transition-colors" href="#">Provenance Inquiries</a></li>
-                    </ul>
-                  </div>
-
-                  {/* Col 5: Exclusive Drops */}
-                  <div className="space-y-4">
-                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-white">
-                      Exclusive Drops
-                    </h4>
-                    <p className="text-[12px] text-[#c4c7c8]">
-                      Subscribe to private gallery viewings and limited certified edition releases.
-                    </p>
-                    <div className="flex flex-col gap-2">
-                      <input
-                        className="bg-[#1c1b1b] border border-[#353434] px-4 py-2 text-white placeholder:text-[#8e9192] text-[12px] focus:outline-none"
-                        placeholder="collector@patron.com"
-                        type="email"
-                      />
-                      <button
-                        className="bg-white text-[#141313] text-[11px] font-bold uppercase tracking-widest py-2 px-4 hover:bg-[#c8c6c6] transition-colors cursor-pointer"
-                        type="button"
-                      >
-                        Access Vault
-                      </button>
-                    </div>
-                  </div>
-
                 </div>
 
-                {/* Footer Sub-Bar */}
-                <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">
-                  <div>© 2025 KAARVO HAUTE ARTISAN COMMERCE. ALL RIGHTS RESERVED.</div>
-                  <div className="flex items-center gap-6">
-                    <a className="hover:text-white transition-colors" href="#">Guild Charter</a>
-                    <a className="hover:text-white transition-colors" href="#">GI Index</a>
-                    <a className="hover:text-white transition-colors" href="#">Privacy Policy</a>
-                    <a className="hover:text-white transition-colors" href="#">Terms of Provenance</a>
-                  </div>
+                {/* Col 2: Living Heritage Guilds (3 cols) */}
+                <div className="lg:col-span-3 space-y-3">
+                  <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white">
+                    Living Craft Guilds
+                  </h4>
+                  <ul className="space-y-2 text-[12px]">
+                    <li>
+                      <button 
+                        onClick={() => { setCustomerCategory('pottery'); switchCustomerTab('shop'); }}
+                        className="hover:text-white transition-colors cursor-pointer text-left"
+                      >
+                        Pottery & Ceramics (Jaipur Blue)
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        onClick={() => { setCustomerCategory('textiles'); switchCustomerTab('shop'); }}
+                        className="hover:text-white transition-colors cursor-pointer text-left"
+                      >
+                        Handloom Textiles (Chanderi & Patola)
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        onClick={() => { setCustomerCategory('metalcraft'); switchCustomerTab('shop'); }}
+                        className="hover:text-white transition-colors cursor-pointer text-left"
+                      >
+                        Dhokra Brass Lost-Wax Metallurgy
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        onClick={() => { setCustomerCategory('woodwork'); switchCustomerTab('shop'); }}
+                        className="hover:text-white transition-colors cursor-pointer text-left"
+                      >
+                        Sankheda Lacquered Hardwood
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        onClick={() => { setCustomerCategory('jewelry'); switchCustomerTab('shop'); }}
+                        className="hover:text-white transition-colors cursor-pointer text-left"
+                      >
+                        Bidriware Silver Inlay & Filigree
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Col 3: Provenance & Standards (3 cols) */}
+                <div className="lg:col-span-3 space-y-3">
+                  <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white">
+                    Provenance & Standards
+                  </h4>
+                  <ul className="space-y-2 text-[12px]">
+                    <li>
+                      <button 
+                        onClick={() => {
+                          setProvenanceModalTitle('Horological Certification & Lineage');
+                          setIsProvenanceModalOpen(true);
+                        }}
+                        className="hover:text-white transition-colors cursor-pointer text-left"
+                      >
+                        Horological Quality Certification
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        onClick={() => {
+                          setProvenanceModalTitle('Artisan Heritage Ledger');
+                          setIsProvenanceModalOpen(true);
+                        }}
+                        className="hover:text-white transition-colors cursor-pointer text-left"
+                      >
+                        Artisan Heritage Ledger
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        onClick={() => switchCustomerTab('ai_ask')}
+                        className="hover:text-white transition-colors cursor-pointer text-left"
+                      >
+                        Custom Concierge & AI Copilot
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        onClick={() => {
+                          setProvenanceModalTitle('Global Insured Secure Logistics');
+                          setIsProvenanceModalOpen(true);
+                        }}
+                        className="hover:text-white transition-colors cursor-pointer text-left"
+                      >
+                        Global Insured Secure Logistics
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        onClick={() => switchCustomerTab('ai_ask')}
+                        className="hover:text-white transition-colors cursor-pointer text-left"
+                      >
+                        Provenance & Lineage Inquiries
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Col 4: Artisan Onboarding (2 cols) */}
+                <div className="lg:col-span-2 space-y-3">
+                  <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white">
+                    Artisan Atelier
+                  </h4>
+                  <p className="text-[12px] text-[#c4c7c8]">
+                    List authentic creations with AI Visual Studio & Voice.
+                  </p>
+                  <button
+                    onClick={() => switchMode('artisan')}
+                    className="border border-white text-white hover:bg-white hover:text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer"
+                  >
+                    Start Selling
+                  </button>
                 </div>
 
               </div>
-            </footer>
 
-          </main>
-        </>
+              {/* Bottom Copyright & Protocol Row */}
+              <div className="pt-12 mt-12 border-t border-[#353434]/50 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
+                <div className="text-[#8e9192]">
+                  © 2026 KAARVO AI. ONDC Compliant Protocol. All Rights Reserved.
+                </div>
+                <div className="flex items-center gap-6 text-[#8e9192]">
+                  <button 
+                    onClick={() => {
+                      setProvenanceModalTitle('Kaarvo Guild Charter');
+                      setIsProvenanceModalOpen(true);
+                    }}
+                    className="hover:text-white transition-colors cursor-pointer"
+                  >
+                    Guild Charter
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setProvenanceModalTitle('Geographical Indication (GI) Index');
+                      setIsProvenanceModalOpen(true);
+                    }}
+                    className="hover:text-white transition-colors cursor-pointer"
+                  >
+                    GI Index
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setProvenanceModalTitle('Privacy & Provenance Data Policy');
+                      setIsProvenanceModalOpen(true);
+                    }}
+                    className="hover:text-white transition-colors cursor-pointer"
+                  >
+                    Privacy Policy
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setProvenanceModalTitle('Terms of Provenance & Escrow Settlement');
+                      setIsProvenanceModalOpen(true);
+                    }}
+                    className="hover:text-white transition-colors cursor-pointer"
+                  >
+                    Terms of Provenance
+                  </button>
+                </div>
+              </div>
+            </div>
+          </footer>
+
+        </div>
       )}
 
       {/* ========================================================================= */}
