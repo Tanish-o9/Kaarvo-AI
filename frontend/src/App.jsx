@@ -546,7 +546,7 @@ export default function App() {
   };
 
   // --- PILLAR 2: MULTILINGUAL VOICE AUTO-CATALOGER STATES ---
-  const [voiceText, setVoiceText] = useState('Handcrafted Jaipur pure terracotta clay water pot with floral engravings, 1.5-liter capacity.');
+  const [voiceText, setVoiceText] = useState('');
   const [rawSpokenHindi, setRawSpokenHindi] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
   const speechTranslateTimeoutRef = useRef(null);
@@ -2998,37 +2998,7 @@ export default function App() {
                       </div>
                     )}
 
-                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', width: '100%', fontWeight: '600' }}>Quick Voice Sample Presets:</span>
-                      <button 
-                        type="button" 
-                        onClick={() => setVoiceText('Yeh Jaipur ki pure terracotta clay water pot hai, hand-carved floral design ke sath, 1.5 liter capacity.')} 
-                        style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-elevated)', cursor: 'pointer' }}
-                      >
-                        🏺 Terracotta Pot
-                      </button>
-                      <button 
-                        type="button" 
-                        onClick={() => setVoiceText('Yeh Banaras ki pure silk handloom saree hai, traditional zari embroidery and floral motif ke sath, 6.5 meter size.')} 
-                        style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-elevated)', cursor: 'pointer' }}
-                      >
-                        🥻 Banarasi Saree
-                      </button>
-                      <button 
-                        type="button" 
-                        onClick={() => setVoiceText('Channapatna handcrafted wooden toy elephant, organic non-toxic lacquer color, eco-friendly kid toy.')} 
-                        style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-elevated)', cursor: 'pointer' }}
-                      >
-                        🐘 Wooden Toy
-                      </button>
-                      <button 
-                        type="button" 
-                        onClick={() => setVoiceText('Yeh Jaipur hand carved solid brass oil diya lamp hai, peacock design motif, pure metal.')} 
-                        style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-elevated)', cursor: 'pointer' }}
-                      >
-                        🪔 Brass Diya
-                      </button>
-                    </div>
+
 
                     {/* LIVE TRANSLATION NOTIFICATION BADGE */}
                     {rawSpokenHindi && (
