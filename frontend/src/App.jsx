@@ -4,7 +4,8 @@ import {
   TrendingUp, Send, CheckCircle, FileText, ArrowRight, ShieldCheck, RefreshCw,
   Globe, CreditCard, Check, X, Star, MapPin, Search, Filter, Heart,
   ShoppingCart, ChevronRight, MessageSquare, Award, ArrowUpRight, HelpCircle,
-  Truck, ShieldAlert, Zap, Compass, Store, Settings, PieChart, Tag, RefreshCcw, Home, Trash2
+  Truck, ShieldAlert, Zap, Compass, Store, Settings, PieChart, Tag, RefreshCcw, Home, Trash2,
+  QrCode, Volume2, VolumeX, Download, Share2, Phone, MessageCircle, Printer, Briefcase
 } from 'lucide-react';
 
 const API_BASE = 'http://127.0.0.1:8001/api/v1';
@@ -81,6 +82,41 @@ export default function App() {
   const [enhancedImage, setEnhancedImage] = useState(null);
   const [imageEnhancing, setImageEnhancing] = useState(false);
   const [imageLightingInfo, setImageLightingInfo] = useState(null);
+
+  // --- HACKATHON INNOVATION SUITE STATES ---
+  // Feature 1: Digital Heritage Passport & Verifiable QR Certificate
+  const [passportProduct, setPassportProduct] = useState(null);
+
+  // Feature 2: WhatsApp Artisan Commerce Bot Simulator
+  const [isWhatsappOpen, setIsWhatsappOpen] = useState(false);
+  const [whatsappInput, setWhatsappInput] = useState('');
+  const [whatsappTyping, setWhatsappTyping] = useState(false);
+  const [whatsappMessages, setWhatsappMessages] = useState([
+    {
+      id: 1,
+      sender: 'bot',
+      text: '🙏 Namaste Mohan ji! Main Kaarvo AI Sahayak hu. Aap bol kar ya photo bhej kar apna craft sidha ONDC aur global customers ke liye list kar sakte hain.',
+      time: '10:00 AM'
+    },
+    {
+      id: 2,
+      sender: 'bot',
+      text: 'Niche diye presets me se tap karein ya mic se bole:',
+      time: '10:00 AM'
+    }
+  ]);
+
+  // Feature 3: Voice Storytelling & Text-To-Speech
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  // Feature 4: Social Media Marketing Flyer Generator
+  const [flyerProduct, setFlyerProduct] = useState(null);
+
+  // Feature 5: B2B Wholesale Export & Living-Wage AI Negotiator
+  const [b2bUnits, setB2bUnits] = useState(500);
+  const [b2bTargetPrice, setB2bTargetPrice] = useState(350);
+  const [b2bAnalysis, setB2bAnalysis] = useState(null);
+  const [b2bNegotiating, setB2bNegotiating] = useState(false);
 
   // Process image on HTML5 canvas with Adaptive AI Lighting & Photo Super-Enhancement
   const processCanvasImage = (rawUrl) => {
@@ -195,6 +231,200 @@ export default function App() {
     };
 
     img.src = rawUrl;
+  };
+
+  // --- FEATURE 3 HELPER: Native Voice Text-to-Speech (Hindi & English) ---
+  const speakText = (text, lang = 'hi-IN') => {
+    if (!('speechSynthesis' in window)) {
+      showToast('⚠️ Speech synthesis not supported on this browser.');
+      return;
+    }
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    utterance.rate = 0.95;
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    window.speechSynthesis.speak(utterance);
+    showToast(`🔊 Playing audio (${lang.startsWith('hi') ? 'Hindi' : 'English'})... Tap again to stop.`);
+  };
+
+  // --- FEATURE 2 HELPER: WhatsApp Artisan Bot Message Handler ---
+  const handleWhatsappSend = (customText) => {
+    const msg = (customText || whatsappInput).trim();
+    if (!msg) return;
+
+    const newMsg = {
+      id: Date.now(),
+      sender: 'artisan',
+      text: msg,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setWhatsappMessages(prev => [...prev, newMsg]);
+    setWhatsappInput('');
+    setWhatsappTyping(true);
+
+    setTimeout(() => {
+      const { catalog, entities } = parseVoiceTextToCatalog(msg);
+      const isListingIntent = /(matka|saree|sari|diya|wood|clay|silk|pot|list|bechna|rate|₹|rupaye|banaya|capacity|meter)/i.test(msg);
+
+      let replyObj;
+      if (isListingIntent) {
+        replyObj = {
+          id: Date.now() + 1,
+          sender: 'bot',
+          text: `✨ Shandaar Mohan ji! Aapka product automatically ONDC standards me catalog ho gaya hai:\n\n📦 *${catalog.descriptor.name}*\n🏷️ *Price:* ₹${catalog.price.suggested_range.min}\n📍 *Origin:* ${entities.region}\n🧵 *Material:* ${entities.material}\n\n✅ Ye sidha Kaarvo Live Storefront aur ONDC Beckn network par live publish kar diya gaya hai!`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          card: {
+            title: catalog.descriptor.name,
+            price: catalog.price.suggested_range.min,
+            region: entities.region,
+            image: enhancedImage || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80'
+          }
+        };
+      } else {
+        replyObj = {
+          id: Date.now() + 1,
+          sender: 'bot',
+          text: `Aapka sandesh mil gaya Mohan ji! Aapke orders ka total payout ₹${orders.reduce((sum, o) => sum + (parseFloat(o.total_price) || 0), 0) || '2,450'} safely process ho chuka hai. Naya craft bechne ke liye photo ya voice note bhejein!`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+      }
+
+      setWhatsappMessages(prev => [...prev, replyObj]);
+      setWhatsappTyping(false);
+    }, 1000);
+  };
+
+  // --- FEATURE 5 HELPER: B2B Living-Wage AI Price Negotiator ---
+  const runB2bNegotiation = () => {
+    setB2bNegotiating(true);
+    setTimeout(() => {
+      const units = parseInt(b2bUnits) || 500;
+      const target = parseFloat(b2bTargetPrice) || 350;
+      
+      const baseMat = 160;
+      const fairWage = 140;
+      const packExport = 50;
+      const costFloor = baseMat + fairWage + packExport;
+      
+      const safeWholesalePrice = Math.round(costFloor * 1.25);
+      const totalArtisanEarnings = Math.round(fairWage * units);
+      const isTargetTooLow = target < costFloor;
+
+      setB2bAnalysis({
+        units,
+        target,
+        costFloor,
+        safeWholesalePrice,
+        totalArtisanEarnings,
+        isTargetTooLow,
+        counterOfferText: `Dear Global Procurement Team, thank you for your bulk inquiry of ${units} units. Under our Fair Trade & ONDC Living-Wage Charter, raw material and skilled craftsman wages require an essential cost floor of ₹${costFloor}/unit. For a volume order of ${units} pieces, our optimal wholesale quote is ₹${safeWholesalePrice}/unit (FOB Mumbai), guaranteeing 100% authentic GI-certified craftsmanship with zero middleman exploitation.`,
+        netSavingsVsRetail: `₹${((1850 - safeWholesalePrice) * units).toLocaleString()} Saved by Buyer vs Retail`,
+      });
+      setB2bNegotiating(false);
+      showToast('🤝 Autonomous B2B Living-Wage Negotiation Strategy Generated!');
+    }, 800);
+  };
+
+  // --- FEATURE 4 HELPER: 1-Click Social Media Marketing Flyer Canvas Generator ---
+  const generateAndDownloadFlyer = (product) => {
+    if (!product) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1080;
+    const ctx = canvas.getContext('2d');
+
+    const bgGrad = ctx.createLinearGradient(0, 0, 1080, 1080);
+    bgGrad.addColorStop(0, '#1E120A');
+    bgGrad.addColorStop(0.5, '#2D1B11');
+    bgGrad.addColorStop(1, '#0F0906');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, 1080, 1080);
+
+    ctx.strokeStyle = '#D97706';
+    ctx.lineWidth = 12;
+    ctx.strokeRect(36, 36, 1008, 1008);
+
+    ctx.strokeStyle = 'rgba(217, 119, 6, 0.4)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(52, 52, 976, 976);
+
+    ctx.fillStyle = '#F59E0B';
+    ctx.font = 'bold 36px Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('KAARVO HERITAGE • VOCAL FOR LOCAL', 540, 110);
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 44px sans-serif';
+    const cleanTitle = (product.title || product.name || 'Handcrafted Artisan Craft').slice(0, 42);
+    ctx.fillText(cleanTitle, 540, 175);
+
+    ctx.fillStyle = '#E5E7EB';
+    ctx.font = '24px sans-serif';
+    ctx.fillText(`Direct from Master Artisans of ${product.location || 'Jaipur, Rajasthan'}`, 540, 220);
+
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(160, 260, 760, 520, 24);
+      ctx.clip();
+      ctx.drawImage(img, 160, 260, 760, 520);
+      ctx.restore();
+
+      ctx.strokeStyle = '#D97706';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.roundRect(160, 260, 760, 520, 24);
+      ctx.stroke();
+
+      ctx.fillStyle = '#D97706';
+      ctx.beginPath();
+      ctx.roundRect(680, 700, 210, 70, 16);
+      ctx.fill();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 34px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`₹${product.price}`, 785, 748);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.beginPath();
+      ctx.roundRect(160, 810, 760, 190, 20);
+      ctx.fill();
+
+      ctx.fillStyle = '#10B981';
+      ctx.font = 'bold 28px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('✓ 100% GI Authentic Craft', 200, 870);
+      ctx.fillText('✓ Fair-Wage Certified', 200, 920);
+      ctx.fillText('✓ Verified ONDC Sync', 200, 970);
+
+      ctx.fillStyle = '#F59E0B';
+      ctx.font = 'bold 24px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('SCAN TO BUY DIRECT', 880, 890);
+      ctx.fillStyle = '#9CA3AF';
+      ctx.font = '18px monospace';
+      ctx.fillText(`ID: ${product.id ? String(product.id).slice(0, 12) : 'KAARVO-892'}`, 880, 930);
+      ctx.fillText('www.kaarvo.in', 880, 965);
+
+      const link = document.createElement('a');
+      link.download = `Kaarvo-Flyer-${(product.title || 'Artisan').replace(/\s+/g, '-')}.jpg`;
+      link.href = canvas.toDataURL('image/jpeg', 0.95);
+      link.click();
+      showToast('📥 High-Res WhatsApp Status Flyer Downloaded!');
+    };
+    img.src = product.image || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80';
   };
 
   // PILLAR 1: Dynamic AI Studio Image Enhancer
@@ -1881,9 +2111,34 @@ export default function App() {
                       {selectedProduct.description}
                     </p>
 
-                    <div style={{ background: 'var(--bg-subtle)', padding: '14px', borderRadius: '12px', fontSize: '13px', marginBottom: '24px' }}>
+                    <div style={{ background: 'var(--bg-subtle)', padding: '14px', borderRadius: '12px', fontSize: '13px', marginBottom: '18px' }}>
                       <div style={{ fontWeight: '700', marginBottom: '4px' }}>✨ Fair Trade Cost Breakdown</div>
                       <div style={{ color: 'var(--text-muted)' }}>Material: ₹180 | Artisan Labor: ₹150 | Fair Margin: 40%</div>
+                    </div>
+
+                    {/* HACKATHON INNOVATION BUTTONS: Audio Story, Digital Passport & Flyer */}
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
+                      <button
+                        type="button"
+                        onClick={() => speakText(`${selectedProduct.title}. ${selectedProduct.description}. Authentic handcrafted provenance verified by Kaarvo Guild.`, 'en-IN')}
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '8px 12px', borderRadius: '8px', background: '#F1F5F9', border: '1px solid #CBD5E1', cursor: 'pointer', color: '#1E293B' }}
+                      >
+                        <Volume2 size={14} /> 🎧 Listen to Craft Story
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPassportProduct(selectedProduct)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '8px 12px', borderRadius: '8px', background: '#ECFDF5', border: '1px solid #10B981', cursor: 'pointer', color: '#059669' }}
+                      >
+                        <QrCode size={14} /> 📜 Digital Passport & QR
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => generateAndDownloadFlyer(selectedProduct)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '8px 12px', borderRadius: '8px', background: '#FEF3C7', border: '1px solid #D97706', cursor: 'pointer', color: '#B45309' }}
+                      >
+                        <Share2 size={14} /> 🎨 WhatsApp Flyer
+                      </button>
                     </div>
 
                     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -2591,27 +2846,177 @@ export default function App() {
                       <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>
                         {generatedCatalog ? generatedCatalog.descriptor.long_desc : 'Click the button to post your product live so all customer users across India can view & purchase it!'}
                       </p>
+
+                      {/* QUICK ACTION BUTTONS: Audio, Passport & Social Flyer */}
+                      {generatedCatalog && (
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+                          <button
+                            type="button"
+                            onClick={() => speakText(`Aapka product ${generatedCatalog.descriptor.name} safalta-purvak list ho gaya hai. Recommended price hai rupaye ${generatedCatalog.price.suggested_range.min}. Shuddh hastkala pramanit!`, 'hi-IN')}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '6px 12px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', cursor: 'pointer', color: 'var(--primary)' }}
+                          >
+                            <Volume2 size={14} /> 🔊 Suniye (Hindi Audio)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPassportProduct({
+                              id: generatedCatalog.product_id,
+                              title: generatedCatalog.descriptor.name,
+                              category: generatedCatalog.category,
+                              price: generatedCatalog.price.suggested_range.min,
+                              location: extractedEntities?.region || 'Jaipur, Rajasthan',
+                              image: enhancedImage || rawImageFile || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80',
+                              materials: extractedEntities?.material || 'Natural Clay / Silk',
+                              craftStory: generatedCatalog.descriptor.long_desc,
+                              artisan: 'Verified Master Artisan (Mohan Lal)'
+                            })}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '6px 12px', borderRadius: '8px', background: '#ECFDF5', border: '1px solid #10B981', cursor: 'pointer', color: '#059669' }}
+                          >
+                            <QrCode size={14} /> 📜 Digital Passport & QR
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => generateAndDownloadFlyer({
+                              id: generatedCatalog.product_id,
+                              title: generatedCatalog.descriptor.name,
+                              price: generatedCatalog.price.suggested_range.min,
+                              location: extractedEntities?.region || 'Jaipur, Rajasthan',
+                              image: enhancedImage || rawImageFile || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80'
+                            })}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '6px 12px', borderRadius: '8px', background: '#FEF3C7', border: '1px solid #D97706', cursor: 'pointer', color: '#B45309' }}
+                          >
+                            <Share2 size={14} /> 🎨 WhatsApp Status Flyer
+                          </button>
+                        </div>
+                      )}
                     </div>
 
-                    <button 
-                      className="btn-artisan-primary" 
-                      onClick={handleSaveCatalogToDB} 
-                      style={{ 
-                        padding: '14px 28px', 
-                        fontSize: '15px', 
-                        fontWeight: '700',
-                        borderRadius: '12px',
-                        boxShadow: '0 4px 14px rgba(217, 119, 6, 0.3)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}
-                    >
-                      <Send size={18} />
-                      Post Product Live to All Customers →
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <button 
+                        className="btn-artisan-primary" 
+                        onClick={handleSaveCatalogToDB} 
+                        style={{ 
+                          padding: '14px 28px', 
+                          fontSize: '15px', 
+                          fontWeight: '700',
+                          borderRadius: '12px',
+                          boxShadow: '0 4px 14px rgba(217, 119, 6, 0.3)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}
+                      >
+                        <Send size={18} />
+                        Post Product Live to All Customers →
+                      </button>
+                    </div>
                   </div>
                 </div>
+
+                {/* PILLAR 5: B2B WHOLESALE EXPORT & LIVING-WAGE AI NEGOTIATOR */}
+                <div className="card-artisan" style={{ padding: '28px', border: '2px solid #3B82F6', borderRadius: '16px', background: '#F8FAFC' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Briefcase size={22} color="#2563EB" />
+                      </div>
+                      <div>
+                        <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#1E293B' }}>Pillar 5: Autonomous B2B Wholesale & Export AI Negotiator</h3>
+                        <p style={{ fontSize: '12px', color: '#64748B' }}>Protects artisan living wages during bulk wholesale buyer negotiations (US/EU/Global retail chains)</p>
+                      </div>
+                    </div>
+                    <span className="badge-tag badge-teal" style={{ background: '#DBEAFE', color: '#1E40AF', borderColor: '#93C5FD' }}>
+                      ⚡ Living-Wage Protection Active
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '18px' }}>
+                    <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', marginBottom: '4px' }}>SIMULATED GLOBAL BUYER RFQ</div>
+                      <div style={{ fontSize: '14px', fontWeight: '800', color: '#1E293B' }}>Nordic Living Stores, Stockholm (Sweden)</div>
+                      <div style={{ fontSize: '12px', color: '#475569', marginTop: '6px' }}>Target Item: Handcrafted Heritage Artifacts</div>
+                      <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                        <div style={{ flex: 1 }}>
+                          <label style={{ fontSize: '11px', color: '#64748B' }}>Bulk Quantity (Units):</label>
+                          <input 
+                            type="number" 
+                            className="input-artisan" 
+                            value={b2bUnits} 
+                            onChange={(e) => setB2bUnits(e.target.value)} 
+                            style={{ padding: '8px', fontSize: '13px', marginTop: '2px' }}
+                          />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <label style={{ fontSize: '11px', color: '#64748B' }}>Buyer Initial Bid (₹/unit):</label>
+                          <input 
+                            type="number" 
+                            className="input-artisan" 
+                            value={b2bTargetPrice} 
+                            onChange={(e) => setB2bTargetPrice(e.target.value)} 
+                            style={{ padding: '8px', fontSize: '13px', marginTop: '2px' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                      <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', marginBottom: '6px' }}>ETHICAL LIVING WAGE BENCHMARK</div>
+                      <div style={{ fontSize: '13px', color: '#334155', lineHeight: '1.6' }}>
+                        • Raw Material Floor: <strong>₹160/unit</strong><br />
+                        • Skilled Artisan Living Wage: <strong>₹140/unit</strong><br />
+                        • Sea-Freight Export Crating: <strong>₹50/unit</strong><br />
+                        • Minimum Ethical Floor: <strong style={{ color: '#DC2626' }}>₹350/unit</strong>
+                      </div>
+                      <button 
+                        className="btn-artisan-primary" 
+                        onClick={runB2bNegotiation}
+                        disabled={b2bNegotiating}
+                        style={{ marginTop: '12px', padding: '10px 16px', fontSize: '13px', background: '#2563EB', borderColor: '#2563EB' }}
+                      >
+                        {b2bNegotiating ? '⚡ Running Living-Wage Algorithm...' : '🤝 Generate AI Living-Wage Counter-Offer'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {b2bAnalysis && (
+                    <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '20px', borderRadius: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                        <div style={{ fontSize: '14px', fontWeight: '800', color: '#1E40AF', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <CheckCircle size={16} /> Autonomous AI Counter-Proposal (Living-Wage Preserved)
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <span style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '6px', background: '#DCFCE7', color: '#166534', fontWeight: '700' }}>
+                            Net Artisan Earnings: ₹{b2bAnalysis.totalArtisanEarnings.toLocaleString()}
+                          </span>
+                          <span style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '6px', background: '#DBEAFE', color: '#1E40AF', fontWeight: '700' }}>
+                            Optimal FOB Quote: ₹{b2bAnalysis.safeWholesalePrice}/unit
+                          </span>
+                        </div>
+                      </div>
+                      <p style={{ fontSize: '13px', color: '#1E293B', lineHeight: '1.6', background: '#FFFFFF', padding: '14px', borderRadius: '8px', border: '1px solid #DBEAFE', fontStyle: 'italic' }}>
+                        "{b2bAnalysis.counterOfferText}"
+                      </p>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '12px' }}>
+                        <button 
+                          onClick={() => speakText(b2bAnalysis.counterOfferText, 'en-IN')}
+                          style={{ fontSize: '12px', padding: '6px 14px', borderRadius: '8px', background: '#FFFFFF', border: '1px solid #CBD5E1', cursor: 'pointer', fontWeight: '700', color: '#2563EB', display: 'flex', alignItems: 'center', gap: '6px' }}
+                        >
+                          <Volume2 size={14} /> 🔊 Listen English Pitch
+                        </button>
+                        <button 
+                          onClick={() => {
+                            navigator.clipboard?.writeText(b2bAnalysis.counterOfferText);
+                            showToast('📋 Export Quote copied to clipboard!');
+                          }}
+                          style={{ fontSize: '12px', padding: '6px 14px', borderRadius: '8px', background: '#2563EB', color: '#FFFFFF', border: 'none', cursor: 'pointer', fontWeight: '700' }}
+                        >
+                          Send Official ONDC Export Quote →
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
               </div>
             )}
 
@@ -2706,6 +3111,244 @@ export default function App() {
             )}
 
           </main>
+        </div>
+      )}
+
+
+      {/* ============================================================ */}
+      {/* FEATURE 1 MODAL: DIGITAL HERITAGE PASSPORT & VERIFIABLE QR */}
+      {/* ============================================================ */}
+      {passportProduct && (
+        <div className="modal-backdrop" onClick={() => setPassportProduct(null)} style={{ zIndex: 9999 }}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '640px', background: '#FFFDF9', border: '2px solid #D97706', borderRadius: '20px', padding: '32px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)', position: 'relative' }}>
+            <button
+              onClick={() => setPassportProduct(null)}
+              style={{ position: 'absolute', top: '18px', right: '18px', background: 'rgba(0,0,0,0.05)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <X size={18} />
+            </button>
+
+            <div style={{ textAlign: 'center', borderBottom: '2px dashed #E5E7EB', paddingBottom: '20px', marginBottom: '20px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#FEF3C7', padding: '6px 14px', borderRadius: '20px', marginBottom: '10px' }}>
+                <ShieldCheck size={16} color="#D97706" />
+                <span style={{ fontSize: '11px', fontWeight: '800', color: '#B45309', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  ONDC & GI Verified Provenance Passport
+                </span>
+              </div>
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '24px', fontWeight: '800', color: '#1E120A' }}>
+                Certificate of Authentic Craftsmanship
+              </h2>
+              <p style={{ fontSize: '12px', color: '#6B7280', marginTop: '4px' }}>
+                Official Digital Heritage Passport • Direct-from-Artisan Guarantee
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '20px', alignItems: 'center', marginBottom: '20px' }}>
+              <img 
+                src={passportProduct.image || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80'} 
+                alt={passportProduct.title} 
+                style={{ width: '140px', height: '140px', objectFit: 'cover', borderRadius: '12px', border: '1px solid #D97706' }} 
+              />
+              <div>
+                <h3 style={{ fontSize: '17px', fontWeight: '800', color: '#1E120A', marginBottom: '6px' }}>{passportProduct.title}</h3>
+                <div style={{ fontSize: '12px', color: '#4B5563', lineHeight: '1.6' }}>
+                  <div>📍 <strong>Heritage Cluster:</strong> {passportProduct.location || 'Jaipur, Rajasthan'}</div>
+                  <div>👤 <strong>Master Artisan:</strong> {passportProduct.artisan || 'Verified Master Artisan (Mohan Lal)'}</div>
+                  <div>🏷️ <strong>Category:</strong> {passportProduct.category || 'Handicrafts'}</div>
+                  <div>💰 <strong>Fair-Wage Value:</strong> ₹{passportProduct.price}</div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px', marginBottom: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '12px' }}>
+              <div>
+                <span style={{ color: '#64748B' }}>GI Tag Status:</span>
+                <div style={{ fontWeight: '700', color: '#059669' }}>✓ Registered Geographical Indication</div>
+              </div>
+              <div>
+                <span style={{ color: '#64748B' }}>Eco Footprint:</span>
+                <div style={{ fontWeight: '700', color: '#059669' }}>✓ 100% Biodegradable / Zero Plastic</div>
+              </div>
+              <div>
+                <span style={{ color: '#64748B' }}>Artisan Wage Guarantee:</span>
+                <div style={{ fontWeight: '700', color: '#2563EB' }}>100% Fair-Trade Direct Payout</div>
+              </div>
+              <div>
+                <span style={{ color: '#64748B' }}>ONDC Beckn Hash:</span>
+                <div style={{ fontFamily: 'monospace', fontWeight: '700', color: '#475569' }}>ONDC-GI-{String(passportProduct.id || '9823').slice(0, 8)}</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#FFFBEB', border: '1px dashed #F59E0B', padding: '16px', borderRadius: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://kaarvo.in/verify/${passportProduct.id || 'KAARVO-892'}`} 
+                  alt="Verification QR" 
+                  style={{ width: '80px', height: '80px', borderRadius: '8px', border: '1px solid #D97706', background: '#FFFFFF', padding: '4px' }} 
+                />
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: '800', color: '#92400E' }}>Scan to Verify Authenticity</div>
+                  <div style={{ fontSize: '11px', color: '#B45309' }}>Scannable with any smartphone camera to view government-compliant craft heritage data.</div>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  window.print();
+                  showToast('🖨️ Opening print dialogue for certificate label...');
+                }}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#D97706', color: '#FFFFFF', border: 'none', padding: '10px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', fontSize: '12px' }}
+              >
+                <Printer size={16} /> Print Certificate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* FEATURE 2: WHATSAPP ARTISAN COMMERCE BOT SIMULATOR           */}
+      {/* ============================================================ */}
+      <button
+        type="button"
+        onClick={() => setIsWhatsappOpen(prev => !prev)}
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          background: '#25D366',
+          color: '#FFFFFF',
+          border: 'none',
+          borderRadius: '50px',
+          padding: '12px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          boxShadow: '0 8px 24px rgba(37, 211, 102, 0.45)',
+          cursor: 'pointer',
+          zIndex: 9000,
+          fontWeight: '800',
+          fontSize: '13px'
+        }}
+      >
+        <MessageCircle size={20} />
+        <span>WhatsApp Artisan Bot</span>
+        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#FFFFFF', animation: 'pulse 1s infinite' }} />
+      </button>
+
+      {isWhatsappOpen && (
+        <div 
+          style={{
+            position: 'fixed',
+            bottom: '84px',
+            right: '24px',
+            width: '380px',
+            height: '540px',
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            boxShadow: '0 16px 40px rgba(0,0,0,0.3)',
+            display: 'flex',
+            flexDirection: 'column',
+            zIndex: 9001,
+            overflow: 'hidden',
+            border: '2px solid #25D366'
+          }}
+        >
+          {/* WHATSAPP HEADER */}
+          <div style={{ background: '#075E54', color: '#FFFFFF', padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: '#FFFFFF', fontSize: '16px' }}>
+                कार्वो
+              </div>
+              <div>
+                <div style={{ fontSize: '14px', fontWeight: '800' }}>Kaarvo AI Sahayak</div>
+                <div style={{ fontSize: '11px', color: '#A7F3D0' }}>🟢 Online • ONDC Certified Bot</div>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsWhatsappOpen(false)}
+              style={{ background: 'transparent', border: 'none', color: '#FFFFFF', cursor: 'pointer', padding: '4px' }}
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* CHAT MESSAGES BODY */}
+          <div style={{ flex: 1, padding: '16px', background: '#ECE5DD', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {whatsappMessages.map(m => (
+              <div 
+                key={m.id} 
+                style={{
+                  alignSelf: m.sender === 'artisan' ? 'flex-end' : 'flex-start',
+                  maxWidth: '85%',
+                  background: m.sender === 'artisan' ? '#DCF8C6' : '#FFFFFF',
+                  padding: '10px 14px',
+                  borderRadius: '12px',
+                  fontSize: '13px',
+                  lineHeight: '1.5',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  color: '#1E293B',
+                  whiteSpace: 'pre-line'
+                }}
+              >
+                {m.text}
+                {m.card && (
+                  <div style={{ marginTop: '8px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '8px', fontSize: '12px' }}>
+                    <img src={m.card.image} alt={m.card.title} style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '6px', marginBottom: '6px' }} />
+                    <div style={{ fontWeight: '800', color: '#1E293B' }}>{m.card.title}</div>
+                    <div style={{ color: '#059669', fontWeight: '700' }}>Live Price: ₹{m.card.price}</div>
+                  </div>
+                )}
+                <div style={{ fontSize: '9px', color: '#64748B', textAlign: 'right', marginTop: '4px' }}>
+                  {m.time} {m.sender === 'artisan' ? '✓✓' : ''}
+                </div>
+              </div>
+            ))}
+            {whatsappTyping && (
+              <div style={{ alignSelf: 'flex-start', background: '#FFFFFF', padding: '8px 14px', borderRadius: '12px', fontSize: '11px', color: '#64748B' }}>
+                ✍️ Kaarvo AI Sahayak typing...
+              </div>
+            )}
+          </div>
+
+          {/* QUICK PRESET BUTTONS */}
+          <div style={{ padding: '8px 12px', background: '#F0F2F5', borderTop: '1px solid #E2E8F0', display: 'flex', gap: '6px', overflowX: 'auto' }}>
+            <button
+              onClick={() => handleWhatsappSend('Yeh Jaipur ki 15 terracotta clay matka ban gaye hain, rate ₹450')}
+              style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '14px', background: '#FFFFFF', border: '1px solid #CBD5E1', cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              🏺 15 Matka (₹450)
+            </button>
+            <button
+              onClick={() => handleWhatsappSend('Varanasi pure silk handloom saree list karo, rate ₹2400')}
+              style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '14px', background: '#FFFFFF', border: '1px solid #CBD5E1', cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              🥻 Silk Saree (₹2400)
+            </button>
+            <button
+              onClick={() => handleWhatsappSend('Mera payment aur order dispatch kab hoga?')}
+              style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '14px', background: '#FFFFFF', border: '1px solid #CBD5E1', cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              📦 Order Status?
+            </button>
+          </div>
+
+          {/* INPUT BAR */}
+          <div style={{ padding: '10px 14px', background: '#F0F2F5', display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <input 
+              type="text" 
+              placeholder="Hindi me likhe ya bole..." 
+              value={whatsappInput}
+              onChange={(e) => setWhatsappInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleWhatsappSend()}
+              style={{ flex: 1, padding: '10px 14px', borderRadius: '20px', border: '1px solid #CBD5E1', fontSize: '13px', outline: 'none', background: '#FFFFFF' }}
+            />
+            <button
+              onClick={() => handleWhatsappSend()}
+              style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#075E54', color: '#FFFFFF', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Send size={16} />
+            </button>
+          </div>
         </div>
       )}
 
