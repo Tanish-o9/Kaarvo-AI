@@ -6,7 +6,7 @@ import {
   ShoppingCart, ChevronRight, MessageSquare, Award, ArrowUpRight, HelpCircle,
   Truck, ShieldAlert, Zap, Compass, Store, Settings, PieChart, Tag, RefreshCcw, Home, Trash2,
   QrCode, Volume2, VolumeX, Download, Share2, Phone, MessageCircle, Printer, Briefcase,
-  Lock, Mail, User, Eye, EyeOff, LogIn, LogOut
+  Lock, Mail, User, Eye, EyeOff, LogIn, LogOut, ExternalLink
 } from 'lucide-react';
 
 const API_BASE = 'http://127.0.0.1:8001/api/v1';
@@ -34,6 +34,181 @@ const getCraftSpecificImage = (category, title) => {
   }
   return 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=800&q=80';
 };
+
+
+// ============================================================================
+// GOOGLE STITCH 12 CERTIFIED LIVING HERITAGE MASTERWORKS DATASET
+// ============================================================================
+const CERTIFIED_MASTERWORKS = [
+  {
+    id: 'dhokra-01',
+    title: 'Sahastradhara Dhokra Nandi',
+    price: 34800,
+    category: 'Metalcraft & Dhokra',
+    artisan: 'Mandar Baghel • Bastar Guild',
+    craft_hours: 96,
+    gi_tag: 'GI CERTIFIED #82',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDglDKiMtkskfvnEbKK-g_n-Dgiln56R1LvlyHXUWc3xoR6fl_Bkr8TXspe8FHir1kDbT1Z2-8BPfanMorTBHc_p6mSzlAgwnDH_e-pXlMCAo9lnNSncQxrmLJccQadqLB9RlbZwpo7iUENBzh6DmK5O3uJXwqqH2trzzeeWJzs_y0ZuibV8ePpi8-3pGNiYWzryia8pdiR6ib3DGter4kr8VM8EEwGxV0ddD0r6mw',
+    material: 'Bell Metal (Cu-Sn Alloy)',
+    edition: 'N° 03/12',
+    region: 'Chhattisgarh',
+    description: 'Ancestral hollow-core cire-perdue cast bell metal vessel with ceremonial horned iconography and fine spiral wirework.'
+  },
+  {
+    id: 'pottery-02',
+    title: 'Neelambari Cobalt Amphora',
+    price: 18500,
+    category: 'Pottery & Ceramics',
+    artisan: 'Leeladhar Sharma • Sanganer',
+    craft_hours: 44,
+    gi_tag: 'GI TAG #248',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDLxim86zVmb3F4TeiCLg-SUWm9Q_TjlxRGiXD9XOKV3I_Rc7FGl8_1llNSnDIJxBBkqMkrOnv-PEQHZW8bewS05YW9pgSwI86la7I87CKdZkDHhgmPE4giwaeaQd9MVjohp3fgcU9O9zB8JqNB6aICeGUbrz3cxDhNbq1peB2hrnguk-A6k71GTxDnG0j9DmZ9OOfvKTLphFWLlc84DRSwYz1AE89d8vDsPTYFLJc',
+    material: 'Egyptian Paste & Quartz',
+    edition: 'N° 04/15',
+    region: 'Rajasthan',
+    description: 'Clayless ground quartz and glass frit urn hand-painted with copper oxide and fired in ancestral single-fire wood kilns.'
+  },
+  {
+    id: 'bidri-03',
+    title: 'Tarkashi Bidri Teardrop Casket',
+    price: 42000,
+    category: 'Metalcraft & Dhokra',
+    artisan: 'M. A. Raheem • Bidar Registry',
+    craft_hours: 120,
+    gi_tag: 'GI TAG #11',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBgdah1At6YL7lU9jsaexjIkUgDGJ49OzpzECtZ7JnlzBW69fduNV7_K1SYpWxoBW0xddBLQC3CpLvRa5wP1Epu0JusgRdKg01mZATW_6p10G9h03iNzkirDRmdvHchHK91t_zutSikCMxG0ayAadvOp_HhN-fdBuZzYte3uoN51W_mRJJNFWpNZxuRDmfTJUICMyYm5kIf9pjFWXMWGIhm-8WixRgdRrosUV4yiL4',
+    material: 'Zinc & 999 Silver',
+    edition: 'N° 01/05',
+    region: 'Karnataka',
+    description: 'Hand-chiseled pure silver wire hammered into darkened non-ferrous alloy, cured with Bidar Fort subterranean soil.'
+  },
+  {
+    id: 'katan-04',
+    title: 'Zari Shikargah Katan Brocade',
+    price: 88000,
+    category: 'Textiles & Weaves',
+    artisan: 'Haji Mohammed • Varanasi Guild',
+    craft_hours: 240,
+    gi_tag: 'GI TAG #49',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBRYZFQqcAmVRE2XI4tYMwfGKEK8aBFuI3kYbomqBflwwAQW3pGFLmZNQ2So_Kobb-hK6Fatd3EnfQ00qxiWrdfF0xQkQ0THmI3M2Ew_ZkuAkpe3_hwjjKLUbQ-jJAK0OBIYT_O3bT8RjYjsVo54QI-LT7MDWshm8zsmWhLDNrzDF8ZJXWFjUm0n1WwkTz3TSt_-F71mSfuuq6wu1dm0kDSxeQfK55po2si_NAhMsk',
+    material: 'Mulberry Zari Silk',
+    edition: 'HEIRLOOM WEAVE',
+    region: 'Uttar Pradesh',
+    description: 'Hand-drawn jacquard loom pattern containing hunting narratives in genuine tested silver-gilt zari on pure mulberry silk.'
+  },
+  {
+    id: 'pashmina-05',
+    title: 'Sozni Jamawar Pashmina Shawl',
+    price: 115000,
+    category: 'Textiles & Weaves',
+    artisan: 'Ghulam Nabi • Srinagar Guild',
+    craft_hours: 310,
+    gi_tag: 'GI TAG #46',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAhjYWXvTyC4t0F5G6WgU6Rayn6RZjdTvXIUDc95VXk8fah7qVZC5iMBWGo5UohYCU1nqmfJeYSsP69nIFC-0m2zYNWAHrF2zq9JicdnWKpQAfV1Ty-wsmG4Xy9_KyMK5YwWgBBsVDttjUcvPN7XR9Hlu61G1wcP1zCC4fim8_YQvkx9GJO19zxzk1G4gr-Mp6UeDNH7BUlxSCSO994AF8XOwKEEDfAq9kPo5dOqmk',
+    material: 'Changthangi Cashmere',
+    edition: 'ONE-OF-A-KIND',
+    region: 'Kashmir',
+    description: 'Hand-combed high-altitude mountain goat fleece stitched with single-strand botanical-dyed silk needles in Jamawar paisley.'
+  },
+  {
+    id: 'molela-06',
+    title: 'Dharmaraj Votive Clay Stele',
+    price: 14200,
+    category: 'Pottery & Ceramics',
+    artisan: 'Hariram Kumbhar • Molela Cluster',
+    craft_hours: 52,
+    gi_tag: 'GI TAG #112',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBvLsFecigeafmtmRGlwxTM0QUgFK5Qixlm8IMYMtQE21Xh9agwkpjmsw187dGDnXV7Mtg0XwKnUrW15o_wp-oFyXtJnv7IxImAcx-lHRCrrkwr06ABjBbU5KdFwZRROBjQZQNz5zpoPya0_S-dtYHKKHAveAs7nc7lHYeEhARE6Yucp-7U7UwxVUWPsTi5Bmdt2mBytBkRkqUzEtyrLlVQ7ZT8EBmXD3sZgGvWJkg',
+    material: 'Alluvial River Clay',
+    edition: 'N° 07/20',
+    region: 'Rajasthan',
+    description: 'Hollow votive relief plaque hand-modeled without molds using riverbed alluvial silt and palash gum.'
+  },
+  {
+    id: 'rogan-07',
+    title: 'Tree of Life Rogan Tapestry',
+    price: 54000,
+    category: 'Textiles & Weaves',
+    artisan: 'Abdul Gafoor Khatri • Niruna',
+    craft_hours: 78,
+    gi_tag: 'GI TAG #564',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAQXz4DumlhaFtCZppYHbYtGGMO0Fe0bn3dt0DHNdMY3tvZ-vNdxg81euLVCpqbc-P750HNH74wh_k4D4xgOXTLPrjs_OoHrL4cbRh82k1YQw6HxCFpDUvyvvDJrhun5uOjLbsjnDqzFBGJqcTgh0MM9ii09z7jbCJHDUkz219RjCqB6NZP85JAC1qfkJ8aE8swchf7uqLCyo0iEKQNfN_xEyhhasmyw3xMu1OVnRw',
+    material: 'Castor Resin Filament',
+    edition: 'N° 02/08',
+    region: 'Gujarat',
+    description: 'Rare 400-year-old technique trailing boiled castor oil elastic pigment threads from palm to silk textile.'
+  },
+  {
+    id: 'sankheda-08',
+    title: 'Kalpavriksha Turned Low Stool',
+    price: 26500,
+    category: 'Wood & Lacquer',
+    artisan: 'Paresh Kharadi • Sankheda',
+    craft_hours: 68,
+    gi_tag: 'GI TAG #13',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDDci-Tib2s19iYWqd1fm-EvZPr-qPgSUJ7wP_QyCu3d3glktkONiE5pZY1GaenKWYTx9EB0aZjXm4m8FvG-wA6zxBOqs-U5vRczTla5vh2-P-19rIHFMCfIeAKRn8OMG-DydN9tzyxfG0U1bxPtcOivARFlcsDK7A09rMid-kgAA1bBupcHVCxW5NCR3AEx9P98Gw1fCn1zHEmT0jvyQlzc5cDbem1j-Lsfqs42IM',
+    material: 'Teakwood & Agate Polish',
+    edition: 'N° 11/15',
+    region: 'Gujarat',
+    description: 'Hand-lathed hardwood burnished with pewter powder and natural kewda lacquer using agate stone friction.'
+  },
+  {
+    id: 'patola-09',
+    title: 'Chhabdi Bhat Double Ikat Patola',
+    price: 245000,
+    category: 'Textiles & Weaves',
+    artisan: 'Salvi Bharatbhai • Patan Guild',
+    craft_hours: 480,
+    gi_tag: 'GI TAG #232',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDBmdFAuW2QQde5IGbtoCAhTXq29tixvX8jJbCRpAlm5L_7AnUcBjw3Adgs7dOuX7VQSKNtkW52dxIS79WIuS93Fax-g2H-BSdTC7sH5q45L8Hi_YyDxYx-jDAwkqmv5kaQpJo0CFY2GEIOvs_GHSFkynktRxSN4fHksb0C1EDrTiWa9GrHHpX0h9IeKg3s_r_Jir1lkC8sdAcU0endKc5aijP2986h1OiYv5AsiB4',
+    material: 'Double-Ikat Silk',
+    edition: 'HERITAGE VAULT',
+    region: 'Gujarat',
+    description: 'Both warp and weft individually resist-dyed before weaving; exact pattern alignment requiring mathematical harmony.'
+  },
+  {
+    id: 'channapatna-10',
+    title: 'Vajra Turned Stacking Vessel',
+    price: 11800,
+    category: 'Wood & Lacquer',
+    artisan: 'Syed Munavar • Channapatna',
+    craft_hours: 32,
+    gi_tag: 'GI TAG #16',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAOxv4qugvCgX4wbs5UH10SqOl3YGUKj9Je_RDL_6Axf3owoXfjgPx2OnuxecVzV0yDM8UE5seCSPK_Yt2G6YNUYyJHzr4irzzK0bsHyfz73-LPwpAl-bI_gb3IJNTvRhjlDW8PV7WWQnZgj9PVNmhhl1sK3M3Us0RIO2VjkOtgsmuelHufK-KDZSZviR5cZt-8hE3YCoba7pbC59YqjCqOAnQqivfHx46RsmOH7Y0',
+    material: 'Aale-Mara Wood & Veg Lac',
+    edition: 'N° 14/30',
+    region: 'Karnataka',
+    description: 'Lathe-spun sustainable Wrightia tinctoria timber polished with non-toxic lac dyed using natural mineral madder.'
+  },
+  {
+    id: 'thanjavur-11',
+    title: 'Maratha Art Plate Salver',
+    price: 38200,
+    category: 'Metalcraft & Dhokra',
+    artisan: 'S. Ramalingam • Thanjavur',
+    craft_hours: 115,
+    gi_tag: 'GI TAG #03',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBQ9_4SyZ20giyyCsQXPO7NIJ3xVt6O1hK8rO2FrKizj_5kyxDclF6SuP6bBUFEwD2rCjOW2MCr2X3S7IBSpGbdKLitWithPc_8wY8lHvP7IL27iM9lCSA022HxeW7gWITJWghYfFBbwChFAzERblBnMTHC2lVpKMu94QlzDoSCLitRGLRxcPabjYbHUAqxjNb-Jn7FhoY5ehTOIi5BwiXfRXXKc2BAEJdNKI6ob-M',
+    material: 'Tri-Metal Repoussé',
+    edition: 'N° 05/10',
+    region: 'Tamil Nadu',
+    description: 'Hand-chased silver and copper relief medallions embedded mechanically into heavy beaten brass plate.'
+  },
+  {
+    id: 'saharanpur-12',
+    title: 'Jali Pierced Rosewood Coffer',
+    price: 29000,
+    category: 'Wood & Lacquer',
+    artisan: 'Mohd. Arshad • Saharanpur',
+    craft_hours: 88,
+    gi_tag: 'GI TAG #156',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD_s9Qh01uEDkSzGul09shj2nN3kcvnubi6K539wWxPoIK2nHy-dNKLa6ZXnyRY0MIaRcK1gwc36lMU2n5JkQdyDszS7oe0VyVjbyICPRBynB1pe8RQ8fkSojoM37iLrewf7CY0iJpz-rIZXeRIIXtenIVOhdLf4pK5LXJfkp1oKUywhlZWNTX_lM2Wvfaobz1ZbjEdGgCjJehz1XJ1OVoXre4-vTP2M9S0l_-edKQ',
+    material: 'Sheesham Hardwood',
+    edition: 'N° 18/25',
+    region: 'Uttar Pradesh',
+    description: 'Monolithic aged seasoned Indian rosewood pierced using handheld fretsaws and hand-chiseled botanical arabesques.'
+  }
+];
 
 export default function App() {
   // --- AUTHENTICATION & JWT STATE (Stitch Integration) ---
@@ -1840,1256 +2015,2005 @@ export default function App() {
       {/* ========================================================================= */}
       {mode === 'customer' && (
         <>
-          {/* CUSTOMER STICKY NAVBAR */}
-          <header style={{
-            background: 'var(--bg-surface)',
-            borderBottom: '1px solid var(--border-subtle)',
-            padding: '16px 0',
-            position: 'sticky',
-            top: 0,
-            zIndex: 100,
-            boxShadow: 'var(--shadow-sm)'
-          }}>
-            <div className="container-wide" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              
-              {/* BRAND LOGO */}
-              <div
-                onClick={() => switchCustomerTab('home')}
-                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
-              >
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '12px',
-                  background: 'var(--primary)',
-                  color: '#FFF',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: '800',
-                  fontSize: '22px'
-                }}>
-                  🪔
-                </div>
-                <div>
-                  <div style={{ fontSize: '22px', fontWeight: '800', letterSpacing: '-0.02em', color: 'var(--text-main)', lineHeight: '1' }}>
-                    Kaarvo<span style={{ color: 'var(--primary)' }}>.</span>
-                  </div>
-                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', letterSpacing: '0.05em', marginTop: '2px' }}>
-                    CRAFTED BY HAND • AI POWERED
-                  </div>
-                </div>
+          {/* ========================================================================= */}
+          {/* GOOGLE STITCH LUXURY EDITORIAL HEADER                                    */}
+          {/* ========================================================================= */}
+          <header className="sticky top-0 left-0 w-full z-50 bg-[#141313]/95 backdrop-blur-md border-b border-[#444748]/30">
+            {/* Top Micro Archival Ticker */}
+            <div className="w-full bg-[#0e0e0e] border-b border-[#444748]/30 py-1.5 px-4 lg:px-12">
+              <div className="max-w-7xl mx-auto flex items-center justify-between text-[9px] uppercase tracking-[0.18em] text-[#c4c7c8] font-bold">
+                <span className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-white inline-block"></span>
+                  Curated Masterpieces from 28 Indian Craft Clusters
+                </span>
+                <span className="hidden md:inline tracking-widest text-white">Free Global Insured Shipping</span>
               </div>
+            </div>
 
-              {/* NAVIGATION LINKS */}
-              <nav className="hide-mobile" style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
-                {[
-                  { id: 'home', label: 'Home' },
-                  { id: 'shop', label: 'Explore Crafts' },
-                  { id: 'ai_ask', label: '✨ Ask Kaarvo AI' },
-                  { id: 'stories', label: 'Craft Stories' }
-                ].map(item => (
+            {/* Main Navigation Bar */}
+            <div className="h-20">
+              <div className="max-w-7xl mx-auto h-full px-4 lg:px-12 flex items-center justify-between gap-4">
+                
+                {/* Brand Logo & Name */}
+                <div 
+                  onClick={() => switchCustomerTab('home')}
+                  className="flex items-center gap-3 cursor-pointer group"
+                >
+                  <img
+                    alt="KAARVO Luxury Logo"
+                    className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
+                    src="https://lh3.googleusercontent.com/aida/AEtjO1Uhs93tN5Vdr6hc1UEwSALe4SxN2jM7MAWTO06wrU6kabT4FGtTQWfdiy9tbQ63qIPO-dpLgZ3ZivuBJ9iX0PlSzf8BhTtHyKmNQLpse_GSfDb8aVY9qItgKBCSlGodxdKuR4S8WE2n0S5WXYRSfUhpa8KusB3qLRM5wnoy4ZFj6I5fNXG0sq5XTt6w5Df6E64Y6SJ5T0bXiiZlQrEgi0Tl5Ey0XfRDaxvLNu6-1cQG"
+                  />
+                  <span className="font-serif text-[20px] font-bold tracking-[0.2em] uppercase text-white hidden sm:inline">
+                    KAARVO
+                  </span>
+                </div>
+
+                {/* Primary Editorial Navigation Links */}
+                <nav className="hidden xl:flex items-center gap-7 text-[11px] font-semibold uppercase tracking-[0.15em]">
                   <button
-                    key={item.id}
-                    onClick={() => switchCustomerTab(item.id)}
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      fontSize: '15px',
-                      fontWeight: customerTab === item.id ? '700' : '500',
-                      color: customerTab === item.id ? 'var(--primary)' : 'var(--text-secondary)',
-                      cursor: 'pointer',
-                      padding: '6px 0',
-                      borderBottom: customerTab === item.id ? '2.5px solid var(--primary)' : '2.5px solid transparent',
-                      transition: 'color 0.2s ease'
-                    }}
+                    onClick={() => switchCustomerTab('home')}
+                    className={`transition-all py-1 cursor-pointer ${
+                      customerTab === 'home'
+                        ? 'text-white border-b-2 border-white font-bold'
+                        : 'text-[#c4c7c8] hover:text-white'
+                    }`}
                   >
-                    {item.label}
+                    Home
                   </button>
-                ))}
-              </nav>
+                  <button
+                    onClick={() => switchCustomerTab('shop')}
+                    className={`transition-all py-1 cursor-pointer ${
+                      customerTab === 'shop'
+                        ? 'text-white border-b-2 border-white font-bold'
+                        : 'text-[#c4c7c8] hover:text-white'
+                    }`}
+                  >
+                    Explore Crafts
+                  </button>
+                  <button
+                    onClick={() => switchCustomerTab('collections')}
+                    className={`transition-all py-1 cursor-pointer ${
+                      customerTab === 'collections'
+                        ? 'text-white border-b-2 border-white font-bold'
+                        : 'text-[#c4c7c8] hover:text-white'
+                    }`}
+                  >
+                    Collections
+                  </button>
+                  <button
+                    onClick={() => switchCustomerTab('artisans')}
+                    className={`transition-all py-1 cursor-pointer ${
+                      customerTab === 'artisans'
+                        ? 'text-white border-b-2 border-white font-bold'
+                        : 'text-[#c4c7c8] hover:text-white'
+                    }`}
+                  >
+                    Artisans
+                  </button>
+                  <button
+                    onClick={() => switchCustomerTab('ai_ask')}
+                    className={`transition-all py-1 cursor-pointer flex items-center gap-1 ${
+                      customerTab === 'ai_ask'
+                        ? 'text-white border-b-2 border-white font-bold'
+                        : 'text-[#c4c7c8] hover:text-white'
+                    }`}
+                  >
+                    <Sparkles size={13} className="text-amber-400" />
+                    AI Copilot
+                  </button>
+                </nav>
 
-              {/* ACTIONS: WISHLIST & CART */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <button
-                  onClick={() => switchCustomerTab('shop')}
-                  style={{ background: 'var(--bg-subtle)', border: 'none', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                >
-                  <Search size={18} color="var(--text-secondary)" />
-                </button>
+                {/* Right Interactive Action Controls */}
+                <div className="flex items-center gap-3 sm:gap-4">
+                  {/* Search Icon */}
+                  <button
+                    onClick={() => switchCustomerTab('shop')}
+                    aria-label="Search"
+                    className="p-2 text-[#c4c7c8] hover:text-white transition-colors cursor-pointer"
+                    type="button"
+                  >
+                    <Search size={18} />
+                  </button>
 
-                <button
-                  onClick={() => setIsCartOpen(true)}
-                  style={{
-                    background: 'var(--primary-light)',
-                    border: '1px solid var(--primary-border)',
-                    color: 'var(--primary)',
-                    padding: '9px 18px',
-                    borderRadius: 'var(--radius-full)',
-                    fontWeight: '700',
-                    fontSize: '14px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                >
-                  <ShoppingCart size={17} />
-                  <span>Cart</span>
-                  {cartItems.length > 0 && (
-                    <span style={{ background: 'var(--primary)', color: '#FFF', padding: '2px 8px', borderRadius: '10px', fontSize: '12px' }}>
-                      {cartItems.reduce((a, b) => a + b.quantity, 0)}
-                    </span>
-                  )}
-                </button>
+                  {/* Cart Icon with Counter */}
+                  <button
+                    onClick={() => setIsCartOpen(true)}
+                    aria-label="Cart"
+                    className="p-2 text-[#c4c7c8] hover:text-white transition-colors relative cursor-pointer"
+                    type="button"
+                  >
+                    <ShoppingBag size={18} />
+                    {cartItems.length > 0 && (
+                      <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-white rounded-full"></span>
+                    )}
+                  </button>
 
-                <button
-                  className="btn-artisan-secondary hide-mobile"
-                  onClick={() => switchMode('artisan')}
-                  style={{ fontSize: '13px', padding: '9px 16px' }}
-                >
-                  Start Selling →
-                </button>
-
-                {/* USER PROFILE / SIGN IN BUTTON (Stitch Auth) */}
-                {currentUser ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      background: 'var(--bg-subtle)',
-                      border: '1px solid var(--border-subtle)',
-                      padding: '5px 12px',
-                      borderRadius: 'var(--radius-full)',
-                      fontSize: '13px',
-                      fontWeight: '700',
-                      color: 'var(--text-main)'
-                    }}>
-                      <div style={{
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '50%',
-                        background: 'var(--primary)',
-                        color: '#FFF',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '11px',
-                        fontWeight: '800'
-                      }}>
+                  {/* User Account / Sign In */}
+                  {currentUser ? (
+                    <div className="flex items-center gap-2 bg-[#201f1f] px-3 py-1.5 rounded-full border border-[#353434]">
+                      <div className="w-5 h-5 rounded-full bg-white text-[#141313] flex items-center justify-center text-[10px] font-extrabold">
                         {(currentUser.full_name || currentUser.username || 'U')[0].toUpperCase()}
                       </div>
-                      <span className="hide-mobile">{currentUser.full_name || currentUser.username}</span>
-                      <span style={{
-                        fontSize: '10px',
-                        fontWeight: '800',
-                        color: currentUser.role === 'artisan' ? '#C26D47' : '#2563EB',
-                        background: currentUser.role === 'artisan' ? 'rgba(194, 109, 71, 0.12)' : 'rgba(37, 99, 235, 0.12)',
-                        padding: '2px 6px',
-                        borderRadius: '6px',
-                        textTransform: 'uppercase'
-                      }}>
-                        {currentUser.role}
+                      <span className="text-[11px] font-bold text-white uppercase tracking-wider hidden sm:inline">
+                        {currentUser.full_name || currentUser.username}
                       </span>
+                      <button
+                        onClick={handleAuthLogout}
+                        title="Sign Out"
+                        className="text-[#8e9192] hover:text-red-400 ml-1 cursor-pointer"
+                      >
+                        <LogOut size={13} />
+                      </button>
                     </div>
+                  ) : (
                     <button
-                      onClick={handleAuthLogout}
-                      title="Sign Out"
-                      style={{
-                        background: 'transparent',
-                        border: '1px solid var(--border-subtle)',
-                        borderRadius: '50%',
-                        width: '34px',
-                        height: '34px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        color: '#EF4444'
-                      }}
+                      onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
+                      className="hidden sm:inline text-[11px] font-bold text-[#c4c7c8] hover:text-white uppercase tracking-[0.15em] transition-colors cursor-pointer"
                     >
-                      <LogOut size={15} />
+                      Login
                     </button>
-                  </div>
-                ) : (
+                  )}
+
+                  {/* Switch to Artisan Studio */}
                   <button
-                    onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
-                    style={{
-                      background: 'var(--primary)',
-                      border: 'none',
-                      color: '#FFF',
-                      padding: '8px 18px',
-                      borderRadius: 'var(--radius-full)',
-                      fontWeight: '700',
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      boxShadow: '0 2px 8px rgba(194, 109, 71, 0.25)'
-                    }}
+                    onClick={() => switchMode('artisan')}
+                    className="border border-[#e2e2e2] text-white text-[11px] font-bold uppercase tracking-[0.15em] px-4 py-2 hover:bg-white hover:text-[#141313] transition-all cursor-pointer"
                   >
-                    <User size={15} />
-                    <span>Sign In</span>
+                    Start Selling
                   </button>
-                )}
+
+                  {/* Master Artisan Avatar */}
+                  <div className="flex items-center pl-1">
+                    <img
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full object-cover border border-[#444748]/60 cursor-pointer"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuALfOFj7XjcnfofzZz2EQCPzpY0eOLUjFj9gqBAZ6bXDSa0GRxats1_rooKzbCwxNIuCkAxxlYFE_V-SLZZdIF-JEm1TNlx68D4X1BoD9_W37SnX-X8Cv7G2UaebRLs1vpv1fm6k5OJy--9vTzGba0PbiYG8I70_6m2VZubbJzSnWuY7PjI9t1Z_p8HAm9rwjuvbGlmEnW404ydG-vrOM2DctDZ4puIyLhSugh4bsQ"
+                      onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
+                    />
+                  </div>
+                </div>
+
               </div>
             </div>
           </header>
 
-          {/* MAIN CUSTOMER BODY */}
-          <main style={{ flex: 1 }}>
-
-            {/* VIEW 1: CUSTOMER HOME PAGE */}
+          {/* ========================================================================= */}
+          {/* MAIN CUSTOMER BODY: STITCH VIEWS                                         */}
+          {/* ========================================================================= */}
+          <main className="w-full bg-[#141313] text-[#e5e2e1] min-h-screen">
+            
+            {/* --------------------------------------------------------------------- */}
+            {/* VIEW 1: HOME PAGE                                                     */}
+            {/* --------------------------------------------------------------------- */}
             {customerTab === 'home' && (
-              <div>
+              <div className="flex flex-col w-full text-[#e5e2e1]">
                 
-                {/* 1. TWO-COLUMN HERO SECTION */}
-                <section style={{
-                  padding: '60px 0 80px',
-                  background: 'linear-gradient(180deg, #FAF9F5 0%, #F3F1E9 100%)',
-                  borderBottom: '1px solid var(--border-subtle)'
-                }}>
-                  <div className="container-wide">
-                    <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '48px', alignItems: 'center' }}>
+                {/* SECTION A: CINEMATIC HERO */}
+                <section className="relative w-full bg-[#0e0e0e] overflow-hidden border-b border-[#353434]/40">
+                  <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_60%_at_55%_35%,rgba(197,166,106,0.12),transparent_75%)]"></div>
+                  
+                  <div className="max-w-7xl mx-auto px-4 lg:px-12 py-16 lg:py-24 relative z-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                       
-                      {/* LEFT HERO COLUMN */}
-                      <div>
-                        <span className="badge-tag badge-terracotta" style={{ marginBottom: '16px' }}>
-                          🇮🇳 MoSJE & ONDC Verified Artisan Network
-                        </span>
-                        
-                        <h1 className="font-serif" style={{ fontSize: '54px', fontWeight: '700', color: 'var(--text-main)', lineHeight: '1.12', marginBottom: '20px' }}>
-                          Crafted by Hand. <br />
-                          <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>Powered by AI.</span>
+                      {/* Left Editorial Meta & Copy */}
+                      <div className="lg:col-span-6 flex flex-col items-start space-y-6">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#2a2a2a] border border-[#353434]">
+                          <span className="w-1.5 h-1.5 bg-white"></span>
+                          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white">
+                            AUTHENTIC INDIAN CRAFTSMANSHIP
+                          </span>
+                        </div>
+
+                        <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.1]">
+                          Tradition,<br />Crafted to Last.
                         </h1>
-                        
-                        <p style={{ fontSize: '17px', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '32px', maxWidth: '580px' }}>
-                          Discover authentic handcrafted treasures directly from master Indian artisans. Powered by AI voice cataloging, fair trade pricing, and direct market linkage.
+
+                        <p className="text-[16px] text-[#c4c7c8] max-w-xl leading-relaxed">
+                          Discover extraordinary handmade heirlooms from India’s master artisan guilds. Every artifact is verified with GI provenance and engineered with centuries of ancestral mastery.
                         </p>
 
-                        {/* HERO CTA BUTTONS */}
-                        <div style={{ display: 'flex', gap: '14px', marginBottom: '40px', flexWrap: 'wrap' }}>
-                          <button className="btn-artisan-primary" onClick={() => switchCustomerTab('shop')} style={{ padding: '14px 32px', fontSize: '16px' }}>
-                            Explore Products <ArrowRight size={18} />
+                        {/* CTAs */}
+                        <div className="flex flex-wrap items-center gap-4 pt-2 w-full sm:w-auto">
+                          <button
+                            onClick={() => switchCustomerTab('shop')}
+                            className="inline-flex items-center justify-center bg-[#494949] text-white px-8 py-3.5 text-[11px] font-bold uppercase tracking-[0.18em] hover:bg-white hover:text-[#141313] transition-all cursor-pointer"
+                          >
+                            EXPLORE CRAFTS
                           </button>
-                          <button className="btn-artisan-secondary" onClick={() => switchMode('artisan')} style={{ padding: '14px 28px', fontSize: '15px' }}>
-                            Start Selling
+                          <button
+                            onClick={() => switchMode('artisan')}
+                            className="inline-flex items-center justify-center bg-transparent border border-white text-white px-8 py-3.5 text-[11px] font-bold uppercase tracking-[0.18em] hover:bg-white hover:text-[#141313] transition-all cursor-pointer"
+                          >
+                            START SELLING
                           </button>
                         </div>
 
-                        {/* VISUALLY IMPORTANT AI SEARCH BOX */}
-                        <div className="card-artisan" style={{ padding: '14px 18px', background: '#FFFFFF', boxShadow: '0 12px 32px rgba(28, 25, 23, 0.08)' }}>
-                          <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <Sparkles size={16} /> ✨ Ask Kaarvo AI — What are you looking for?
+                        {/* Swiss Precision Micro Ledger Index */}
+                        <div className="pt-4 grid grid-cols-3 gap-4 w-full max-w-md bg-[#1c1b1b] p-4 border border-[#353434]">
+                          <div>
+                            <span className="block text-[9px] font-bold uppercase text-[#8e9192] tracking-widest">REGISTRY NO.</span>
+                            <span className="text-[11px] font-bold text-white tracking-wider">IND-G28-409</span>
                           </div>
+                          <div>
+                            <span className="block text-[9px] font-bold uppercase text-[#8e9192] tracking-widest">GUILD CERTIFIED</span>
+                            <span className="text-[11px] font-bold text-[#e5e2e1] tracking-wider">100% SECURE</span>
+                          </div>
+                          <div>
+                            <span className="block text-[9px] font-bold uppercase text-[#8e9192] tracking-widest">METALLURGY</span>
+                            <span className="text-[11px] font-bold text-white tracking-wider">PVD BRONZE / SILK</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right Focal Masterpiece Showcase (Dhokra Lost-Wax Vase with Horological Crosshair) */}
+                      <div className="lg:col-span-6 relative flex justify-center">
+                        <div className="relative w-full max-w-md lg:max-w-lg aspect-square bg-[#201f1f] p-4 flex flex-col justify-between group shadow-2xl border border-[#353434]">
                           
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <input
-                              type="text"
-                              value={customerSearchQuery}
-                              onChange={(e) => setCustomerSearchQuery(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && switchCustomerTab('shop')}
-                              placeholder="e.g. 'Find me a handmade gift under ₹1500'"
-                              style={{ border: 'none', outline: 'none', flex: 1, fontSize: '14px', color: 'var(--text-main)', background: 'transparent' }}
-                            />
-                            <button
-                              className="btn-artisan-primary"
-                              onClick={() => switchCustomerTab('shop')}
-                              style={{ padding: '10px 20px', fontSize: '13px' }}
-                            >
-                              Search
-                            </button>
-                          </div>
+                          {/* Dial Glare Overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-tr from-[#0e0e0e]/80 via-transparent to-white/10 pointer-events-none"></div>
 
-                          {/* SUGGESTION CHIPS */}
-                          <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
-                            {[
-                              'Handmade gift under ₹1500',
-                              'Traditional Indian crafts',
-                              'Home decor',
-                              'Wedding gifts'
-                            ].map(chip => (
-                              <button
-                                key={chip}
-                                onClick={() => {
-                                  setCustomerSearchQuery(chip);
-                                  switchCustomerTab('shop');
-                                }}
-                                style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', borderRadius: '14px', padding: '5px 12px', fontSize: '11px', fontWeight: '600', color: 'var(--text-secondary)', cursor: 'pointer' }}
-                              >
-                                "{chip}"
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                      </div>
-
-                      {/* RIGHT HERO COLUMN: ARTISAN & PRODUCT COLLAGE */}
-                      <div className="hide-mobile" style={{ position: 'relative' }}>
-                        <div style={{ height: '480px', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.12)' }}>
-                          <img
-                            src="https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=1000&q=80"
-                            alt="Jaipur Terracotta Pottery"
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          />
-                        </div>
-
-                        {/* FLOATING ARTISAN BADGE CARD */}
-                        <div className="card-artisan" style={{ position: 'absolute', top: '24px', left: '-20px', padding: '16px 20px', display: 'flex', gap: '12px', alignItems: 'center', background: 'rgba(255,255,255,0.96)', backdropFilter: 'blur(8px)' }}>
-                          <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'var(--primary)', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '18px' }}>
-                            🏺
-                          </div>
-                          <div>
-                            <div style={{ fontSize: '14px', fontWeight: '800' }}>Ramswaroop Prajapat</div>
-                            <div style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: '700' }}>Master Potter • Jaipur, Rajasthan</div>
-                          </div>
-                        </div>
-
-                        {/* FLOATING DIRECT PROCEEDS CARD */}
-                        <div className="card-artisan" style={{ position: 'absolute', bottom: '24px', right: '-20px', padding: '16px 20px', background: 'rgba(255,255,255,0.96)', backdropFilter: 'blur(8px)' }}>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>FAIR TRADE COST TRANSPARENCY</div>
-                          <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-main)', marginTop: '2px' }}>₹480 <span style={{ fontSize: '12px', color: '#10B981' }}>(100% Direct to Artisan)</span></div>
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-                </section>
-
-                {/* 2. IMAGE-FOCUSED CATEGORIES SECTION */}
-                <section style={{ padding: '80px 0', background: 'var(--bg-surface)', borderBottom: '1px solid var(--border-subtle)' }}>
-                  <div className="container-wide">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px' }}>
-                      <div>
-                        <span className="badge-tag badge-gold" style={{ marginBottom: '8px' }}>Heritage Craftsmanship</span>
-                        <h2 className="font-serif" style={{ fontSize: '32px', fontWeight: '700' }}>Explore By Craft Category</h2>
-                      </div>
-                      <button className="btn-artisan-outline" onClick={() => switchCustomerTab('shop')}>
-                        View All Categories →
-                      </button>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-                      {[
-                        { name: 'Pottery / Terracotta', count: '120+ Products', image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=600&q=80' },
-                        { name: 'Textiles / Handloom', count: '350+ Products', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80' },
-                        { name: 'Metal craft', count: '90+ Products', image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80' },
-                        { name: 'Woodwork', count: '140+ Products', image: 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=600&q=80' },
-                        { name: 'Jewelry (traditional)', count: '210+ Products', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80' }
-                      ].map(cat => (
-                        <div
-                          key={cat.name}
-                          className="card-artisan"
-                          onClick={() => {
-                            setActiveCategoryFilter(cat.name);
-                            switchCustomerTab('shop');
-                          }}
-                          style={{ cursor: 'pointer' }}
-                        >
-                          <div className="product-card-img-wrapper" style={{ height: '180px' }}>
-                            <img src={cat.image} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          </div>
-                          <div style={{ padding: '16px', textAlign: 'center' }}>
-                            <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-main)', marginBottom: '2px' }}>{cat.name}</h3>
-                            <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{cat.count}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-
-                {/* 3. TRENDING PRODUCTS GRID (4 CARDS PER ROW DESKTOP) */}
-                <section style={{ padding: '80px 0' }}>
-                  <div className="container-wide">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px' }}>
-                      <div>
-                        <span className="badge-tag badge-terracotta" style={{ marginBottom: '8px' }}>Direct Market Linkage</span>
-                        <h2 className="font-serif" style={{ fontSize: '32px', fontWeight: '700' }}>Trending Artisan Products</h2>
-                      </div>
-                      <button className="btn-artisan-outline" onClick={() => switchCustomerTab('shop')}>
-                        Browse Shop Catalog →
-                      </button>
-                    </div>
-
-                    {products.length === 0 ? (
-                      <div className="card-artisan" style={{ padding: '48px 24px', textAlign: 'center', background: '#FFFFFF' }}>
-                        <Package size={42} color="var(--primary)" style={{ marginBottom: '14px' }} />
-                        <h3 style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-main)', marginBottom: '6px' }}>No Published Products Yet</h3>
-                        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto 20px' }}>
-                          Be the first artisan to publish authentic handicrafts using our 3-Pillar AI Studio (Photo & Voice auto-cataloger)!
-                        </p>
-                        <button className="btn-artisan-primary" onClick={() => switchMode('artisan')} style={{ padding: '12px 24px' }}>
-                          + Catalog Product in 3-Pillar AI Studio
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="desktop-grid-4">
-                        {products.map(p => (
-                        <div
-                          key={p.id}
-                          className="card-artisan"
-                          onClick={() => setSelectedProduct(p)}
-                          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'pointer' }}
-                        >
-                          <div>
-                            {/* PRODUCT IMAGE & WISHLIST */}
-                            <div className="product-card-img-wrapper" style={{ height: '240px' }}>
-                              <img src={p.image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              
-                              <button
-                                onClick={(e) => toggleWishlist(p.id, e)}
-                                style={{
-                                  position: 'absolute',
-                                  top: '12px',
-                                  right: '12px',
-                                  background: 'rgba(255,255,255,0.85)',
-                                  backdropFilter: 'blur(4px)',
-                                  border: 'none',
-                                  width: '36px',
-                                  height: '36px',
-                                  borderRadius: '50%',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  cursor: 'pointer',
-                                  zIndex: 2
-                                }}
-                              >
-                                <Heart size={18} color={wishlist.includes(p.id) ? '#E11D48' : '#78716C'} fill={wishlist.includes(p.id) ? '#E11D48' : 'none'} />
-                              </button>
-
-                              <button
-                                onClick={(e) => handleDeleteProduct(p.id, e)}
-                                title="Delete Product"
-                                style={{
-                                  position: 'absolute',
-                                  top: '12px',
-                                  left: '12px',
-                                  background: 'rgba(239, 68, 68, 0.95)',
-                                  color: '#FFFFFF',
-                                  backdropFilter: 'blur(4px)',
-                                  border: 'none',
-                                  width: '34px',
-                                  height: '34px',
-                                  borderRadius: '50%',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  cursor: 'pointer',
-                                  zIndex: 2,
-                                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                                }}
-                              >
-                                <Trash2 size={16} />
-                              </button>
-
-                              <span className="badge-tag badge-terracotta" style={{ position: 'absolute', bottom: '12px', left: '12px', background: 'rgba(255,255,255,0.94)' }}>
-                                {p.badge || 'Fair Trade'}
-                              </span>
-                            </div>
-
-                            {/* CARD CONTENT */}
-                            <div style={{ padding: '18px 18px 0' }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', marginBottom: '6px' }}>
-                                <span style={{ color: 'var(--primary)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                                  <MapPin size={12} /> {p.artisan || 'Master Artisan'}
-                                </span>
-                                <span style={{ display: 'flex', alignItems: 'center', gap: '3px', fontWeight: '700', color: '#D97706' }}>
-                                  <Star size={12} fill="#D97706" /> {p.rating || 4.9}
-                                </span>
-                              </div>
-
-                              <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-main)', marginBottom: '8px', lineHeight: '1.35', height: '42px', overflow: 'hidden' }}>
-                                {p.title}
-                              </h3>
-                            </div>
-                          </div>
-
-                          {/* PRICE & ADD TO CART */}
-                          <div style={{ padding: '16px 18px 18px', borderTop: '1px solid var(--border-subtle)', marginTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div>
-                              <span style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-main)' }}>₹{p.price}</span>
-                              {p.originalPrice && (
-                                <span style={{ fontSize: '12px', color: 'var(--text-muted)', textDecoration: 'line-through', marginLeft: '6px' }}>₹{p.originalPrice}</span>
-                              )}
-                            </div>
-
-                            <button
-                              className="btn-artisan-primary"
-                              onClick={(e) => addToCart(p, e)}
-                              style={{ padding: '8px 14px', fontSize: '13px' }}
-                            >
-                              <ShoppingCart size={15} /> Add to Cart
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    )}
-                  </div>
-                </section>
-
-                {/* 4. HOW KAARVO WORKS SECTION */}
-                <section style={{ padding: '80px 0', background: 'var(--bg-surface)', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
-                  <div className="container-wide">
-                    <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 48px' }}>
-                      <span className="badge-tag badge-gold" style={{ marginBottom: '8px' }}>Simple & Transparent</span>
-                      <h2 className="font-serif" style={{ fontSize: '32px', fontWeight: '700' }}>How Kaarvo Works</h2>
-                      <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginTop: '8px' }}>
-                        Empowering artisans through AI innovation and transparent ONDC market linkage.
-                      </p>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
-                      {[
-                        { step: '01', title: 'Discover Crafts', desc: 'Browse verified handcrafted products cataloged directly from artisan clusters across India.', icon: '🏺' },
-                        { step: '02', title: 'Ask Kaarvo AI', desc: 'Use natural voice or search queries to find exact products tailored to your occasion and budget.', icon: '✨' },
-                        { step: '03', title: 'Direct Purchase', desc: 'Orders are processed directly to the artisan via ONDC Beckn protocol with 100% fair trade proceeds.', icon: '📦' }
-                      ].map(item => (
-                        <div key={item.step} className="card-artisan" style={{ padding: '32px', textAlign: 'center' }}>
-                          <div style={{ fontSize: '36px', marginBottom: '16px' }}>{item.icon}</div>
-                          <span className="badge-tag badge-terracotta" style={{ marginBottom: '12px' }}>Step {item.step}</span>
-                          <h3 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>{item.title}</h3>
-                          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>{item.desc}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-
-                {/* 5. FEATURED ARTISANS SECTION */}
-                <section style={{ padding: '80px 0' }}>
-                  <div className="container-wide">
-                    <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 48px' }}>
-                      <span className="badge-tag badge-terracotta" style={{ marginBottom: '8px' }}>Meet The Makers</span>
-                      <h2 className="font-serif" style={{ fontSize: '32px', fontWeight: '700' }}>Master Indian Artisans</h2>
-                      <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginTop: '8px' }}>
-                        Meet the heritage craftspeople keeping ancient Indian arts alive.
-                      </p>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '28px' }}>
-                      {[
-                        {
-                          name: 'Ramswaroop Prajapat',
-                          craft: 'Master Terracotta Potter',
-                          location: 'Jaipur, Rajasthan',
-                          desc: '4th generation potter preserving eco-friendly clay water vessels with hand-carved relief motifs.',
-                          image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=500&q=80'
-                        },
-                        {
-                          name: 'Sunita Devi Weaver Guild',
-                          craft: 'Chanderi Silk Weaver',
-                          location: 'Chanderi, Madhya Pradesh',
-                          desc: 'Weaving regal Chanderi sarees on handloom frames with gold zari heritage peacock motifs.',
-                          image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=500&q=80'
-                        },
-                        {
-                          name: 'Bishnu Jhara',
-                          craft: 'Dhokra Metal Artisan',
-                          location: 'Bastar, Chhattisgarh',
-                          desc: 'Practicing 4,000-year-old lost-wax metal casting technique to create solid brass tribal figurines.',
-                          image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=500&q=80'
-                        }
-                      ].map(artisan => (
-                        <div key={artisan.name} className="card-artisan" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '16px' }}>
-                            <img src={artisan.image} alt={artisan.name} style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
-                            <div>
-                              <span className="badge-tag badge-terracotta" style={{ fontSize: '10px', marginBottom: '4px' }}>Verified Artisan</span>
-                              <h3 style={{ fontSize: '18px', fontWeight: '800' }}>{artisan.name}</h3>
-                              <p style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: '700' }}>{artisan.craft}</p>
-                              <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>📍 {artisan.location}</p>
-                            </div>
-                          </div>
-                          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.5', marginBottom: '20px' }}>{artisan.desc}</p>
-                          <button className="btn-artisan-outline" onClick={() => switchCustomerTab('shop')} style={{ width: '100%' }}>
-                            View Artisan Products →
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-
-                {/* 6. DEDICATED PERSONAL CRAFT ASSISTANT SECTION */}
-                <section style={{ padding: '80px 0', background: 'var(--primary-light)', borderTop: '1px solid var(--primary-border)', borderBottom: '1px solid var(--primary-border)' }}>
-                  <div className="container-wide">
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
-                      <div>
-                        <span className="badge-tag badge-terracotta" style={{ marginBottom: '12px' }}>AI Shopping Innovation</span>
-                        <h2 className="font-serif" style={{ fontSize: '36px', fontWeight: '700', marginBottom: '16px' }}>
-                          Your Personal Craft Assistant
-                        </h2>
-                        <p style={{ fontSize: '16px', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '24px' }}>
-                          Ask Kaarvo AI anything using natural language voice or text. Get intelligent recommendations tailored to your exact budget, occasion, and style.
-                        </p>
-                        <button className="btn-artisan-primary" onClick={() => switchCustomerTab('ai_ask')} style={{ padding: '14px 28px' }}>
-                          Try Ask Kaarvo AI →
-                        </button>
-                      </div>
-
-                      <div className="card-artisan" style={{ padding: '24px', background: '#FFFFFF' }}>
-                        <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Sparkles size={16} /> Live AI Shopping Query Demo
-                        </div>
-                        <div style={{ background: 'var(--bg-subtle)', padding: '14px', borderRadius: '12px', fontSize: '13px', color: 'var(--text-main)', marginBottom: '14px' }}>
-                          "I need a traditional Jaipur gift under ₹1000 for a housewarming."
-                        </div>
-                        <div style={{ fontSize: '12px', color: '#10B981', fontWeight: '700', marginBottom: '8px' }}>
-                          ✓ AI Recommended Product:
-                        </div>
-                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', background: 'var(--primary-light)', padding: '12px', borderRadius: '10px' }}>
-                          <img src={products[0]?.image} alt="Pottery" style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '8px' }} />
-                          <div>
-                            <div style={{ fontSize: '13px', fontWeight: '700' }}>{products[0]?.title}</div>
-                            <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--primary)' }}>₹{products[0]?.price}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-                {/* 7. CRAFT STORIES SECTION */}
-                <section style={{ padding: '80px 0', background: 'var(--bg-surface)' }}>
-                  <div className="container-wide">
-                    <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 48px' }}>
-                      <span className="badge-tag badge-gold" style={{ marginBottom: '8px' }}>Cultural Preservation</span>
-                      <h2 className="font-serif" style={{ fontSize: '32px', fontWeight: '700' }}>Authentic Craft Stories</h2>
-                      <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginTop: '8px' }}>
-                        The people and 4,000-year heritage behind every piece.
-                      </p>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
-                      {[
-                        {
-                          title: '4,000 Years of Dhokra Metal Casting',
-                          artisan: 'Bishnu Jhara • Bastar, Chhattisgarh',
-                          image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80',
-                          content: 'Dhokra is one of the oldest non-ferrous metal casting techniques known to human civilization, dating back to the Indus Valley Dancing Girl figurine. Using beeswax thread sculpting and clay baking, each mold is broken open after cooling, making every single piece an irreplicable antique.'
-                        },
-                        {
-                          title: 'Jaipur Natural Cooling Clay Pottery',
-                          artisan: 'Ramswaroop Prajapat • Jaipur, Rajasthan',
-                          image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80',
-                          content: 'Crafted from rich alluvial Jaipur clay, these water pitchers utilize micro-porous capillary evaporation to naturally cool water down by 5-8°C without electricity or chemical filters.'
-                        }
-                      ].map((story, i) => (
-                        <div key={i} className="card-artisan" style={{ padding: '28px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                          <img src={story.image} alt={story.title} style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '14px', marginBottom: '20px' }} />
-                          <div>
-                            <span className="badge-tag badge-terracotta" style={{ marginBottom: '8px' }}>{story.artisan}</span>
-                            <h3 className="font-serif" style={{ fontSize: '22px', fontWeight: '700', marginBottom: '12px' }}>{story.title}</h3>
-                            <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>{story.content}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-
-                {/* 8. STRONG FINAL PRE-FOOTER CTA */}
-                <section style={{ padding: '80px 0', background: 'var(--bg-dark)', color: '#FFFFFF', textAlign: 'center' }}>
-                  <div className="container-wide" style={{ maxWidth: '800px' }}>
-                    <h2 className="font-serif" style={{ fontSize: '42px', fontWeight: '700', marginBottom: '16px' }}>
-                      Discover something made differently.
-                    </h2>
-                    <p style={{ fontSize: '16px', color: '#A8A29E', lineHeight: '1.6', marginBottom: '32px' }}>
-                      Support master Indian craftspeople directly with 100% transparent fair-trade pricing and verified heritage quality.
-                    </p>
-                    <button className="btn-artisan-primary" onClick={() => switchCustomerTab('shop')} style={{ padding: '16px 36px', fontSize: '16px' }}>
-                      Explore Crafts Catalog <ArrowRight size={18} />
-                    </button>
-                  </div>
-                </section>
-
-                {/* FOOTER */}
-                <footer style={{ background: '#141210', color: '#A8A29E', padding: '48px 0 24px', borderTop: '1px solid #292524' }}>
-                  <div className="container-wide">
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '32px', marginBottom: '36px' }}>
-                      <div>
-                        <div style={{ fontSize: '22px', fontWeight: '800', color: '#FFF', marginBottom: '8px' }}>
-                          Kaarvo<span style={{ color: 'var(--primary)' }}>.</span>
-                        </div>
-                        <p style={{ fontSize: '13px', lineHeight: '1.5', color: '#78716C' }}>
-                          AI-Native Commerce Operating System empowering Indian craftspeople under MoSJE Smart India Hackathon initiative.
-                        </p>
-                      </div>
-
-                      <div>
-                        <h4 style={{ fontSize: '14px', fontWeight: '700', color: '#FFF', marginBottom: '12px' }}>Explore Crafts</h4>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
-                          <span>Terracotta & Pottery</span>
-                          <span>Handloom & Textiles</span>
-                          <span>Dhokra Metal Art</span>
-                          <span>Saharanpur Woodwork</span>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h4 style={{ fontSize: '14px', fontWeight: '700', color: '#FFF', marginBottom: '12px' }}>Platform Standards</h4>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
-                          <span>✓ ONDC Beckn Protocol</span>
-                          <span>✓ Bhashini Multilingual Speech</span>
-                          <span>✓ OpenCV Background Removal</span>
-                          <span>✓ Transparent Cost-Plus Model</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style={{ borderTop: '1px solid #292524', paddingTop: '20px', textAlign: 'center', fontSize: '12px', color: '#78716C' }}>
-                      © 2026 Kaarvo AI. Built for Smart India Hackathon SIH26090. All rights reserved.
-                    </div>
-                  </div>
-                </footer>
-
-              </div>
-            )}
-
-            {/* VIEW 2: CUSTOMER CATALOG / SHOP PAGE */}
-            {customerTab === 'shop' && (
-              <div className="container-wide" style={{ padding: '40px 28px 80px' }}>
-                <div style={{ marginBottom: '32px' }}>
-                  <h1 className="font-serif" style={{ fontSize: '36px', fontWeight: '700', marginBottom: '8px' }}>Explore Handcrafted Products</h1>
-                  <p style={{ fontSize: '15px', color: 'var(--text-secondary)' }}>Direct market linkage connecting master artisans with customers nationwide.</p>
-                </div>
-
-                {/* SEARCH & FILTER CONTROLS */}
-                <div className="card-artisan" style={{ padding: '16px 20px', marginBottom: '36px', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <div style={{ flex: 1, position: 'relative', minWidth: '260px' }}>
-                    <Search size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <input
-                      type="text"
-                      className="input-artisan"
-                      value={customerSearchQuery}
-                      onChange={(e) => setCustomerSearchQuery(e.target.value)}
-                      placeholder="Search by title, craft, material or artisan region..."
-                      style={{ paddingLeft: '42px' }}
-                    />
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    {['All', 'Pottery / Terracotta', 'Textiles / Handloom', 'Metal craft', 'Woodwork', 'Jewelry (traditional)'].map(cat => (
-                      <button
-                        key={cat}
-                        onClick={() => setActiveCategoryFilter(cat)}
-                        className={activeCategoryFilter === cat ? 'btn-artisan-primary' : 'btn-artisan-secondary'}
-                        style={{ padding: '8px 14px', fontSize: '12px' }}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* PRODUCTS 4-COLUMN DESKTOP GRID */}
-                {filteredProducts.length === 0 ? (
-                  <div className="card-artisan" style={{ padding: '60px 20px', textAlign: 'center' }}>
-                    <Search size={48} color="var(--text-muted)" style={{ marginBottom: '12px' }} />
-                    <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '4px' }}>No Products Found</h3>
-                    <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Try resetting your search query or category filters.</p>
-                  </div>
-                ) : (
-                  <div className="desktop-grid-4">
-                    {filteredProducts.map(p => (
-                      <div
-                        key={p.id}
-                        className="card-artisan"
-                        onClick={() => setSelectedProduct(p)}
-                        style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'pointer' }}
-                      >
-                        <div>
-                          <div className="product-card-img-wrapper" style={{ height: '240px' }}>
-                            <img src={p.image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            <button
-                              onClick={(e) => handleDeleteProduct(p.id, e)}
-                              title="Delete Product"
-                              style={{
-                                position: 'absolute',
-                                top: '12px',
-                                left: '12px',
-                                background: 'rgba(239, 68, 68, 0.95)',
-                                color: '#FFFFFF',
-                                backdropFilter: 'blur(4px)',
-                                border: 'none',
-                                width: '34px',
-                                height: '34px',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                zIndex: 2,
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                              }}
-                            >
-                              <Trash2 size={16} />
-                            </button>
-
-                            <span className="badge-tag badge-terracotta" style={{ position: 'absolute', bottom: '12px', left: '12px', background: 'rgba(255,255,255,0.94)' }}>
-                              {p.category}
+                          {/* Top Spec Ledger */}
+                          <div className="relative z-10 flex items-center justify-between pb-2">
+                            <span className="text-[9px] font-bold text-white uppercase tracking-[0.22em] flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 bg-white"></span> PIECE N° 01/40 • BASTAR
+                            </span>
+                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">
+                              CHHATTISGARH CLUSTER
                             </span>
                           </div>
 
-                          <div style={{ padding: '18px 18px 0' }}>
-                            <div style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: '600', marginBottom: '4px' }}>
-                              📍 {p.artisan || 'Artisan Guild'} • {p.location || 'India'}
+                          {/* Center Artwork Container with Precision Crosshairs */}
+                          <div className="relative my-auto flex items-center justify-center py-4">
+                            <div className="relative w-64 h-64 sm:w-72 sm:h-72 overflow-hidden bg-[#0e0e0e] flex items-center justify-center">
+                              <img
+                                alt="Dhokra Vase Masterpiece"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7owgjKgr-k4As1OoxxwRAxypiyws-9A9UiEG97mFkzW56TRuhWJI1DSSdOqsyYVmyX-RYE0x1bJ3DRNe6U6SlHND4OBj75rc2GSd13nz77z9P9sdwdTAYFCiYIhkS7iyTaSen8okfXeaI9WmBVZnPGCzClN7am18pk2GGz0Eg5IOFlgkFoBoLwK9c9vwWc6ERgLY4tLYj-lnGsX4Ux40DlgmIGNubeXid2R8Dc2k"
+                              />
+                              {/* Radial Precision Crosshair Overlay */}
+                              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div className="w-full h-[1px] bg-white/20"></div>
+                                <div className="h-full w-[1px] bg-white/20 absolute"></div>
+                                <div className="w-24 h-24 rounded-full border border-white/20 absolute"></div>
+                              </div>
                             </div>
-
-                            <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-main)', marginBottom: '8px', lineHeight: '1.35', height: '42px', overflow: 'hidden' }}>
-                              {p.title}
-                            </h3>
                           </div>
+
+                          {/* Bottom Caliber Spec Grid */}
+                          <div className="relative z-10 grid grid-cols-3 gap-2 pt-2 bg-[#1c1b1b] p-3 text-center border border-[#353434]/50">
+                            <div>
+                              <span className="block text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">CADENCE</span>
+                              <span className="text-[11px] font-bold text-white">84 HRS HAND-CAST</span>
+                            </div>
+                            <div>
+                              <span className="block text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">ALLOY</span>
+                              <span className="text-[11px] font-bold text-white">BELL METAL C260</span>
+                            </div>
+                            <div>
+                              <span className="block text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">ATELIER</span>
+                              <span className="text-[11px] font-bold text-white">BAGHEL GUILD</span>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </section>
+
+                {/* SECTION B: ASYMMETRICAL PROMOTIONAL BANNERS */}
+                <section className="w-full bg-[#141313] py-16 border-b border-[#353434]/40">
+                  <div className="max-w-7xl mx-auto px-4 lg:px-12 space-y-8">
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-[#353434]/50">
+                      <div>
+                        <span className="text-[9px] font-bold text-white uppercase tracking-[0.2em] block mb-1">
+                          CURATED ATELIERS
+                        </span>
+                        <h2 className="font-serif text-2xl sm:text-3xl text-white">Private Gallery Series</h2>
+                      </div>
+                      <button
+                        onClick={() => switchCustomerTab('shop')}
+                        className="text-[11px] font-bold text-white uppercase tracking-widest hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        VIEW ALL COMPLICATIONS <ExternalLink size={14} />
+                      </button>
+                    </div>
+
+                    {/* Asymmetrical 3-block grid matching Stitch */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                      
+                      {/* Large Wide Block: The Heritage Collection (Banarasi Zari) */}
+                      <div className="lg:col-span-8 bg-[#201f1f] border border-[#353434] relative flex flex-col justify-between overflow-hidden group min-h-[380px] p-6 lg:p-8">
+                        <div
+                          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-35 mix-blend-luminosity"
+                          style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuCXzQRCTJRyOv7lxExPiTIH82UJKKnkEbxSv-2qCCgMGBAagJ-6Guzsf1gggdKrNTyz7oXvCAGTgnh2cY-iT3ArL9Ju5wvJhZ20hHhgTl19s41OCgK75LaSbhN1xzIPO13KEhhQClx1jyN9Tys54psQnm_mcYZd3G1yBrY68c2jM1DXoBy4_fjdgFv1an0CNNK00yxChJ43jE8GiCCVr5d6MU4KkB33tjag3tryHmE')` }}
+                        ></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-[#201f1f]/80 to-transparent pointer-events-none"></div>
+                        
+                        <div className="relative z-10 flex items-center justify-between">
+                          <span className="bg-[#0e0e0e] text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 border border-[#353434]">
+                            LIMITED SERIES • 12 PIECES
+                          </span>
+                          <span className="text-[11px] font-bold text-[#c4c7c8] uppercase tracking-widest">
+                            VARANASI CADENCE
+                          </span>
                         </div>
 
-                        <div style={{ padding: '16px 18px 18px', borderTop: '1px solid var(--border-subtle)', marginTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div>
-                            <span style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-main)' }}>₹{p.price}</span>
+                        <div className="relative z-10 max-w-lg space-y-3 pt-24">
+                          <h3 className="font-serif text-3xl sm:text-4xl text-white leading-tight">
+                            The Heritage Collection
+                          </h3>
+                          <p className="text-[14px] text-[#c4c7c8] leading-relaxed">
+                            Centuries-old jacquard patterns calibrated with 24-karat gold warp leaf. Handcrafted across 90 weaving days per drape.
+                          </p>
+                          <div className="pt-2">
+                            <button
+                              onClick={() => switchCustomerTab('shop')}
+                              className="inline-flex items-center gap-2 bg-white text-[#141313] text-[11px] font-bold uppercase tracking-[0.18em] px-6 py-3 hover:bg-[#c8c6c6] transition-colors cursor-pointer"
+                            >
+                              DISCOVER COLLECTION <ArrowRight size={14} />
+                            </button>
                           </div>
+                        </div>
+                      </div>
 
+                      {/* Medium Block: Handcrafted Home Decor (Channapatna) */}
+                      <div className="lg:col-span-4 bg-[#201f1f] border border-[#353434] relative flex flex-col justify-between overflow-hidden group min-h-[380px] p-6 lg:p-8">
+                        <div
+                          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-30"
+                          style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuBy9AlAaF-Yo3DEQYO2S7DfV0Ewk8ZLA8-qViWai8FXVl3SnZDhfOuYCQ4H6hFdmKPwqj1OpQFHw3PV77qpi067mTjN0qi5yiacZFPR_wfBdM_S46xjh9NeTfNmzCdimDhQiFHAzkY6Ms5uERh-d8AZ6RHL8ILvRbEN3J1fjVxV7UG_XZgN5JOLrI7tZyM7EZcEUaJmJZ1hbxNg2NpR9zIhxEAQ8jIA67gXYs2JjgU')` }}
+                        ></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-[#201f1f]/70 to-transparent pointer-events-none"></div>
+
+                        <div className="relative z-10 flex items-center justify-between">
+                          <span className="bg-[#0e0e0e] text-[#c8c6c6] text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 border border-[#353434]">
+                            GEOMETRIC OBJECTS
+                          </span>
+                          <span className="text-white text-xs">🏛️</span>
+                        </div>
+
+                        <div className="relative z-10 space-y-3 pt-24">
+                          <h3 className="font-serif text-2xl text-white">Handcrafted Home Decor</h3>
+                          <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
+                            Turned teakwood, lost-wax bell metal fixtures, and hand-chiseled sandstone totems.
+                          </p>
+                          <div className="pt-2">
+                            <button
+                              onClick={() => switchCustomerTab('shop')}
+                              className="inline-flex items-center gap-2 bg-[#2a2a2a] text-white text-[11px] font-bold uppercase tracking-[0.18em] px-5 py-2.5 hover:bg-white hover:text-[#141313] transition-colors cursor-pointer"
+                            >
+                              SHOP PIECES
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* Lower Split Banner (Textiles & Zero Broker Markup Protocol) */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                      
+                      {/* Left Pashmina Block */}
+                      <div className="lg:col-span-4 bg-[#201f1f] border border-[#353434] relative flex flex-col justify-between p-6 lg:p-8 min-h-[320px] overflow-hidden group">
+                        <div
+                          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-30"
+                          style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuCXPsZ07doy8wEcazxryIgOZEIQMChIwdDMiV65XOQaxa81mhcfELuST-1SXS6xtulLO7BjyTp6g5ZPFWS_nCYR3Yc35GazHTQDUe57bhzdJE-lU8lkZD-riJlWVbzhBmGNq8sw2XoPfAtwV8wPf4gyRtSOg_iRWqQf2-CEsl0fMKXsMbsbf_XSpUy4grKnsrMWWy-gHTaBs0T4WYt6oMc5pIU8_5Khob9FMkGSOOM')` }}
+                        ></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-[#201f1f]/80 to-transparent pointer-events-none"></div>
+
+                        <div className="relative z-10 flex items-center justify-between">
+                          <span className="text-[9px] font-bold text-white uppercase tracking-widest bg-[#0e0e0e] px-2 py-0.5 border border-[#353434]">
+                            GI SEAL VERIFIED
+                          </span>
+                          <span className="text-[9px] font-bold text-[#8e9192] uppercase">SRINAGAR</span>
+                        </div>
+
+                        <div className="relative z-10 space-y-2">
+                          <h3 className="font-serif text-2xl text-white">The Art of Textiles</h3>
+                          <p className="text-[12px] text-[#c4c7c8]">
+                            Grade-A Himalayan Changthangi spun cashmere with needlework certified under GI protocol.
+                          </p>
                           <button
-                            className="btn-artisan-primary"
-                            onClick={(e) => addToCart(p, e)}
-                            style={{ padding: '8px 14px', fontSize: '13px' }}
+                            onClick={() => switchCustomerTab('shop')}
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-white uppercase tracking-widest pt-2 hover:underline cursor-pointer"
                           >
-                            <ShoppingCart size={15} /> Add to Cart
+                            EXPLORE WEAVES <ArrowRight size={13} />
                           </button>
                         </div>
                       </div>
-                    ))}
+
+                      {/* Right Protocol Ledger Block */}
+                      <div className="lg:col-span-8 bg-[#2a2a2a] border border-[#353434] relative flex flex-col md:flex-row items-center justify-between p-6 lg:p-8 overflow-hidden gap-6">
+                        <div className="relative z-10 space-y-3 max-w-md">
+                          <span className="text-[9px] font-bold text-white uppercase tracking-widest">
+                            DIRECT COMMERCE PROTOCOL
+                          </span>
+                          <h3 className="font-serif text-2xl sm:text-3xl text-white">
+                            Zero Broker Markup. Total Lineage Ownership.
+                          </h3>
+                          <p className="text-[14px] text-[#c4c7c8] leading-relaxed">
+                            Every Indian rupee transacted delivers immediate, cryptographically registered liquidity directly into verified artisan bank accounts via ONDC.
+                          </p>
+                          <div className="pt-2 flex items-center gap-4">
+                            <span className="font-serif text-3xl font-bold text-white">88.4%</span>
+                            <span className="text-[12px] text-[#c4c7c8] leading-tight">
+                              Average gross proceeds directly received by artisan cooperatives
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="relative z-10 w-full md:w-64 bg-[#0e0e0e] p-5 border border-[#353434] flex flex-col justify-between">
+                          <div className="flex items-center justify-between pb-3">
+                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">SETTLEMENT ENGINE</span>
+                            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-[10px] font-bold text-[#c4c7c8]">
+                              <span>ARTISAN SHARE</span>
+                              <span className="text-white font-extrabold">₹28,500</span>
+                            </div>
+                            <div className="w-full bg-[#201f1f] h-2 overflow-hidden">
+                              <div className="bg-white h-full w-[88.4%]"></div>
+                            </div>
+                            <div className="flex justify-between text-[10px] font-bold text-[#8e9192] pt-1">
+                              <span>LOGISTICS & TAX</span>
+                              <span>₹3,500</span>
+                            </div>
+                          </div>
+                          <div className="text-[10px] font-bold text-white text-center uppercase tracking-widest pt-4 border-t border-[#353434] mt-3">
+                            ESCROW CLEAR: INSTANT (ONDC)
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
                   </div>
-                )}
+                </section>
+
+                {/* SECTION C: 4 HOROLOGICAL VALUE STANDARDS */}
+                <section className="w-full bg-[#0e0e0e] py-12 border-b border-[#353434]/40">
+                  <div className="max-w-7xl mx-auto px-4 lg:px-12">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      
+                      <div className="p-6 bg-[#201f1f] border border-[#353434] flex flex-col space-y-3 hover:bg-[#2a2a2a] transition-colors">
+                        <div className="flex items-center justify-between">
+                          <CheckCircle size={22} className="text-white" />
+                          <span className="text-[10px] font-bold text-[#8e9192]">01</span>
+                        </div>
+                        <h4 className="font-serif text-[16px] text-white font-bold">Direct From Master Artisans</h4>
+                        <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
+                          100% direct studio provenance. Zero commercial brokers, dealers, or opaque middle tier.
+                        </p>
+                      </div>
+
+                      <div className="p-6 bg-[#201f1f] border border-[#353434] flex flex-col space-y-3 hover:bg-[#2a2a2a] transition-colors">
+                        <div className="flex items-center justify-between">
+                          <CreditCard size={22} className="text-white" />
+                          <span className="text-[10px] font-bold text-[#8e9192]">02</span>
+                        </div>
+                        <h4 className="font-serif text-[16px] text-white font-bold">Fair & Transparent Pricing</h4>
+                        <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
+                          Immutable smart payouts logged on public ledgers with audited artisan living wage royalty structures.
+                        </p>
+                      </div>
+
+                      <div className="p-6 bg-[#201f1f] border border-[#353434] flex flex-col space-y-3 hover:bg-[#2a2a2a] transition-colors">
+                        <div className="flex items-center justify-between">
+                          <Award size={22} className="text-white" />
+                          <span className="text-[10px] font-bold text-[#8e9192]">03</span>
+                        </div>
+                        <h4 className="font-serif text-[16px] text-white font-bold">Authentic GI Heritage</h4>
+                        <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
+                          Every artifact dispatched carries its authentic Geographical Indication stamp and genealogy ledger.
+                        </p>
+                      </div>
+
+                      <div className="p-6 bg-[#201f1f] border border-[#353434] flex flex-col space-y-3 hover:bg-[#2a2a2a] transition-colors">
+                        <div className="flex items-center justify-between">
+                          <Sparkles size={22} className="text-white" />
+                          <span className="text-[10px] font-bold text-[#8e9192]">04</span>
+                        </div>
+                        <h4 className="font-serif text-[16px] text-white font-bold">AI-Powered Cataloging</h4>
+                        <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
+                          Smartphone AI assistant converts workshop voice in Indian languages into museum-grade 4K listings instantly.
+                        </p>
+                      </div>
+
+                    </div>
+                  </div>
+                </section>
+
+                {/* SECTION D: SHOP BY COLLECTION */}
+                <section className="w-full bg-[#141313] py-16 border-b border-[#353434]/40">
+                  <div className="max-w-7xl mx-auto px-4 lg:px-12 space-y-12">
+                    
+                    <div className="text-center max-w-xl mx-auto space-y-2">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-white block">
+                        CURATION BY MEDIUM
+                      </span>
+                      <h2 className="font-serif text-3xl sm:text-4xl text-white">Shop By Collection</h2>
+                      <p className="text-[14px] text-[#c4c7c8]">
+                        Handcrafted lineages categorized by their geological and mineral foundations.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      
+                      {/* Collection 1: Pottery & Ceramics */}
+                      <div 
+                        onClick={() => { setCustomerCategory('pottery'); switchCustomerTab('shop'); }}
+                        className="bg-[#201f1f] border border-[#353434] flex flex-col overflow-hidden group hover:bg-[#2a2a2a] transition-all cursor-pointer"
+                      >
+                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
+                          <img
+                            alt="Pottery & Ceramics Collection"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8J9qQ8F6XPoZlY8ZkXiIxAYRw-R9wy8ELozin0L3d2AsR1cYCFVU8VZ4nzVPZsSCzwQv6ZQmCbapNuHomiWLsfQA-2628ITqHRxoh0QoGFqY8QsqDdzb411L8P6sxbKzah7v3vuzoCwCURk9DJYQ-e5icaBoIW44WHLgUSxN8p65FWjhBR0P_xHm6cDJFLs5MZNS7qdy1znqCyIU1E6fIWg8qz6TOY8oaJuBVTz4"
+                          />
+                          <div className="absolute top-4 left-4 bg-[#0e0e0e]/90 px-3 py-1 border border-[#353434]">
+                            <span className="text-[9px] font-bold text-white uppercase tracking-widest">142 MASTERWORKS</span>
+                          </div>
+                        </div>
+                        <div className="p-6 flex flex-col justify-between flex-grow space-y-4">
+                          <div>
+                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block mb-1">
+                              MINERAL GLAZE & CLAY
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Pottery & Ceramics</h3>
+                            <p className="text-[12px] text-[#c4c7c8] mt-1">
+                              Jaipur Egyptian-paste Blue Pottery, Molela terracotta votives, and Khurja stoneware.
+                            </p>
+                          </div>
+                          <div className="pt-2 flex items-center justify-between text-[11px] font-bold text-white uppercase tracking-widest">
+                            <span className="group-hover:underline">VIEW COLLECTION</span>
+                            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Collection 2: Textiles & Fabrics */}
+                      <div 
+                        onClick={() => { setCustomerCategory('textiles'); switchCustomerTab('shop'); }}
+                        className="bg-[#201f1f] border border-[#353434] flex flex-col overflow-hidden group hover:bg-[#2a2a2a] transition-all cursor-pointer"
+                      >
+                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
+                          <img
+                            alt="Textiles & Fabrics Collection"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFlKCXXQ_JaLnFPtIyyCBfr9UCl287bu_JXPWczmOwbJM0w36f19IM5Bqx_96RaNg1dqhxleTBxtnjvq6zrgQw-H_cFM4WR993-TvyN-5KEMK_UUSHhHGs4UV2fFT9dGXWtz84LREkviNMbdr0oQVX1Cuwsv3hI9RainhdG6aY_ZeKd7LZSAC8v_TU_GYWt5shgoHiE7DijTa-zaxwGNFKjzx-LXwCSmZ4IzDXO7c"
+                          />
+                          <div className="absolute top-4 left-4 bg-[#0e0e0e]/90 px-3 py-1 border border-[#353434]">
+                            <span className="text-[9px] font-bold text-white uppercase tracking-widest">88 MASTERWORKS</span>
+                          </div>
+                        </div>
+                        <div className="p-6 flex flex-col justify-between flex-grow space-y-4">
+                          <div>
+                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block mb-1">
+                              DOUBLE IKAT & CASHMERE
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Textiles & Fabrics</h3>
+                            <p className="text-[12px] text-[#c4c7c8] mt-1">
+                              Patan Patola looms, Varanasi Katan brocades, and Chanderi gossamer cottons.
+                            </p>
+                          </div>
+                          <div className="pt-2 flex items-center justify-between text-[11px] font-bold text-white uppercase tracking-widest">
+                            <span className="group-hover:underline">VIEW COLLECTION</span>
+                            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Collection 3: Home Decor & Woodcraft */}
+                      <div 
+                        onClick={() => { setCustomerCategory('woodwork'); switchCustomerTab('shop'); }}
+                        className="bg-[#201f1f] border border-[#353434] flex flex-col overflow-hidden group hover:bg-[#2a2a2a] transition-all cursor-pointer"
+                      >
+                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
+                          <img
+                            alt="Home Decor & Woodcraft Collection"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqmymwXinYA329bej5AmsBAMHPJURViNADkX6FXC5IAZF4BZ3qWc_vSShNB4AfELSE1efFjlnKtOOPuRsntXoFdVJKDU7ZrdH353sNchrN5N-Cc7_Oxr9II3pzAjsgCe5aSkEvqT5icS9W7LzFaHAk-j6cnouvU7-z9DUdef7YneXkrcpcAxxlmx7mvdnuvNM8FJ1LIE1FwzumWH9aNnCqEzjlditFMJlhRd_JcNc"
+                          />
+                          <div className="absolute top-4 left-4 bg-[#0e0e0e]/90 px-3 py-1 border border-[#353434]">
+                            <span className="text-[9px] font-bold text-white uppercase tracking-widest">210 MASTERWORKS</span>
+                          </div>
+                        </div>
+                        <div className="p-6 flex flex-col justify-between flex-grow space-y-4">
+                          <div>
+                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block mb-1">
+                              CARVED HARDWOOD & METALS
+                            </span>
+                            <h3 className="font-serif text-xl text-white">Home Decor & Woodcraft</h3>
+                            <p className="text-[12px] text-[#c4c7c8] mt-1">
+                              Saharanpur hand-carvings, Sankheda lacquer furniture, and Bidriware silver inlay.
+                            </p>
+                          </div>
+                          <div className="pt-2 flex items-center justify-between text-[11px] font-bold text-white uppercase tracking-widest">
+                            <span className="group-hover:underline">VIEW COLLECTION</span>
+                            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+                </section>
+
+                {/* SECTION E: TRENDING CERTIFIED MASTERWORKS (LIVE PRODUCTS + STITCH PIECES) */}
+                <section className="w-full bg-[#0e0e0e] py-16 border-b border-[#353434]/40">
+                  <div className="max-w-7xl mx-auto px-4 lg:px-12 space-y-8">
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-[#353434]/50">
+                      <div>
+                        <span className="text-[9px] font-bold text-white uppercase tracking-[0.2em] block mb-1">
+                          PROVENANCE SELECTIONS
+                        </span>
+                        <h2 className="font-serif text-2xl sm:text-3xl text-white">
+                          Trending Certified Masterworks
+                        </h2>
+                      </div>
+                      <button
+                        onClick={() => switchCustomerTab('shop')}
+                        className="text-[11px] font-bold text-white uppercase tracking-widest hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        VIEW COMPLETE VITRINE <ArrowRight size={14} />
+                      </button>
+                    </div>
+
+                    {/* 4-column Luxury Vitrine Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                      
+                      {/* Item 1: Bastar Dhokra */}
+                      <div className="bg-[#201f1f] border border-[#353434] flex flex-col group hover:bg-[#2a2a2a] transition-all">
+                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
+                          <img
+                            alt="Sahasrara Dhokra Brass Vessel"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgERiqwe-jJ4j-wXH_3Mlw0DbHukdEwqkxTh9jzjALKWrKQolJ33n1rN8fRQTHWOUKeJIZcFzlPLv5rnC79GKmOABdzWbpIv3CSB8e9JBY1znBQ2dVYJemnhm8uW8JdeMLbq9HpqXtm-CVo88gZ1d6vzOxleOvkfnodF14UxQ2a2RO-s6BXWscY_2cWjr0AykijbCWZZPXC5uqZR-tPpz0zrAwsMqWvy4pMR00t3A"
+                          />
+                          <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2 py-0.5 border border-[#353434]">
+                            <span className="text-[9px] font-bold text-white uppercase">GI CERTIFIED</span>
+                          </div>
+                        </div>
+                        <div className="p-4 flex flex-col justify-between flex-grow space-y-3">
+                          <div>
+                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block">
+                              DEVENDRA BAGHEL • BASTAR
+                            </span>
+                            <h3 className="font-serif text-[17px] text-white line-clamp-1 group-hover:text-amber-200 transition-colors">
+                              Sahasrara Dhokra Brass Vessel
+                            </h3>
+                            <p className="text-[12px] text-[#8e9192] mt-0.5 line-clamp-1">
+                              Lost-wax bronze alloy casting • 72 hrs
+                            </p>
+                          </div>
+                          <div className="pt-2 flex items-center justify-between border-t border-[#353434]/60">
+                            <span className="font-serif text-lg font-bold text-white">₹18,500</span>
+                            <button
+                              onClick={() => {
+                                addToCart({
+                                  id: 'dhokra-top-01',
+                                  title: 'Sahasrara Dhokra Brass Vessel',
+                                  price: 18500,
+                                  image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBgERiqwe-jJ4j-wXH_3Mlw0DbHukdEwqkxTh9jzjALKWrKQolJ33n1rN8fRQTHWOUKeJIZcFzlPLv5rnC79GKmOABdzWbpIv3CSB8e9JBY1znBQ2dVYJemnhm8uW8JdeMLbq9HpqXtm-CVo88gZ1d6vzOxleOvkfnodF14UxQ2a2RO-s6BXWscY_2cWjr0AykijbCWZZPXC5uqZR-tPpz0zrAwsMqWvy4pMR00t3A',
+                                  category: 'Metalcraft & Dhokra'
+                                });
+                              }}
+                              className="bg-[#353434] text-white hover:bg-white hover:text-[#141313] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
+                              type="button"
+                            >
+                              ACQUIRE
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Item 2: Neelambari Blue Glaze Jar */}
+                      <div className="bg-[#201f1f] border border-[#353434] flex flex-col group hover:bg-[#2a2a2a] transition-all">
+                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
+                          <img
+                            alt="Neelambari Blue Glaze Jar"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmAHqpENVakqXswpvUEKTejh05201o6Q0g6JoWY0IBk_E43l2h21DZu5ItYGaTm7bKmj2sX_6G9yeigqZfSSkDMs3SEJRBWgHJFoqCYPHMKgrmVQNnIhXvcUru4O6MIMJLSYit2baHZEy_m-LJGyJ7vDHnXnxHA5vCmV5ElHJg6DbvlUr5HjQM85izdUV3xdrlpCv2IxXEiu6rYPLxn8zq24A3IKJCnM5gX3sVxKo"
+                          />
+                          <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2 py-0.5 border border-[#353434]">
+                            <span className="text-[9px] font-bold text-white uppercase">KRIPAL STUDIO</span>
+                          </div>
+                        </div>
+                        <div className="p-4 flex flex-col justify-between flex-grow space-y-3">
+                          <div>
+                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block">
+                              KRIPAL KUMBH • JAIPUR
+                            </span>
+                            <h3 className="font-serif text-[17px] text-white line-clamp-1 group-hover:text-amber-200 transition-colors">
+                              Neelambari Blue Glaze Jar
+                            </h3>
+                            <p className="text-[12px] text-[#8e9192] mt-0.5 line-clamp-1">
+                              Quartz & fuller's earth fired amphora
+                            </p>
+                          </div>
+                          <div className="pt-2 flex items-center justify-between border-t border-[#353434]/60">
+                            <span className="font-serif text-lg font-bold text-white">₹12,200</span>
+                            <button
+                              onClick={() => {
+                                addToCart({
+                                  id: 'pottery-top-02',
+                                  title: 'Neelambari Blue Glaze Jar',
+                                  price: 12200,
+                                  image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDmAHqpENVakqXswpvUEKTejh05201o6Q0g6JoWY0IBk_E43l2h21DZu5ItYGaTm7bKmj2sX_6G9yeigqZfSSkDMs3SEJRBWgHJFoqCYPHMKgrmVQNnIhXvcUru4O6MIMJLSYit2baHZEy_m-LJGyJ7vDHnXnxHA5vCmV5ElHJg6DbvlUr5HjQM85izdUV3xdrlpCv2IxXEiu6rYPLxn8zq24A3IKJCnM5gX3sVxKo',
+                                  category: 'Pottery & Ceramics'
+                                });
+                              }}
+                              className="bg-[#353434] text-white hover:bg-white hover:text-[#141313] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
+                              type="button"
+                            >
+                              ACQUIRE
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Item 3: Shikargah Banarasi Katan Silk */}
+                      <div className="bg-[#201f1f] border border-[#353434] flex flex-col group hover:bg-[#2a2a2a] transition-all">
+                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
+                          <img
+                            alt="Shikargah Banarasi Katan Silk"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmI2nVu2NB_RhbcBe0IQyshk9r-gE449ZW1jIbcb-o8c4_sXppvDEyC3CWU5Bb5JHHH4lDUq4k3ocbu3vfGx8EV2cm3PT6ELBHfUg9lLHnM0ROvZidtAguxdeHuYxGmLfu9cy2tLYZU6241CEjA58BlsOFU_y1j-7JCNQEJWyak6HR34NlgeWnTrqD4yM-kxiwaygKMJcUpKF_UMIYb_Jjkl-oQZBq8cCHcGAEKWg"
+                          />
+                          <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2 py-0.5 border border-[#353434]">
+                            <span className="text-[9px] font-bold text-white uppercase">LIMITED WEAVE</span>
+                          </div>
+                        </div>
+                        <div className="p-4 flex flex-col justify-between flex-grow space-y-3">
+                          <div>
+                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block">
+                              RASHID ANSARI • VARANASI
+                            </span>
+                            <h3 className="font-serif text-[17px] text-white line-clamp-1 group-hover:text-amber-200 transition-colors">
+                              Shikargah Banarasi Katan Silk
+                            </h3>
+                            <p className="text-[12px] text-[#8e9192] mt-0.5 line-clamp-1">
+                              Pure mulberry silk with antique gold zari
+                            </p>
+                          </div>
+                          <div className="pt-2 flex items-center justify-between border-t border-[#353434]/60">
+                            <span className="font-serif text-lg font-bold text-white">₹34,000</span>
+                            <button
+                              onClick={() => {
+                                addToCart({
+                                  id: 'silk-top-03',
+                                  title: 'Shikargah Banarasi Katan Silk',
+                                  price: 34000,
+                                  image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAmI2nVu2NB_RhbcBe0IQyshk9r-gE449ZW1jIbcb-o8c4_sXppvDEyC3CWU5Bb5JHHH4lDUq4k3ocbu3vfGx8EV2cm3PT6ELBHfUg9lLHnM0ROvZidtAguxdeHuYxGmLfu9cy2tLYZU6241CEjA58BlsOFU_y1j-7JCNQEJWyak6HR34NlgeWnTrqD4yM-kxiwaygKMJcUpKF_UMIYb_Jjkl-oQZBq8cCHcGAEKWg',
+                                  category: 'Textiles & Weaves'
+                                });
+                              }}
+                              className="bg-[#353434] text-white hover:bg-white hover:text-[#141313] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
+                              type="button"
+                            >
+                              ACQUIRE
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Item 4: Bhakti Rosewood Intarsia Box */}
+                      <div className="bg-[#201f1f] border border-[#353434] flex flex-col group hover:bg-[#2a2a2a] transition-all">
+                        <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden">
+                          <img
+                            alt="Bhakti Rosewood Intarsia Box"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtlYs0CKotoqzgOsaf_BTiLGipkSP_yavVegMyCBqm7Lfo0u0NGdsC1_VTumxLptyRNJr0UNMgVq_hcUfXEMDyVDM_hvI0J0iO_XVq-o5BXWCMggEvJESS4m2V9-v7Ie8sKTCP4EpCqczHM-S8MT51rrmjwztXqQYTya7QNleTSq_gJoeZMIA12ciW7Wxc6tPpvD1yPNYJch04MBZVwkKMRoRN10PcmpvDuzEM7KA"
+                          />
+                          <div className="absolute bottom-2 left-2 bg-[#0e0e0e]/90 px-2 py-0.5 border border-[#353434]">
+                            <span className="text-[9px] font-bold text-white uppercase">INTARSIA SEAL</span>
+                          </div>
+                        </div>
+                        <div className="p-4 flex flex-col justify-between flex-grow space-y-3">
+                          <div>
+                            <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest block">
+                              M. RAMACHANDRA • MYSURU
+                            </span>
+                            <h3 className="font-serif text-[17px] text-white line-clamp-1 group-hover:text-amber-200 transition-colors">
+                              Bhakti Rosewood Intarsia Box
+                            </h3>
+                            <p className="text-[12px] text-[#8e9192] mt-0.5 line-clamp-1">
+                              Seasoned rosewood & brass joinery
+                            </p>
+                          </div>
+                          <div className="pt-2 flex items-center justify-between border-t border-[#353434]/60">
+                            <span className="font-serif text-lg font-bold text-white">₹15,800</span>
+                            <button
+                              onClick={() => {
+                                addToCart({
+                                  id: 'wood-top-04',
+                                  title: 'Bhakti Rosewood Intarsia Box',
+                                  price: 15800,
+                                  image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAtlYs0CKotoqzgOsaf_BTiLGipkSP_yavVegMyCBqm7Lfo0u0NGdsC1_VTumxLptyRNJr0UNMgVq_hcUfXEMDyVDM_hvI0J0iO_XVq-o5BXWCMggEvJESS4m2V9-v7Ie8sKTCP4EpCqczHM-S8MT51rrmjwztXqQYTya7QNleTSq_gJoeZMIA12ciW7Wxc6tPpvD1yPNYJch04MBZVwkKMRoRN10PcmpvDuzEM7KA',
+                                  category: 'Wood & Lacquer'
+                                });
+                              }}
+                              className="bg-[#353434] text-white hover:bg-white hover:text-[#141313] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
+                              type="button"
+                            >
+                              ACQUIRE
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+                </section>
+
+                {/* SECTION F: FEATURED ARTISAN (MASTER HARIRAM) */}
+                <section className="w-full bg-[#141313] py-16 border-b border-[#353434]/40">
+                  <div className="max-w-7xl mx-auto px-4 lg:px-12">
+                    <div className="bg-[#201f1f] border border-[#353434] overflow-hidden">
+                      <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
+                        
+                        {/* Portrait */}
+                        <div className="lg:col-span-6 relative min-h-[440px] lg:min-h-[540px] bg-[#0e0e0e]">
+                          <img
+                            alt="Master Hariram Portrait"
+                            className="w-full h-full object-cover object-center"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuALfOFj7XjcnfofzZz2EQCPzpY0eOLUjFj9gqBAZ6bXDSa0GRxats1_rooKzbCwxNIuCkAxxlYFE_V-SLZZdIF-JEm1TNlx68D4X1BoD9_W37SnX-X8Cv7G2UaebRLs1vpv1fm6k5OJy--9vTzGba0PbiYG8I70_6m2VZubbJzSnWuY7PjI9t1Z_p8HAm9rwjuvbGlmEnW404ydG-vrOM2DctDZ4puIyLhSugh4bsQ"
+                          />
+                          <div className="absolute bottom-4 left-4 bg-[#0e0e0e]/90 px-4 py-2 border border-[#353434]">
+                            <span className="text-[9px] font-bold text-white uppercase tracking-[0.2em] block">
+                              MOLELA CLAY GUILD • RAJASTHAN
+                            </span>
+                            <span className="text-[11px] font-semibold text-[#e5e2e1]">
+                              MASTER SCULPTOR ATELIER
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Narrative & Metrics */}
+                        <div className="lg:col-span-6 p-6 lg:p-12 flex flex-col justify-between space-y-6">
+                          <div className="space-y-4">
+                            <div className="inline-flex items-center gap-2">
+                              <span className="w-2 h-2 bg-[#c8c6c6] rounded-full"></span>
+                              <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#c8c6c6]">
+                                MASTER OF THE MONTH
+                              </span>
+                            </div>
+
+                            <h2 className="font-serif text-3xl sm:text-4xl text-white">
+                              Master Hariram — 4th Generation Terracotta Sculptor
+                            </h2>
+
+                            <p className="text-[15px] text-[#c4c7c8] leading-relaxed">
+                              For thirty-eight uninterrupted years, Hariram has shaped the alluvial riverbed clay of the Banas river into monumental, unglazed bas-relief plaques. Working without casting molds, every curve is finger-carved from sacred ancestral memory.
+                            </p>
+
+                            {/* Metrics */}
+                            <div className="grid grid-cols-2 gap-4 pt-2">
+                              <div className="bg-[#1c1b1b] p-4 border border-[#353434]">
+                                <span className="font-serif text-2xl font-bold text-white block">46 YRS</span>
+                                <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">
+                                  GUILD HERITAGE RECORD
+                                </span>
+                              </div>
+                              <div className="bg-[#1c1b1b] p-4 border border-[#353434]">
+                                <span className="font-serif text-2xl font-bold text-white block">2,400+</span>
+                                <span className="text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">
+                                  HEIRLOOMS DISPATCHED GLOBALLY
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-4 pt-4">
+                            <button
+                              onClick={() => { setCustomerCategory('pottery'); switchCustomerTab('shop'); }}
+                              className="inline-flex items-center gap-2 bg-white text-[#141313] text-[11px] font-bold uppercase tracking-[0.18em] px-6 py-3.5 hover:bg-[#c8c6c6] transition-all cursor-pointer"
+                            >
+                              MEET THE ARTISAN <ArrowRight size={14} />
+                            </button>
+                            <button
+                              onClick={() => switchCustomerTab('artisans')}
+                              className="inline-flex items-center gap-2 bg-[#2a2a2a] text-white text-[11px] font-bold uppercase tracking-[0.18em] px-6 py-3.5 hover:bg-white hover:text-[#141313] transition-all cursor-pointer"
+                            >
+                              EXPLORE HARIRAM’S ATELIER
+                            </button>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* SECTION G: CLOSING HOROLOGICAL BANNER */}
+                <section className="w-full bg-[#0e0e0e] relative py-20 overflow-hidden border-b border-[#353434]/40">
+                  <div
+                    className="absolute inset-0 bg-cover bg-center opacity-25 mix-blend-luminosity scale-105"
+                    style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuAlwwlQYZPAIH_6AZYW_m605-xc4ztYLs_p1mL7ehPOQ_Lb6HuLp1fgFyq6MI7C7YqfT3iYoidChFDY9Ora2pc_rBMFuGC3I8qACUpvkG3A-xUlgrT7pHcOky-B4eab6f7xIITKyBqH8bJsOPZ3zsTSV5nS3hH0F2AJIw4XK010pO4uxm3kaGrI3-4B6O-5verJf8LnMz2BM1mUfDkNPbQpi8p1wbCqLr99__TFlN4')` }}
+                  ></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-[#0e0e0e]/80 to-[#0e0e0e] pointer-events-none"></div>
+
+                  <div className="relative z-10 max-w-4xl mx-auto px-4 lg:px-12 text-center space-y-4">
+                    <span className="text-[9px] font-bold text-white uppercase tracking-[0.3em] block">
+                      EXTRAORDINARY LIVING ANTIQUITIES
+                    </span>
+                    <h2 className="font-serif text-3xl sm:text-5xl text-white">
+                      World-Class Artisan Collections
+                    </h2>
+                    <p className="text-[15px] text-[#c4c7c8] max-w-2xl mx-auto leading-relaxed">
+                      Join the private ledger of patrons, curators, and collectors investing directly in the sustained legacy of India’s finest master creators.
+                    </p>
+                    <div className="pt-4 flex justify-center items-center">
+                      <button
+                        onClick={() => switchCustomerTab('shop')}
+                        className="bg-[#494949] text-white hover:bg-white hover:text-[#141313] px-10 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
+                      >
+                        BROWSE VAULT
+                      </button>
+                    </div>
+                  </div>
+                </section>
+
               </div>
             )}
 
-            {/* VIEW 3: ASK KAARVO AI SHOPPING ASSISTANT */}
-            {customerTab === 'ai_ask' && (
-              <div className="container-wide" style={{ maxWidth: '960px', padding: '40px 28px 80px' }}>
-                <div className="card-artisan" style={{ padding: '32px', marginBottom: '28px', background: 'linear-gradient(135deg, #FDF4EF, #F3F1E9)' }}>
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '14px' }}>
-                    <div style={{ background: 'var(--primary)', color: '#FFF', padding: '12px', borderRadius: '14px' }}>
-                      <Sparkles size={28} />
+            {/* --------------------------------------------------------------------- */}
+            {/* VIEW 2: EXPLORE CRAFTS / SHOP                                         */}
+            {/* --------------------------------------------------------------------- */}
+            {customerTab === 'shop' && (
+              <div className="flex flex-col w-full text-[#e5e2e1]">
+                
+                {/* Sub-Hero Header */}
+                <section className="relative bg-[#0e0e0e] px-4 lg:px-12 pt-12 pb-8 border-b border-[#353434]/40">
+                  <div className="max-w-7xl mx-auto relative z-10 flex flex-col gap-6">
+                    
+                    {/* Breadcrumbs & Cluster Metadata */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-[9px] font-bold uppercase tracking-widest text-[#8e9192]">
+                      <div className="flex items-center gap-2">
+                        <span className="text-white">REGISTRY ARCHIVE</span>
+                        <span>/</span>
+                        <span className="text-white">28 GI CERTIFIED CRAFT CLUSTERS</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-[#201f1f] px-3 py-1 border border-[#353434]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        <span className="text-[#e5e2e1]">184 MASTERWORKS RECORDED IN LEDGER</span>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="font-serif" style={{ fontSize: '28px', fontWeight: '700' }}>Ask Kaarvo AI Craft Assistant</h2>
-                      <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '2px' }}>Get instant personalized recommendations directly from Indian master artisans.</p>
+
+                    {/* Display Title & Direct Guild Ratio */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+                      <div className="lg:col-span-8 space-y-2">
+                        <h1 className="font-serif text-4xl sm:text-5xl text-white uppercase tracking-tight">
+                          Discover Handmade.
+                        </h1>
+                        <p className="text-[15px] text-[#c4c7c8] max-w-3xl leading-relaxed">
+                          Explore certified heirloom creations curated directly from India’s living ancestral lineages. Every artifact carries cryptographically verifiable GI origin records, material assay telemetry, and direct smart settlements to master artisan guilds.
+                        </p>
+                      </div>
+                      <div className="lg:col-span-4 flex flex-col lg:items-end justify-end">
+                        <div className="bg-[#201f1f] p-4 space-y-2 w-full lg:max-w-xs border border-[#353434]">
+                          <span className="text-[9px] font-bold uppercase tracking-widest text-[#c4c7c8] block">DIRECT GUILD RATIO</span>
+                          <div className="flex items-baseline justify-between">
+                            <span className="font-serif text-2xl font-bold text-white">89.4%</span>
+                            <span className="text-[11px] font-bold text-[#c4c7c8] uppercase">To Master Craftsmen</span>
+                          </div>
+                          <div className="w-full bg-[#353434] h-1.5">
+                            <div className="bg-white h-1.5 w-[89.4%]"></div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* QUICK SUGGESTIONS */}
-                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '18px' }}>
-                    {[
-                      'Handmade gift under ₹1500',
-                      'Traditional Indian crafts',
-                      'Home decor',
-                      'Wedding gifts'
-                    ].map(prompt => (
-                      <button
-                        key={prompt}
-                        onClick={() => handleAiShoppingQuery(prompt)}
-                        className="btn-artisan-secondary"
-                        style={{ fontSize: '13px', padding: '8px 16px' }}
-                      >
-                        💡 "{prompt}"
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* CONVERSATION HISTORY */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', marginBottom: '28px' }}>
-                  {aiShoppingHistory.map((m, idx) => (
-                    <div
-                      key={idx}
-                      className="card-artisan"
-                      style={{
-                        padding: '24px',
-                        background: m.sender === 'user' ? 'var(--primary-light)' : 'var(--bg-surface)',
-                        borderColor: m.sender === 'user' ? 'var(--primary-border)' : 'var(--border-subtle)'
-                      }}
-                    >
-                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '8px', fontSize: '14px', fontWeight: '700', color: m.sender === 'user' ? 'var(--primary)' : 'var(--text-main)' }}>
-                        {m.sender === 'user' ? '👤 You' : '🤖 Kaarvo AI Assistant'}
+                    {/* Search Bar & Suggestion Chips */}
+                    <div className="bg-[#201f1f] p-3 sm:p-4 space-y-3 border border-[#353434] shadow-xl">
+                      <div className="relative flex items-center bg-[#0e0e0e] border border-[#353434]">
+                        <Search size={18} className="absolute left-4 text-[#8e9192]" />
+                        <input
+                          aria-label="Search artisan crafts"
+                          className="w-full bg-transparent pl-12 pr-28 py-3.5 text-[14px] text-white placeholder:text-[#8e9192] focus:outline-none"
+                          value={customerSearchQuery}
+                          onChange={(e) => setCustomerSearchQuery(e.target.value)}
+                          placeholder="Search by craft lineage, metallurgy, artisan master, or GI cluster (e.g. Molela Terracotta, Rogan, Dhokra)..."
+                          type="text"
+                        />
+                        <div className="absolute right-4 hidden sm:flex items-center gap-1 pointer-events-none">
+                          <kbd className="px-2 py-0.5 text-[9px] font-bold text-[#c4c7c8] bg-[#201f1f] border border-[#353434] tracking-wider">⌘ K</kbd>
+                        </div>
                       </div>
 
-                      <p style={{ fontSize: '15px', color: 'var(--text-main)', lineHeight: '1.5', marginBottom: m.recommendedProducts ? '16px' : '0' }}>
-                        {m.text}
-                      </p>
+                      {/* Cluster Suggestion Chips */}
+                      <div className="flex flex-wrap items-center gap-2 pt-1 text-[9px] font-bold uppercase tracking-widest">
+                        <span className="text-[#8e9192] mr-1">Cluster Indices:</span>
+                        {[
+                          'Jaipur Blue Pottery',
+                          'Changthang Pashmina',
+                          'Bidriware Inlay',
+                          'Dhokra Lost-Wax',
+                          'Patan Patola Silk',
+                          'Molela Clay Stele'
+                        ].map((chip) => (
+                          <button
+                            key={chip}
+                            onClick={() => setCustomerSearchQuery(chip)}
+                            className="bg-[#1c1b1b] hover:bg-[#353434] text-[#c4c7c8] hover:text-white px-2.5 py-1 border border-[#353434] transition-colors cursor-pointer"
+                            type="button"
+                          >
+                            {chip}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
 
-                      {/* RECOMMENDED PRODUCTS CARDS */}
-                      {m.recommendedProducts && (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginTop: '14px' }}>
-                          {m.recommendedProducts.map(p => (
-                            <div key={p.id} style={{ background: 'var(--bg-body)', padding: '14px', borderRadius: '14px', border: '1px solid var(--border-subtle)' }}>
-                              <img src={p.image} alt={p.title} style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '10px', marginBottom: '10px' }} />
-                              <div style={{ fontSize: '14px', fontWeight: '700', marginBottom: '4px' }}>{p.title}</div>
-                              <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--primary)', marginBottom: '10px' }}>₹{p.price}</div>
-                              <button className="btn-artisan-primary" onClick={(e) => addToCart(p, e)} style={{ width: '100%', padding: '8px', fontSize: '13px' }}>
-                                Add to Cart
+                  </div>
+                </section>
+
+                {/* Filter & Category Bar */}
+                <section className="sticky top-20 z-40 bg-[#141313]/95 backdrop-blur-md px-4 lg:px-12 py-3 border-b border-[#353434]">
+                  <div className="max-w-7xl mx-auto flex flex-col gap-3">
+                    
+                    {/* Category Tabs */}
+                    <div className="flex items-center justify-between overflow-x-auto pb-1">
+                      <div className="flex items-center gap-2 flex-nowrap">
+                        {[
+                          { id: 'all', label: 'All Masterworks (184)' },
+                          { id: 'pottery', label: 'Pottery & Ceramics (42)' },
+                          { id: 'textiles', label: 'Textiles & Weaves (56)' },
+                          { id: 'metalcraft', label: 'Metalcraft & Dhokra (38)' },
+                          { id: 'woodwork', label: 'Wood & Lacquer (32)' },
+                          { id: 'jewelry', label: 'Jewellery & Stones (16)' }
+                        ].map((cat) => (
+                          <button
+                            key={cat.id}
+                            onClick={() => setCustomerCategory(cat.id)}
+                            className={`px-4 py-2 text-[11px] font-bold uppercase tracking-[0.15em] whitespace-nowrap transition-all cursor-pointer ${
+                              customerCategory === cat.id
+                                ? 'bg-white text-[#141313]'
+                                : 'bg-[#1c1b1b] text-[#c4c7c8] hover:text-white hover:bg-[#201f1f] border border-[#353434]'
+                            }`}
+                            type="button"
+                          >
+                            {cat.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="hidden lg:flex items-center text-[9px] font-bold text-[#8e9192] uppercase whitespace-nowrap pl-4">
+                        <span>Displaying {products.length + 12} Verified Artifacts</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </section>
+
+                {/* 4-Column Masterwork Vitrine Grid */}
+                <section className="px-4 lg:px-12 py-12 bg-[#0e0e0e]">
+                  <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                      
+                      {/* 1. Masterworks Curated List from Stitch */}
+                      {CERTIFIED_MASTERWORKS
+                        .filter((item) => {
+                          if (customerCategory !== 'all') {
+                            const cLower = item.category.toLowerCase();
+                            if (customerCategory === 'pottery' && !cLower.includes('pottery') && !cLower.includes('clay')) return false;
+                            if (customerCategory === 'textiles' && !cLower.includes('textile') && !cLower.includes('silk') && !cLower.includes('weaves')) return false;
+                            if (customerCategory === 'metalcraft' && !cLower.includes('metal') && !cLower.includes('dhokra') && !cLower.includes('brass')) return false;
+                            if (customerCategory === 'woodwork' && !cLower.includes('wood') && !cLower.includes('lacquer')) return false;
+                            if (customerCategory === 'jewelry' && !cLower.includes('jewel') && !cLower.includes('stone')) return false;
+                          }
+                          if (customerSearchQuery.trim()) {
+                            const q = customerSearchQuery.toLowerCase();
+                            return (
+                              item.title.toLowerCase().includes(q) ||
+                              item.artisan.toLowerCase().includes(q) ||
+                              item.material.toLowerCase().includes(q) ||
+                              item.region.toLowerCase().includes(q)
+                            );
+                          }
+                          return true;
+                        })
+                        .map((item) => (
+                          <div
+                            key={item.id}
+                            className="group bg-[#1c1b1b] border border-[#353434] flex flex-col justify-between hover:bg-[#201f1f] transition-all duration-200"
+                          >
+                            <div 
+                              onClick={() => setSelectedProduct(item)}
+                              className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden cursor-pointer"
+                            >
+                              <img
+                                alt={item.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                src={item.image}
+                              />
+                              <div className="absolute top-2 left-2 flex flex-col gap-1">
+                                <span className="bg-[#0e0e0e]/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white border border-[#353434]">
+                                  {item.edition}
+                                </span>
+                                <span className="bg-[#2a2a2a]/90 text-white px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-[#353434]">
+                                  {item.gi_tag}
+                                </span>
+                              </div>
+                              <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center text-[9px] font-bold bg-[#0e0e0e]/90 px-2 py-1 border border-[#353434]">
+                                <span className="text-[#c4c7c8] uppercase tracking-wider">{item.material}</span>
+                                <span className="text-white font-extrabold">{item.craft_hours} CRAFT HRS</span>
+                              </div>
+                            </div>
+
+                            <div className="p-4 flex flex-col gap-3 flex-grow justify-between">
+                              <div className="space-y-1">
+                                <span className="text-[9px] font-bold uppercase tracking-widest text-[#8e9192] block">
+                                  {item.artisan}
+                                </span>
+                                <h2 
+                                  onClick={() => setSelectedProduct(item)}
+                                  className="font-serif text-[17px] font-bold text-white group-hover:text-amber-200 transition-colors line-clamp-1 cursor-pointer"
+                                >
+                                  {item.title}
+                                </h2>
+                                <p className="text-[12px] text-[#c4c7c8] line-clamp-2">
+                                  Ancestral museum-grade craft from {item.region}. Cryptographically attested provenance.
+                                </p>
+                              </div>
+
+                              <div className="pt-2 flex items-center justify-between border-t border-[#353434]">
+                                <div>
+                                  <span className="text-[9px] font-bold text-[#8e9192] uppercase block">VALUATION</span>
+                                  <span className="font-serif text-[18px] font-bold text-white">₹{item.price.toLocaleString()}</span>
+                                </div>
+                                <button
+                                  onClick={() => addToCart(item)}
+                                  className="bg-white text-[#141313] hover:bg-[#c8c6c6] px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
+                                  type="button"
+                                >
+                                  Acquire
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+
+                      {/* 2. User-Created Products From Backend (Synchronized Seamlessly) */}
+                      {products
+                        .filter((p) => {
+                          if (customerCategory !== 'all') {
+                            const cLower = (p.category || '').toLowerCase();
+                            if (customerCategory === 'pottery' && !cLower.includes('pottery') && !cLower.includes('clay')) return false;
+                            if (customerCategory === 'textiles' && !cLower.includes('textile') && !cLower.includes('silk')) return false;
+                            if (customerCategory === 'metalcraft' && !cLower.includes('metal') && !cLower.includes('dhokra')) return false;
+                            if (customerCategory === 'woodwork' && !cLower.includes('wood')) return false;
+                            if (customerCategory === 'jewelry' && !cLower.includes('jewel')) return false;
+                          }
+                          if (customerSearchQuery.trim()) {
+                            const q = customerSearchQuery.toLowerCase();
+                            return (
+                              (p.title || '').toLowerCase().includes(q) ||
+                              (p.artisan || '').toLowerCase().includes(q) ||
+                              (p.category || '').toLowerCase().includes(q)
+                            );
+                          }
+                          return true;
+                        })
+                        .map((p) => (
+                          <div
+                            key={p.id}
+                            className="group bg-[#1c1b1b] border border-[#353434] flex flex-col justify-between hover:bg-[#201f1f] transition-all duration-200"
+                          >
+                            <div 
+                              onClick={() => setSelectedProduct(p)}
+                              className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden cursor-pointer"
+                            >
+                              <img
+                                alt={p.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                src={p.image}
+                              />
+                              <div className="absolute top-2 left-2 flex flex-col gap-1">
+                                <span className="bg-[#0e0e0e]/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-emerald-400 border border-[#353434]">
+                                  LIVE ONDC LISTING
+                                </span>
+                              </div>
+                              <button
+                                onClick={(e) => handleDeleteProduct(p.id, e)}
+                                title="Delete Product"
+                                className="absolute top-2 right-2 bg-red-600/90 text-white p-1.5 rounded-full hover:bg-red-700 transition-colors z-10"
+                              >
+                                <Trash2 size={13} />
                               </button>
                             </div>
-                          ))}
+
+                            <div className="p-4 flex flex-col gap-3 flex-grow justify-between">
+                              <div className="space-y-1">
+                                <span className="text-[9px] font-bold uppercase tracking-widest text-[#8e9192] block">
+                                  {p.artisan || 'Verified Master Artisan'} • {p.location || 'India'}
+                                </span>
+                                <h2 
+                                  onClick={() => setSelectedProduct(p)}
+                                  className="font-serif text-[17px] font-bold text-white group-hover:text-amber-200 transition-colors line-clamp-1 cursor-pointer"
+                                >
+                                  {p.title}
+                                </h2>
+                                <p className="text-[12px] text-[#c4c7c8] line-clamp-2">
+                                  {p.description || 'Authentic artisan creation with digital provenance passport.'}
+                                </p>
+                              </div>
+
+                              <div className="pt-2 flex items-center justify-between border-t border-[#353434]">
+                                <div>
+                                  <span className="text-[9px] font-bold text-[#8e9192] uppercase block">VALUATION</span>
+                                  <span className="font-serif text-[18px] font-bold text-white">₹{p.price}</span>
+                                </div>
+                                <button
+                                  onClick={() => addToCart(p)}
+                                  className="bg-white text-[#141313] hover:bg-[#c8c6c6] px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
+                                  type="button"
+                                >
+                                  Acquire
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+
+                    </div>
+                  </div>
+                </section>
+
+                {/* Provenance & Direct Impact Banner */}
+                <section className="bg-[#141313] px-4 lg:px-12 py-16 border-t border-[#353434]/40">
+                  <div className="max-w-7xl mx-auto">
+                    <div className="bg-[#1c1b1b] border border-[#353434] p-8 lg:p-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                      <div className="flex items-start gap-4">
+                        <div className="p-3 bg-[#201f1f] border border-[#353434] text-white">
+                          <CheckCircle size={24} />
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        <div className="space-y-1">
+                          <h3 className="text-[11px] font-bold uppercase tracking-widest text-white">
+                            100% Direct Guild Settlement
+                          </h3>
+                          <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
+                            Zero intermediary margins. All acquisitions clear into master artisan guild accounts under transparent ledger disbursement protocols.
+                          </p>
+                        </div>
+                      </div>
 
-                  {aiShoppingLoading && (
-                    <div className="card-artisan" style={{ padding: '24px', textAlign: 'center', color: 'var(--primary)' }}>
-                      <RefreshCw size={22} className="animate-spin" style={{ display: 'inline', marginRight: '8px' }} />
-                      Kaarvo AI is searching verified artisan catalog...
-                    </div>
-                  )}
-                </div>
+                      <div className="flex items-start gap-4">
+                        <div className="p-3 bg-[#201f1f] border border-[#353434] text-white">
+                          <Award size={24} />
+                        </div>
+                        <div className="space-y-1">
+                          <h3 className="text-[11px] font-bold uppercase tracking-widest text-white">
+                            Cryptographic GI Authenticity
+                          </h3>
+                          <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
+                            Each physical artifact carries an immutable NFC-embedded certificate mapped to the Government of India Geographical Indication registry.
+                          </p>
+                        </div>
+                      </div>
 
-                {/* AI INPUT BAR */}
-                <div className="card-artisan" style={{ padding: '14px', display: 'flex', gap: '12px' }}>
-                  <input
-                    type="text"
-                    className="input-artisan"
-                    value={aiShoppingInput}
-                    onChange={(e) => setAiShoppingInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleAiShoppingQuery()}
-                    placeholder="Ask Kaarvo AI anything e.g. 'Show me traditional Indian crafts under ₹2000'..."
-                    style={{ border: 'none' }}
-                  />
-                  <button className="btn-artisan-primary" onClick={() => handleAiShoppingQuery()} style={{ padding: '12px 24px' }}>
-                    <Send size={16} /> Ask
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* VIEW 4: CRAFT STORIES */}
-            {customerTab === 'stories' && (
-              <div className="container-wide" style={{ maxWidth: '1080px', padding: '40px 28px 80px' }}>
-                <div style={{ marginBottom: '40px', textAlign: 'center' }}>
-                  <span className="badge-tag badge-gold" style={{ marginBottom: '8px' }}>Cultural Preservation</span>
-                  <h1 className="font-serif" style={{ fontSize: '38px', fontWeight: '700' }}>Heritage Craft Stories</h1>
-                  <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginTop: '8px' }}>
-                    Discover the ancient techniques, regional traditions, and artisan families behind every piece.
-                  </p>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
-                  {[
-                    {
-                      title: '4,000 Years of Dhokra Metal Casting',
-                      artisan: 'Bishnu Jhara • Bastar, Chhattisgarh',
-                      image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=1000&q=80',
-                      content: 'Dhokra is one of the oldest non-ferrous metal casting techniques known to human civilization, dating back to the Indus Valley Dancing Girl figurine. Using beeswax thread sculpting and clay baking, each mold is broken open after cooling, making every single piece an irreplicable antique.'
-                    },
-                    {
-                      title: 'Jaipur Natural Cooling Clay Pottery',
-                      artisan: 'Ramswaroop Prajapat • Jaipur, Rajasthan',
-                      image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=1000&q=80',
-                      content: 'Crafted from rich alluvial Jaipur clay, these water pitchers utilize micro-porous capillary evaporation to naturally cool water down by 5-8°C without electricity or chemical filters.'
-                    }
-                  ].map((story, i) => (
-                    <div key={i} className="card-artisan" style={{ padding: '32px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', alignItems: 'center' }}>
-                      <img src={story.image} alt={story.title} style={{ width: '100%', height: '260px', objectFit: 'cover', borderRadius: '16px' }} />
-                      <div>
-                        <span className="badge-tag badge-terracotta" style={{ marginBottom: '10px' }}>{story.artisan}</span>
-                        <h3 className="font-serif" style={{ fontSize: '24px', fontWeight: '700', marginBottom: '12px' }}>{story.title}</h3>
-                        <p style={{ fontSize: '15px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>{story.content}</p>
+                      <div className="flex items-start gap-4">
+                        <div className="p-3 bg-[#201f1f] border border-[#353434] text-white">
+                          <ShieldCheck size={24} />
+                        </div>
+                        <div className="space-y-1">
+                          <h3 className="text-[11px] font-bold uppercase tracking-widest text-white">
+                            Insured White-Glove Transit
+                          </h3>
+                          <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
+                            Museum-grade crate packaging and temperature-stabilized bonded global courier logistics with comprehensive transit indemnity.
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                </section>
+
               </div>
             )}
 
-          </main>
+            {/* --------------------------------------------------------------------- */}
+            {/* VIEW 3: COLLECTIONS & ARTISANS                                        */}
+            {/* --------------------------------------------------------------------- */}
+            {(customerTab === 'collections' || customerTab === 'artisans') && (
+              <div className="flex flex-col w-full text-[#e5e2e1]">
+                
+                {/* Atelier Vitrine Cover */}
+                <section className="relative w-full h-[400px] overflow-hidden bg-[#0e0e0e] border-b border-[#353434]">
+                  <div
+                    className="w-full h-full bg-cover bg-center opacity-40 mix-blend-luminosity"
+                    style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuD0BflBIeahEwYu-nbuhMSAcyp24GKqfl-JHtnRUykqCdK-_pow8gNa12MzZ2qAv3w7OsZ_zp1cgsD26eh-fSXJ0dD9aAJsqzyjwXs8wCR1LLLjEneshMk8bT6BVzWgd04ZFG8rATxhpJyuBK3R4Zwp0jt3I668_m7wjG4Ul2Fp5VA6vP5SAiLrV03pvb_4tUO2kOw84ZAQMGZC2Fu6NQ44x-4p14F8vJ0SH1kd_48')` }}
+                  ></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#141313] via-[#141313]/60 to-transparent"></div>
 
-          {/* PRODUCT DETAIL MODAL / VIEW */}
-          {selectedProduct && (
-            <div className="modal-backdrop" onClick={() => setSelectedProduct(null)}>
-              <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '860px' }}>
-                <button
-                  onClick={() => setSelectedProduct(null)}
-                  style={{ position: 'absolute', top: '20px', right: '20px', background: 'var(--bg-subtle)', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  <X size={20} />
-                </button>
+                  <div className="absolute bottom-10 left-0 w-full px-4 lg:px-12">
+                    <div className="max-w-7xl mx-auto space-y-2">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-white bg-[#0e0e0e] px-3 py-1 border border-[#353434] inline-block">
+                        ATELIER ARCHIVES • 28 HUBS
+                      </span>
+                      <h1 className="font-serif text-3xl sm:text-5xl text-white">
+                        {customerTab === 'collections' ? 'Curated Masterwork Collections' : 'Living Master Artisan Guilds'}
+                      </h1>
+                      <p className="text-[14px] text-[#c4c7c8] max-w-2xl">
+                        {customerTab === 'collections'
+                          ? 'Certified mineralogy and metallurgy lineages preserving centuries of ancestral technique.'
+                          : 'Meet the 4th and 5th generation Indian craftsmen keeping endangered art forms alive.'}
+                      </p>
+                    </div>
+                  </div>
+                </section>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', alignItems: 'start' }}>
-                  <img src={selectedProduct.image} alt={selectedProduct.title} style={{ width: '100%', height: '360px', objectFit: 'cover', borderRadius: '18px' }} />
-
-                  <div>
-                    <span className="badge-tag badge-terracotta" style={{ marginBottom: '10px' }}>{selectedProduct.category}</span>
-                    <h2 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '8px' }}>{selectedProduct.title}</h2>
+                {/* Artisan Master Cards Grid */}
+                <section className="px-4 lg:px-12 py-16 bg-[#141313]">
+                  <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
                     
-                    <div style={{ fontSize: '14px', color: 'var(--primary)', fontWeight: '600', marginBottom: '14px' }}>
-                      📍 Artisan: {selectedProduct.artisan || 'Master Artisan Guild'} • {selectedProduct.location || 'India'}
-                    </div>
-
-                    <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--text-main)', marginBottom: '18px' }}>
-                      ₹{selectedProduct.price}
-                    </div>
-
-                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '20px' }}>
-                      {selectedProduct.description}
-                    </p>
-
-                    <div style={{ background: 'var(--bg-subtle)', padding: '14px', borderRadius: '12px', fontSize: '13px', marginBottom: '18px' }}>
-                      <div style={{ fontWeight: '700', marginBottom: '4px' }}>✨ Fair Trade Cost Breakdown</div>
-                      <div style={{ color: 'var(--text-muted)' }}>Material: ₹180 | Artisan Labor: ₹150 | Fair Margin: 40%</div>
-                    </div>
-
-                    {/* HACKATHON INNOVATION BUTTONS: Audio Story, Digital Passport & Flyer */}
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
-                      <button
-                        type="button"
-                        onClick={() => speakText(`${selectedProduct.title}. ${selectedProduct.description}. Authentic handcrafted provenance verified by Kaarvo Guild.`, 'en-IN')}
-                        style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '8px 12px', borderRadius: '8px', background: '#F1F5F9', border: '1px solid #CBD5E1', cursor: 'pointer', color: '#1E293B' }}
-                      >
-                        <Volume2 size={14} /> 🎧 Listen to Craft Story
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPassportProduct(selectedProduct)}
-                        style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '8px 12px', borderRadius: '8px', background: '#ECFDF5', border: '1px solid #10B981', cursor: 'pointer', color: '#059669' }}
-                      >
-                        <QrCode size={14} /> 📜 Digital Passport & QR
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setFlyerProduct(selectedProduct)}
-                        style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '8px 12px', borderRadius: '8px', background: '#FEF3C7', border: '1px solid #D97706', cursor: 'pointer', color: '#B45309' }}
-                      >
-                        <Share2 size={14} /> 🎨 WhatsApp Flyer
-                      </button>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                      <button
-                        className="btn-artisan-primary"
-                        onClick={(e) => {
-                          addToCart(selectedProduct, e);
-                          setSelectedProduct(null);
-                        }}
-                        style={{ flex: 1, padding: '14px' }}
-                      >
-                        <ShoppingCart size={18} /> Add to Cart
-                      </button>
-                      <button
-                        className="btn-artisan-secondary"
-                        onClick={(e) => {
-                          addToCart(selectedProduct, e);
-                          setSelectedProduct(null);
-                          setIsCartOpen(true);
-                        }}
-                        style={{ flex: 1, padding: '14px' }}
-                      >
-                        Buy Now
-                      </button>
-                      <button
-                        onClick={(e) => handleDeleteProduct(selectedProduct.id, e)}
-                        style={{
-                          background: 'rgba(239, 68, 68, 0.1)',
-                          border: '1px solid #ef4444',
-                          color: '#ef4444',
-                          padding: '14px 18px',
-                          borderRadius: '12px',
-                          cursor: 'pointer',
-                          fontWeight: '700',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px'
-                        }}
-                      >
-                        <Trash2 size={18} /> Delete Item
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* CART DRAWER & CHECKOUT */}
-          {isCartOpen && (
-            <div className="modal-backdrop" onClick={() => setIsCartOpen(false)}>
-              <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                  <h3 style={{ fontSize: '20px', fontWeight: '800' }}>Your Shopping Cart ({cartItems.length})</h3>
-                  <button onClick={() => setIsCartOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                    <X size={22} />
-                  </button>
-                </div>
-
-                {cartItems.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted)' }}>
-                    <ShoppingCart size={54} style={{ marginBottom: '16px' }} />
-                    <p style={{ fontSize: '15px' }}>Your cart is empty.</p>
-                  </div>
-                ) : (
-                  <div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxHeight: '320px', overflowY: 'auto', marginBottom: '24px' }}>
-                      {cartItems.map(item => (
-                        <div key={item.id} style={{ display: 'flex', gap: '14px', alignItems: 'center', background: 'var(--bg-subtle)', padding: '12px', borderRadius: '12px' }}>
-                          <img src={item.image} alt={item.title} style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '10px' }} />
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: '14px', fontWeight: '700' }}>{item.title}</div>
-                            <div style={{ fontSize: '15px', color: 'var(--primary)', fontWeight: '800' }}>₹{item.price}</div>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <button onClick={() => updateCartQty(item.id, -1)} style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid var(--border-subtle)', cursor: 'pointer' }}>-</button>
-                            <span style={{ fontSize: '14px', fontWeight: '700' }}>{item.quantity}</span>
-                            <button onClick={() => updateCartQty(item.id, 1)} style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid var(--border-subtle)', cursor: 'pointer' }}>+</button>
-                          </div>
+                    {/* Master 1: Leeladhar Sharma */}
+                    <div className="bg-[#201f1f] border border-[#353434] p-6 lg:p-8 flex flex-col sm:flex-row gap-6 items-center">
+                      <img
+                        alt="Master Leeladhar Sharma"
+                        className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-2 border-white/20 shrink-0"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDonYfE4pP7xnEzbq1ogN4JdUCyGObr5GHwKA-a-Fewr7DcZxuog1aROhFCWb7hoOLEZISrT4gqnMEfW3FrIbmlyTXXHh0T4s9pK6Ym8ZwcYb-AgMsOE9pNc06FGImp0WWNvs3T7luzQ2eTa63eH4jubqY_ZUGx3imaxuDxZLYG1_Kd-z6_UqbQV4khG2vOwAmafZtksOYRKXMjveNEg3h5ZEAkUb7FZHrJ1FifJ-k"
+                      />
+                      <div className="space-y-2">
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#8e9192]">SANGANER ATELIER, JAIPUR</span>
+                        <h3 className="font-serif text-2xl text-white font-bold">Master Leeladhar Sharma</h3>
+                        <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
+                          5th-generation Blue Pottery alchemist. Guarding the clay-free formulation of quartz stone, Fuller’s earth, and Persian cobalt glaze for 40 uninterrupted years.
+                        </p>
+                        <div className="pt-2 flex items-center gap-3">
+                          <button
+                            onClick={() => { setCustomerCategory('pottery'); switchCustomerTab('shop'); }}
+                            className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#c8c6c6] transition-colors cursor-pointer"
+                          >
+                            View Works
+                          </button>
+                          <span className="text-[10px] font-bold text-[#8e9192] uppercase">38 Yrs at Wheel</span>
                         </div>
-                      ))}
-                    </div>
-
-                    <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '16px', marginBottom: '24px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '8px' }}>
-                        <span>Subtotal</span>
-                        <span>₹{cartSubtotal}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '8px' }}>
-                        <span>Delivery</span>
-                        <span>{shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '20px', fontWeight: '800', color: 'var(--text-main)', marginTop: '10px' }}>
-                        <span>Total</span>
-                        <span>₹{cartTotal}</span>
                       </div>
                     </div>
 
+                    {/* Master 2: Hariram Kumbhar */}
+                    <div className="bg-[#201f1f] border border-[#353434] p-6 lg:p-8 flex flex-col sm:flex-row gap-6 items-center">
+                      <img
+                        alt="Master Hariram"
+                        className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-2 border-white/20 shrink-0"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuALfOFj7XjcnfofzZz2EQCPzpY0eOLUjFj9gqBAZ6bXDSa0GRxats1_rooKzbCwxNIuCkAxxlYFE_V-SLZZdIF-JEm1TNlx68D4X1BoD9_W37SnX-X8Cv7G2UaebRLs1vpv1fm6k5OJy--9vTzGba0PbiYG8I70_6m2VZubbJzSnWuY7PjI9t1Z_p8HAm9rwjuvbGlmEnW404ydG-vrOM2DctDZ4puIyLhSugh4bsQ"
+                      />
+                      <div className="space-y-2">
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#8e9192]">MOLELA CLUSTER, RAJASTHAN</span>
+                        <h3 className="font-serif text-2xl text-white font-bold">Master Hariram Kumbhar</h3>
+                        <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
+                          4th-generation terracotta sculptor modeling the alluvial mud of the Banas river into hollow votive stele plaques completely freehand without any molds.
+                        </p>
+                        <div className="pt-2 flex items-center gap-3">
+                          <button
+                            onClick={() => { setCustomerCategory('pottery'); switchCustomerTab('shop'); }}
+                            className="bg-white text-[#141313] px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#c8c6c6] transition-colors cursor-pointer"
+                          >
+                            View Works
+                          </button>
+                          <span className="text-[10px] font-bold text-[#8e9192] uppercase">46 Yrs Guild Heritage</span>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </section>
+
+              </div>
+            )}
+
+            {/* --------------------------------------------------------------------- */}
+            {/* VIEW 4: AI BUSINESS & SHOPPING COPILOT                                */}
+            {/* --------------------------------------------------------------------- */}
+            {customerTab === 'ai_ask' && (
+              <div className="max-w-4xl mx-auto px-4 py-12">
+                <div className="bg-[#201f1f] border border-[#353434] p-8 space-y-6">
+                  
+                  <div className="flex items-center gap-3 pb-4 border-b border-[#353434]">
+                    <div className="w-10 h-10 rounded-full bg-white text-[#141313] flex items-center justify-center font-bold">
+                      <Sparkles size={20} />
+                    </div>
+                    <div>
+                      <h2 className="font-serif text-2xl text-white">Kaarvo AI Craft Copilot</h2>
+                      <p className="text-[12px] text-[#c4c7c8]">
+                        Ask about Indian craft heritage, custom gift recommendations, fair price audits, or speak in Hindi/regional languages.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Message History */}
+                  <div className="space-y-4 max-h-[420px] overflow-y-auto pr-2">
+                    {aiShoppingMessages.map((m, idx) => (
+                      <div
+                        key={idx}
+                        className={`p-4 border ${
+                          m.sender === 'user'
+                            ? 'bg-[#2a2a2a] border-[#444748] ml-8'
+                            : 'bg-[#141313] border-[#353434] mr-8'
+                        }`}
+                      >
+                        <div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">
+                          {m.sender === 'user' ? 'You' : 'Kaarvo AI Copilot'}
+                        </div>
+                        <p className="text-[14px] text-[#e5e2e1] leading-relaxed whitespace-pre-wrap">
+                          {m.text}
+                        </p>
+                      </div>
+                    ))}
+                    {aiShoppingLoading && (
+                      <div className="p-4 bg-[#141313] border border-[#353434] text-center text-[#c4c7c8] text-sm flex items-center justify-center gap-2">
+                        <RefreshCw size={16} className="animate-spin text-white" />
+                        Analyzing verified craft clusters...
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Input Form with Neural Voice Mic */}
+                  <div className="flex items-center gap-3 pt-4 border-t border-[#353434]">
+                    <input
+                      type="text"
+                      className="flex-1 bg-[#0e0e0e] border border-[#353434] p-3 text-[14px] text-white focus:outline-none focus:border-white"
+                      value={aiShoppingInput}
+                      onChange={(e) => setAiShoppingInput(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleAiShoppingQuery()}
+                      placeholder="Ask Kaarvo AI anything e.g. 'Show me authentic Dhokra brass under ₹20,000'..."
+                    />
                     <button
-                      className="btn-artisan-primary"
-                      onClick={() => {
-                        setIsCartOpen(false);
-                        setIsCheckoutOpen(true);
-                      }}
-                      style={{ width: '100%', padding: '16px', fontSize: '16px' }}
+                      onClick={() => handleAiShoppingQuery()}
+                      className="bg-white text-[#141313] px-6 py-3 text-[11px] font-bold uppercase tracking-widest hover:bg-[#c8c6c6] transition-colors cursor-pointer"
                     >
-                      Proceed to Checkout →
+                      Ask
                     </button>
                   </div>
-                )}
-              </div>
-            </div>
-          )}
 
-          {/* CHECKOUT MODAL WITH PROGRESS INDICATOR */}
-          {isCheckoutOpen && (
-            <div className="modal-backdrop" onClick={() => setIsCheckoutOpen(false)}>
-              <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '540px' }}>
-                
-                {/* PROGRESS INDICATOR */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '28px', position: 'relative' }}>
-                  {['Address', 'Delivery', 'Payment', 'Confirmation'].map((stepName, i) => (
-                    <div key={stepName} style={{ textAlign: 'center', flex: 1 }}>
-                      <div style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '50%',
-                        background: checkoutStep >= (i + 1) ? 'var(--primary)' : 'var(--bg-subtle)',
-                        color: checkoutStep >= (i + 1) ? '#FFF' : 'var(--text-muted)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: '700',
-                        fontSize: '13px',
-                        margin: '0 auto 6px'
-                      }}>
-                        {i + 1}
+                </div>
+              </div>
+            )}
+
+            {/* --------------------------------------------------------------------- */}
+            {/* FULL STITCH PRODUCT DETAIL DOSSIER MODAL                              */}
+            {/* --------------------------------------------------------------------- */}
+            {selectedProduct && (
+              <div 
+                className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md overflow-y-auto p-4 lg:p-12 flex justify-center items-start"
+                onClick={() => setSelectedProduct(null)}
+              >
+                <div 
+                  className="bg-[#141313] border border-[#353434] w-full max-w-6xl overflow-hidden my-auto relative shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  
+                  {/* Top Archival Navigation Strip */}
+                  <div className="w-full bg-[#0e0e0e] border-b border-[#353434] px-6 py-3 flex flex-wrap items-center justify-between text-[10px] font-bold uppercase tracking-widest text-[#8e9192]">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white">REGISTRY ARCHIVE</span>
+                      <span>/</span>
+                      <span className="text-[#c4c7c8]">{selectedProduct.category}</span>
+                      <span>/</span>
+                      <span className="text-white">{selectedProduct.title}</span>
+                    </div>
+                    <button
+                      onClick={() => setSelectedProduct(null)}
+                      className="p-1 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+
+                  {/* Main 2-Column Showcase */}
+                  <div className="p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    {/* Left Column: Gallery & Telemetry (7 Cols) */}
+                    <div className="lg:col-span-7 flex flex-col gap-4">
+                      
+                      {/* Viewport Frame */}
+                      <div className="relative w-full aspect-[4/5] bg-[#0e0e0e] overflow-hidden border border-[#353434]">
+                        <img
+                          alt={selectedProduct.title}
+                          className="w-full h-full object-cover"
+                          src={selectedProduct.image}
+                        />
+                        <div className="absolute top-3 left-3 bg-[#0e0e0e]/90 px-3 py-1 border border-[#353434]">
+                          <span className="text-[9px] font-bold text-white uppercase tracking-widest">
+                            CRYPTOGRAPHIC GI PROVENANCE ATTESTED
+                          </span>
+                        </div>
+                        <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center text-[9px] font-bold bg-[#0e0e0e]/90 px-3 py-1.5 border border-[#353434] text-[#c4c7c8]">
+                          <span>ASSAY WEIGHT: 3.120 KG</span>
+                          <span>CRAFT HOURS: {selectedProduct.craft_hours || '44'} HRS</span>
+                        </div>
                       </div>
-                      <span style={{ fontSize: '12px', fontWeight: '600', color: checkoutStep >= (i + 1) ? 'var(--primary)' : 'var(--text-muted)' }}>
-                        {stepName}
+
+                      {/* NFC Passkey Strip */}
+                      <div className="bg-[#1c1b1b] border border-[#353434] p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <QrCode size={24} className="text-white" />
+                          <div>
+                            <p className="text-[11px] font-bold uppercase tracking-widest text-white">NFC Cryptographic Physical Twin</p>
+                            <p className="text-[12px] text-[#c4c7c8]">Tap device upon receiving to inspect immutable kiln provenance ledger.</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setPassportProduct(selectedProduct)}
+                          className="text-[9px] font-bold text-white uppercase tracking-widest px-3 py-1.5 bg-[#2a2a2a] border border-[#353434] hover:bg-white hover:text-[#141313] transition-colors"
+                        >
+                          View Passport
+                        </button>
+                      </div>
+
+                    </div>
+
+                    {/* Right Column: Acquisition Dossier (5 Cols) */}
+                    <div className="lg:col-span-5 flex flex-col bg-[#1c1b1b] border border-[#353434] p-6 lg:p-8 space-y-6">
+                      
+                      <div>
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#8e9192] block mb-1">
+                          ORIGIN: {selectedProduct.location || selectedProduct.region || 'INDIA'} • GI CERTIFIED
+                        </span>
+                        <h1 className="font-serif text-3xl text-white tracking-tight">
+                          {selectedProduct.title}
+                        </h1>
+                        <div className="flex items-center gap-2 pt-2">
+                          <span className="text-[13px] text-white font-bold">{selectedProduct.artisan || 'Master Artisan'}</span>
+                          <CheckCircle size={14} className="text-emerald-400" />
+                        </div>
+                      </div>
+
+                      {/* Valuation Tier & 89% Guild Cut */}
+                      <div className="py-4 bg-[#0e0e0e] px-5 border border-[#353434] space-y-2">
+                        <div className="flex items-baseline justify-between">
+                          <span className="font-serif text-3xl font-bold text-white">₹{selectedProduct.price?.toLocaleString()}</span>
+                          <span className="text-[9px] font-bold uppercase px-2 py-0.5 bg-[#2a2a2a] text-white border border-[#353434]">
+                            DIRECT GUILD CUT 89%
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-[#c4c7c8]">
+                          ₹{Math.round(selectedProduct.price * 0.89).toLocaleString()} proceeds directly disbursed to verified artisan cooperative
+                        </p>
+                      </div>
+
+                      {/* Curatorial Description */}
+                      <p className="text-[13px] text-[#c4c7c8] leading-relaxed">
+                        {selectedProduct.description || 'Museum-grade artifact engineered with centuries of ancestral mastery and verified under Government of India Geographical Indication protocols.'}
+                      </p>
+
+                      {/* Metrology Spec Grid */}
+                      <div className="border border-[#353434] divide-y divide-[#353434] bg-[#0e0e0e] text-[11px]">
+                        <div className="flex justify-between p-2.5">
+                          <span className="text-[#8e9192] uppercase">Craft Duration</span>
+                          <span className="font-bold text-white">{selectedProduct.craft_hours || '44'} Dedicated Hours</span>
+                        </div>
+                        <div className="flex justify-between p-2.5">
+                          <span className="text-[#8e9192] uppercase">Assay Materials</span>
+                          <span className="font-bold text-white">{selectedProduct.material || 'Natural Mineral & Earth'}</span>
+                        </div>
+                        <div className="flex justify-between p-2.5">
+                          <span className="text-[#8e9192] uppercase">Lineage Ledger</span>
+                          <span className="font-bold text-white">Batch #KV-IND-{selectedProduct.id || '248'}</span>
+                        </div>
+                      </div>
+
+                      {/* Acquire Action Button */}
+                      <div className="space-y-3 pt-2">
+                        <button
+                          onClick={() => {
+                            addToCart(selectedProduct);
+                            setSelectedProduct(null);
+                            setIsCartOpen(true);
+                          }}
+                          className="w-full bg-white text-[#141313] hover:bg-[#c8c6c6] py-4 text-[12px] font-bold uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <ShoppingBag size={16} />
+                          <span>Acquire Masterwork</span>
+                        </button>
+                        <button
+                          onClick={() => speakText(`${selectedProduct.title}. ${selectedProduct.description || 'Authentic handcrafted artifact'}. Verified by Kaarvo Guild.`, 'en-IN')}
+                          className="w-full bg-[#2a2a2a] hover:bg-[#353434] text-white py-2.5 text-[11px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer border border-[#353434]"
+                        >
+                          <Volume2 size={14} />
+                          <span>Listen to Heritage Story</span>
+                        </button>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  {/* Section: Cryptographic Fair Pricing Ledger */}
+                  <div className="bg-[#0e0e0e] border-t border-[#353434] p-6 lg:p-10 space-y-4">
+                    <div className="flex justify-between items-center pb-2">
+                      <span className="text-[10px] font-bold text-white uppercase tracking-widest">
+                        AUDITED ESCROW TRANSPARENCY
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-400 uppercase">
+                        Polygon Mainnet Hash: 0x8a92f03b22...c78d1e90
                       </span>
                     </div>
-                  ))}
-                </div>
 
-                {/* STEP 1: ADDRESS */}
-                {checkoutStep === 1 && (
-                  <div>
-                    <h3 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '18px' }}>Shipping Address</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '24px' }}>
-                      <input type="text" className="input-artisan" value={checkoutData.name} onChange={(e) => setCheckoutData({ ...checkoutData, name: e.target.value })} placeholder="Full Name" />
-                      <input type="text" className="input-artisan" value={checkoutData.phone} onChange={(e) => setCheckoutData({ ...checkoutData, phone: e.target.value })} placeholder="Mobile Number" />
-                      <input type="text" className="input-artisan" value={checkoutData.address} onChange={(e) => setCheckoutData({ ...checkoutData, address: e.target.value })} placeholder="Street Address" />
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                        <input type="text" className="input-artisan" value={checkoutData.city} onChange={(e) => setCheckoutData({ ...checkoutData, city: e.target.value })} placeholder="City" />
-                        <input type="text" className="input-artisan" value={checkoutData.pincode} onChange={(e) => setCheckoutData({ ...checkoutData, pincode: e.target.value })} placeholder="Pincode" />
+                    <div className="h-3 w-full flex overflow-hidden bg-[#201f1f]">
+                      <div className="bg-white h-full w-[89%]" title="Artisan Direct (89%)"></div>
+                      <div className="bg-[#c8c6c6] h-full w-[4.5%]" title="Guild Fund (4.5%)"></div>
+                      <div className="bg-[#8e9192] h-full w-[3.5%]" title="Logistics (3.5%)"></div>
+                      <div className="bg-[#444748] h-full w-[3%]" title="Platform (3%)"></div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-[11px] pt-2">
+                      <div className="bg-[#1c1b1b] p-3 border border-[#353434]">
+                        <span className="text-[#8e9192] block uppercase text-[9px]">89% Direct Maker</span>
+                        <span className="text-white font-bold">₹{Math.round(selectedProduct.price * 0.89).toLocaleString()}</span>
+                      </div>
+                      <div className="bg-[#1c1b1b] p-3 border border-[#353434]">
+                        <span className="text-[#8e9192] block uppercase text-[9px]">4.5% Guild Coop</span>
+                        <span className="text-white font-bold">₹{Math.round(selectedProduct.price * 0.045).toLocaleString()}</span>
+                      </div>
+                      <div className="bg-[#1c1b1b] p-3 border border-[#353434]">
+                        <span className="text-[#8e9192] block uppercase text-[9px]">3.5% White-Glove Transit</span>
+                        <span className="text-white font-bold">₹{Math.round(selectedProduct.price * 0.035).toLocaleString()}</span>
+                      </div>
+                      <div className="bg-[#1c1b1b] p-3 border border-[#353434]">
+                        <span className="text-[#8e9192] block uppercase text-[9px]">3% Kaarvo Protocol</span>
+                        <span className="text-white font-bold">₹{Math.round(selectedProduct.price * 0.03).toLocaleString()}</span>
                       </div>
                     </div>
-                    <button className="btn-artisan-primary" onClick={() => setCheckoutStep(2)} style={{ width: '100%', padding: '14px' }}>
-                      Continue to Delivery →
-                    </button>
                   </div>
-                )}
 
-                {/* STEP 2: DELIVERY */}
-                {checkoutStep === 2 && (
-                  <div>
-                    <h3 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '18px' }}>Delivery Option</h3>
-                    <div style={{ background: 'var(--primary-light)', border: '1px solid var(--primary-border)', padding: '20px', borderRadius: '14px', marginBottom: '24px' }}>
-                      <div style={{ fontWeight: '700', color: 'var(--primary)', fontSize: '15px' }}>🚀 Standard Direct Artisan Shipping</div>
-                      <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '6px' }}>Dispatched directly from artisan studio in Jaipur. Estimated 3-5 business days.</div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                      <button className="btn-artisan-secondary" onClick={() => setCheckoutStep(1)} style={{ padding: '14px 20px' }}>Back</button>
-                      <button className="btn-artisan-primary" onClick={() => setCheckoutStep(3)} style={{ flex: 1, padding: '14px' }}>Continue to Payment →</button>
-                    </div>
-                  </div>
-                )}
+                </div>
+              </div>
+            )}
 
-                {/* STEP 3: PAYMENT */}
-                {checkoutStep === 3 && (
-                  <div>
-                    <h3 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '18px' }}>Payment Method</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-                      {['UPI (PhonePe / GPay)', 'Cash on Delivery', 'Credit / Debit Card'].map(pm => (
-                        <div
-                          key={pm}
-                          onClick={() => setCheckoutData({ ...checkoutData, paymentMethod: pm })}
-                          style={{
-                            padding: '16px',
-                            borderRadius: '12px',
-                            border: checkoutData.paymentMethod === pm ? '2px solid var(--primary)' : '1px solid var(--border-subtle)',
-                            background: checkoutData.paymentMethod === pm ? 'var(--primary-light)' : 'var(--bg-surface)',
-                            cursor: 'pointer',
-                            fontWeight: '600',
-                            fontSize: '15px'
-                          }}
+            {/* --------------------------------------------------------------------- */}
+            {/* CART DRAWER & CHECKOUT                                                */}
+            {/* --------------------------------------------------------------------- */}
+            {isCartOpen && (
+              <div 
+                className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex justify-end"
+                onClick={() => setIsCartOpen(false)}
+              >
+                <div 
+                  className="bg-[#1c1b1b] border-l border-[#353434] w-full max-w-md h-full p-6 flex flex-col justify-between"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-center pb-4 border-b border-[#353434]">
+                      <h3 className="font-serif text-2xl text-white">Your Shopping Cart ({cartItems.length})</h3>
+                      <button onClick={() => setIsCartOpen(false)} className="text-[#8e9192] hover:text-white cursor-pointer">
+                        <X size={22} />
+                      </button>
+                    </div>
+
+                    {cartItems.length === 0 ? (
+                      <div className="text-center py-16 text-[#8e9192] space-y-3">
+                        <ShoppingBag size={48} className="mx-auto text-[#444748]" />
+                        <p className="text-[14px]">Your cart is currently empty.</p>
+                        <button
+                          onClick={() => { setIsCartOpen(false); switchCustomerTab('shop'); }}
+                          className="bg-white text-[#141313] px-6 py-2.5 text-[11px] font-bold uppercase tracking-widest mt-2 cursor-pointer"
                         >
-                          {pm}
-                        </div>
-                      ))}
-                    </div>
-                    <button className="btn-artisan-primary" onClick={handlePlaceOrder} disabled={isPlacingOrder} style={{ width: '100%', padding: '16px', fontSize: '16px' }}>
-                      {isPlacingOrder ? 'Processing...' : `Confirm & Pay ₹${cartTotal}`}
-                    </button>
+                          Explore Masterworks
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
+                        {cartItems.map((item) => (
+                          <div key={item.id} className="flex gap-4 items-center bg-[#201f1f] border border-[#353434] p-3">
+                            <img src={item.image} alt={item.title} className="w-14 h-14 object-cover" />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-[13px] font-bold text-white truncate">{item.title}</h4>
+                              <div className="text-[14px] font-serif font-bold text-white">₹{item.price}</div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => updateCartQty(item.id, -1)}
+                                className="w-7 h-7 bg-[#2a2a2a] border border-[#353434] text-white flex items-center justify-center font-bold"
+                              >
+                                -
+                              </button>
+                              <span className="text-[12px] font-bold text-white px-1">{item.quantity}</span>
+                              <button
+                                onClick={() => updateCartQty(item.id, 1)}
+                                className="w-7 h-7 bg-[#2a2a2a] border border-[#353434] text-white flex items-center justify-center font-bold"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
 
-                {/* STEP 4: SUCCESS */}
-                {checkoutStep === 4 && (
-                  <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                    <CheckCircle size={64} color="#10B981" style={{ marginBottom: '16px' }} />
-                    <h2 style={{ fontSize: '26px', fontWeight: '800', marginBottom: '8px' }}>Order Placed Successfully!</h2>
-                    <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: '28px' }}>
-                      Order notification sent directly to the artisan's ONDC Beckn Gateway.
-                    </p>
-                    <button className="btn-artisan-primary" onClick={() => setIsCheckoutOpen(false)} style={{ padding: '14px 28px' }}>
-                      Return to Marketplace
+                  {cartItems.length > 0 && (
+                    <div className="pt-6 border-t border-[#353434] space-y-4">
+                      <div className="space-y-2 text-[13px] text-[#c4c7c8]">
+                        <div className="flex justify-between">
+                          <span>Subtotal</span>
+                          <span className="text-white font-bold">₹{cartSubtotal}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Global Insured Logistics</span>
+                          <span className="text-emerald-400 font-bold">FREE</span>
+                        </div>
+                        <div className="flex justify-between text-lg font-bold text-white pt-2 border-t border-[#353434]">
+                          <span>Net Escrow Total</span>
+                          <span>₹{cartTotal}</span>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setIsCartOpen(false);
+                          setIsCheckoutOpen(true);
+                        }}
+                        className="w-full bg-white text-[#141313] hover:bg-[#c8c6c6] py-4 text-[12px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
+                      >
+                        Proceed to Secure Checkout →
+                      </button>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+            )}
+
+            {/* --------------------------------------------------------------------- */}
+            {/* CHECKOUT MODAL                                                        */}
+            {/* --------------------------------------------------------------------- */}
+            {isCheckoutOpen && (
+              <div 
+                className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
+                onClick={() => setIsCheckoutOpen(false)}
+              >
+                <div 
+                  className="bg-[#1c1b1b] border border-[#353434] w-full max-w-lg p-6 lg:p-8 space-y-6 shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex justify-between items-center pb-3 border-b border-[#353434]">
+                    <h3 className="font-serif text-2xl text-white">Masterwork Acquisition Dossier</h3>
+                    <button onClick={() => setIsCheckoutOpen(false)} className="text-[#8e9192] hover:text-white">
+                      <X size={20} />
                     </button>
                   </div>
-                )}
+
+                  {checkoutStep === 1 && (
+                    <div className="space-y-4">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-white block">Step 1: Shipping Address</span>
+                      <input
+                        type="text"
+                        className="w-full bg-[#0e0e0e] border border-[#353434] p-3 text-[14px] text-white focus:outline-none"
+                        value={checkoutData.name}
+                        onChange={(e) => setCheckoutData({ ...checkoutData, name: e.target.value })}
+                        placeholder="Full Legal Name / Collector Name"
+                      />
+                      <input
+                        type="text"
+                        className="w-full bg-[#0e0e0e] border border-[#353434] p-3 text-[14px] text-white focus:outline-none"
+                        value={checkoutData.phone}
+                        onChange={(e) => setCheckoutData({ ...checkoutData, phone: e.target.value })}
+                        placeholder="Contact Phone Number"
+                      />
+                      <input
+                        type="text"
+                        className="w-full bg-[#0e0e0e] border border-[#353434] p-3 text-[14px] text-white focus:outline-none"
+                        value={checkoutData.address}
+                        onChange={(e) => setCheckoutData({ ...checkoutData, address: e.target.value })}
+                        placeholder="Street Address / Vault Location"
+                      />
+                      <div className="grid grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          className="bg-[#0e0e0e] border border-[#353434] p-3 text-[14px] text-white focus:outline-none"
+                          value={checkoutData.city}
+                          onChange={(e) => setCheckoutData({ ...checkoutData, city: e.target.value })}
+                          placeholder="City"
+                        />
+                        <input
+                          type="text"
+                          className="bg-[#0e0e0e] border border-[#353434] p-3 text-[14px] text-white focus:outline-none"
+                          value={checkoutData.pincode}
+                          onChange={(e) => setCheckoutData({ ...checkoutData, pincode: e.target.value })}
+                          placeholder="Pincode / Postal"
+                        />
+                      </div>
+                      <button
+                        onClick={() => setCheckoutStep(2)}
+                        className="w-full bg-white text-[#141313] py-3.5 text-[11px] font-bold uppercase tracking-widest hover:bg-[#c8c6c6] transition-colors cursor-pointer mt-2"
+                      >
+                        Continue to Delivery →
+                      </button>
+                    </div>
+                  )}
+
+                  {checkoutStep === 2 && (
+                    <div className="space-y-4">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-white block">Step 2: Insured Dispatch Protocol</span>
+                      <div className="bg-[#201f1f] border border-[#353434] p-4 space-y-2">
+                        <div className="text-[13px] font-bold text-white flex items-center gap-2">
+                          <CheckCircle size={16} className="text-emerald-400" />
+                          <span>Insured Temperature-Controlled Transit</span>
+                        </div>
+                        <p className="text-[12px] text-[#c4c7c8]">
+                          Custom wooden crate with shock-sensor telemetry dispatched directly from artisan guild workshops.
+                        </p>
+                      </div>
+                      <div className="flex gap-3 pt-2">
+                        <button
+                          onClick={() => setCheckoutStep(1)}
+                          className="bg-[#2a2a2a] text-white px-6 py-3 text-[11px] font-bold uppercase tracking-widest border border-[#353434]"
+                        >
+                          Back
+                        </button>
+                        <button
+                          onClick={() => setCheckoutStep(3)}
+                          className="flex-1 bg-white text-[#141313] py-3 text-[11px] font-bold uppercase tracking-widest hover:bg-[#c8c6c6] transition-colors"
+                        >
+                          Continue to Payment →
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {checkoutStep === 3 && (
+                    <div className="space-y-4">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-white block">Step 3: Escrow Payment</span>
+                      <div className="bg-[#201f1f] border border-[#353434] p-4 space-y-3">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-[#c4c7c8]">Escrow Total</span>
+                          <span className="text-xl font-serif font-bold text-white">₹{cartTotal}</span>
+                        </div>
+                        <p className="text-[11px] text-emerald-400">
+                          89% of this amount will be immediately locked and released to the artisan cooperative via ONDC Beckn settlement.
+                        </p>
+                      </div>
+                      <button
+                        onClick={handleProcessOrder}
+                        className="w-full bg-white text-[#141313] py-4 text-[12px] font-bold uppercase tracking-[0.2em] hover:bg-[#c8c6c6] transition-colors cursor-pointer"
+                      >
+                        Confirm Acquisition & Lock Escrow
+                      </button>
+                    </div>
+                  )}
+
+                  {checkoutStep === 4 && (
+                    <div className="text-center py-6 space-y-4">
+                      <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/40">
+                        <CheckCircle size={32} />
+                      </div>
+                      <h4 className="font-serif text-2xl text-white">Acquisition Registered</h4>
+                      <p className="text-[13px] text-[#c4c7c8] max-w-sm mx-auto">
+                        Your order has been cryptographically confirmed and dispatched to the artisan guild via ONDC Beckn gateway.
+                      </p>
+                      <button
+                        onClick={() => { setIsCheckoutOpen(false); setCheckoutStep(1); }}
+                        className="bg-white text-[#141313] px-8 py-3 text-[11px] font-bold uppercase tracking-widest hover:bg-[#c8c6c6] transition-colors cursor-pointer"
+                      >
+                        Return to Gallery
+                      </button>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+            )}
+
+            {/* --------------------------------------------------------------------- */}
+            {/* GOOGLE STITCH 5-COLUMN LUXURY FOOTER                                  */}
+            {/* --------------------------------------------------------------------- */}
+            <footer className="w-full bg-[#0e0e0e] border-t border-[#353434]/40 pt-16 pb-12">
+              <div className="max-w-7xl mx-auto px-4 lg:px-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-12 border-b border-[#353434]/30">
+                  
+                  {/* Col 1: Brand & Mission */}
+                  <div className="space-y-4 lg:col-span-1">
+                    <div className="flex items-center gap-3">
+                      <img
+                        alt="KAARVO Luxury Logo"
+                        className="h-6 w-auto object-contain"
+                        src="https://lh3.googleusercontent.com/aida/AEtjO1Uhs93tN5Vdr6hc1UEwSALe4SxN2jM7MAWTO06wrU6kabT4FGtTQWfdiy9tbQ63qIPO-dpLgZ3ZivuBJ9iX0PlSzf8BhTtHyKmNQLpse_GSfDb8aVY9qItgKBCSlGodxdKuR4S8WE2n0S5WXYRSfUhpa8KusB3qLRM5wnoy4ZFj6I5fNXG0sq5XTt6w5Df6E64Y6SJ5T0bXiiZlQrEgi0Tl5Ey0XfRDaxvLNu6-1cQG"
+                      />
+                      <span className="font-serif text-[18px] text-white tracking-widest uppercase font-bold">
+                        KAARVO
+                      </span>
+                    </div>
+                    <p className="text-[12px] text-[#c4c7c8] leading-relaxed">
+                      Haute horlogerie discipline meeting ancestral Indian artisan lineage. Monolithic gallery commerce for museum-grade artifacts.
+                    </p>
+                    <div className="flex items-center gap-2 text-[#8e9192]">
+                      <CheckCircle size={14} className="text-white" />
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-[#c4c7c8]">
+                        GI Cluster Verified
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Col 2: Explore Crafts */}
+                  <div>
+                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-white mb-4">
+                      Explore Crafts
+                    </h4>
+                    <ul className="space-y-2 text-[12px] text-[#c4c7c8]">
+                      <li><a className="hover:text-white transition-colors" href="#">Pottery & Ceramics (Jaipur Blue)</a></li>
+                      <li><a className="hover:text-white transition-colors" href="#">Handloom Textiles (Patan Patola)</a></li>
+                      <li><a className="hover:text-white transition-colors" href="#">Dhokra Brass Lost-Wax</a></li>
+                      <li><a className="hover:text-white transition-colors" href="#">Sankheda Lacquered Wood</a></li>
+                      <li><a className="hover:text-white transition-colors" href="#">Bidriware Silver Inlay</a></li>
+                    </ul>
+                  </div>
+
+                  {/* Col 3: Sell on Kaarvo */}
+                  <div>
+                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-white mb-4">
+                      Sell on Kaarvo
+                    </h4>
+                    <ul className="space-y-2 text-[12px] text-[#c4c7c8]">
+                      <li><button onClick={() => switchMode('artisan')} className="hover:text-white transition-colors cursor-pointer text-left">AI Provenance Cataloger</button></li>
+                      <li><button onClick={() => switchMode('artisan')} className="hover:text-white transition-colors cursor-pointer text-left">Master Artisan Onboarding</button></li>
+                      <li><button onClick={() => switchMode('artisan')} className="hover:text-white transition-colors cursor-pointer text-left">Transparent Smart Payouts</button></li>
+                      <li><button onClick={() => switchMode('artisan')} className="hover:text-white transition-colors cursor-pointer text-left">Guild Protection Protocol</button></li>
+                      <li><button onClick={() => switchMode('artisan')} className="hover:text-white transition-colors cursor-pointer text-left">Valuation Audits</button></li>
+                    </ul>
+                  </div>
+
+                  {/* Col 4: Guild & Registry */}
+                  <div>
+                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-white mb-4">
+                      Guild & Registry
+                    </h4>
+                    <ul className="space-y-2 text-[12px] text-[#c4c7c8]">
+                      <li><a className="hover:text-white transition-colors" href="#">Horological Certification</a></li>
+                      <li><a className="hover:text-white transition-colors" href="#">Artisan Heritage Ledger</a></li>
+                      <li><a className="hover:text-white transition-colors" href="#">Custom Concierge & Bids</a></li>
+                      <li><a className="hover:text-white transition-colors" href="#">Global Secure Logistics</a></li>
+                      <li><a className="hover:text-white transition-colors" href="#">Provenance Inquiries</a></li>
+                    </ul>
+                  </div>
+
+                  {/* Col 5: Exclusive Drops */}
+                  <div className="space-y-4">
+                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-white">
+                      Exclusive Drops
+                    </h4>
+                    <p className="text-[12px] text-[#c4c7c8]">
+                      Subscribe to private gallery viewings and limited certified edition releases.
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      <input
+                        className="bg-[#1c1b1b] border border-[#353434] px-4 py-2 text-white placeholder:text-[#8e9192] text-[12px] focus:outline-none"
+                        placeholder="collector@patron.com"
+                        type="email"
+                      />
+                      <button
+                        className="bg-white text-[#141313] text-[11px] font-bold uppercase tracking-widest py-2 px-4 hover:bg-[#c8c6c6] transition-colors cursor-pointer"
+                        type="button"
+                      >
+                        Access Vault
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Footer Sub-Bar */}
+                <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[9px] font-bold text-[#8e9192] uppercase tracking-widest">
+                  <div>© 2025 KAARVO HAUTE ARTISAN COMMERCE. ALL RIGHTS RESERVED.</div>
+                  <div className="flex items-center gap-6">
+                    <a className="hover:text-white transition-colors" href="#">Guild Charter</a>
+                    <a className="hover:text-white transition-colors" href="#">GI Index</a>
+                    <a className="hover:text-white transition-colors" href="#">Privacy Policy</a>
+                    <a className="hover:text-white transition-colors" href="#">Terms of Provenance</a>
+                  </div>
+                </div>
 
               </div>
-            </div>
-          )}
+            </footer>
+
+          </main>
         </>
       )}
 

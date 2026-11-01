@@ -1,12 +1,137 @@
 <!doctype html>
-<html lang="en">
+<html class="dark" lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>KAARVO — Haute Artisan Commerce & AI Studio</title>
+
+    <!-- Google Fonts & Material Symbols from Stitch -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"/>
+
+    <style>
+      @layer base {
+        html, body { margin: 0; padding: 0; }
+        body { overscroll-behavior: none; }
+        main > :first-child { margin-top: 0 !important; }
+        main > :last-child { margin-bottom: 0 !important; }
+      }
+      ::-webkit-scrollbar { display: none; }
+    </style>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#c6c6c7",
+              "on-tertiary-fixed": "#1a1c1c",
+              primary: "#ffffff",
+              "surface-container-lowest": "#0e0e0e",
+              "surface-container-highest": "#353434",
+              "on-secondary": "#303030",
+              "inverse-primary": "#5d5f5f",
+              "surface-variant": "#353434",
+              "primary-fixed": "#e2e2e2",
+              "on-tertiary-container": "#636565",
+              "surface-bright": "#3a3939",
+              "on-tertiary": "#2f3131",
+              "on-background": "#e5e2e1",
+              "surface-container-low": "#1c1b1b",
+              "on-primary-container": "#636565",
+              "primary-fixed-dim": "#c6c6c7",
+              tertiary: "#ffffff",
+              "on-surface-variant": "#c4c7c8",
+              "secondary-fixed-dim": "#c8c6c6",
+              "on-surface": "#e5e2e1",
+              "tertiary-container": "#e2e2e2",
+              surface: "#141313",
+              "outline-variant": "#444748",
+              "secondary-fixed": "#e4e2e2",
+              "tertiary-fixed-dim": "#c6c6c7",
+              "on-secondary-fixed": "#1b1c1c",
+              "on-primary-fixed-variant": "#454747",
+              "error-container": "#93000a",
+              "on-error-container": "#ffdad6",
+              error: "#ffb4ab",
+              "on-tertiary-fixed-variant": "#454747",
+              "inverse-surface": "#e5e2e1",
+              "secondary-container": "#494949",
+              "tertiary-fixed": "#e2e2e2",
+              "on-secondary-fixed-variant": "#474747",
+              secondary: "#c8c6c6",
+              "surface-dim": "#141313",
+              "surface-container-high": "#2a2a2a",
+              "surface-container": "#201f1f",
+              "inverse-on-surface": "#313030",
+              "on-primary-fixed": "#1a1c1c",
+              "on-secondary-container": "#b9b8b8",
+              "on-error": "#690005",
+              "primary-container": "#e2e2e2",
+              "on-primary": "#2f3131",
+              outline: "#8e9192",
+              background: "#141313"
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px"
+            },
+            spacing: {
+              "gutter-mobile": "0.75rem",
+              "margin-mobile": "1rem",
+              margin: "3rem",
+              "space-sm": "0.5rem",
+              "space-xs": "0.25rem",
+              "space-lg": "1.5rem",
+              gutter: "1.5rem",
+              "space-md": "1rem",
+              "space-xl": "2.5rem"
+            },
+            fontFamily: {
+              "body-lg": ["Inter", "sans-serif"],
+              "headline-md": ["Playfair Display", "serif"],
+              "headline-lg": ["Playfair Display", "serif"],
+              "body-sm": ["Inter", "sans-serif"],
+              "headline-xl-mobile": ["Playfair Display", "serif"],
+              "body-md": ["Inter", "sans-serif"],
+              "label-micro": ["Inter", "sans-serif"],
+              "headline-sm": ["Playfair Display", "serif"],
+              "headline-xl": ["Playfair Display", "serif"],
+              "display-hero-mobile": ["Playfair Display", "serif"],
+              "label-instrument": ["Inter", "sans-serif"],
+              "title-editorial": ["Playfair Display", "serif"],
+              "display-hero": ["Playfair Display", "serif"],
+              headline: ["Playfair Display", "serif"],
+              display: ["Playfair Display", "serif"],
+              body: ["Inter", "sans-serif"],
+              label: ["Inter", "sans-serif"]
+            },
+            fontSize: {
+              "body-lg": ["16px", { lineHeight: "26px", letterSpacing: "-0.01em", fontWeight: "400" }],
+              "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "0.01em", fontWeight: "400" }],
+              "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "0em", fontWeight: "400" }],
+              "body-sm": ["12px", { lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "400" }],
+              "headline-xl-mobile": ["28px", { lineHeight: "36px", letterSpacing: "0em", fontWeight: "400" }],
+              "body-md": ["14px", { lineHeight: "22px", letterSpacing: "0em", fontWeight: "400" }],
+              "label-micro": ["9px", { lineHeight: "12px", letterSpacing: "0.18em", fontWeight: "700" }],
+              "headline-sm": ["20px", { lineHeight: "28px", letterSpacing: "0.01em", fontWeight: "500" }],
+              "headline-xl": ["40px", { lineHeight: "48px", letterSpacing: "-0.01em", fontWeight: "400" }],
+              "display-hero-mobile": ["36px", { lineHeight: "44px", letterSpacing: "-0.01em", fontWeight: "400" }],
+              "label-instrument": ["11px", { lineHeight: "16px", letterSpacing: "0.12em", fontWeight: "600" }],
+              "title-editorial": ["16px", { lineHeight: "24px", letterSpacing: "0.04em", fontWeight: "600" }],
+              "display-hero": ["56px", { lineHeight: "64px", letterSpacing: "-0.02em", fontWeight: "400" }]
+            }
+          }
+        }
+      };
+    </script>
   </head>
-  <body>
+  <body class="bg-background font-body-md text-on-surface antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
