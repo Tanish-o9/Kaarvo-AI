@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Sparkles, Camera, Mic, ShoppingBag, Layers, Package, Users, Sliders,
+  Sparkles, Camera, Mic, MicOff, ShoppingBag, Layers, Package, Users, Sliders,
   TrendingUp, Send, CheckCircle, FileText, ArrowRight, ShieldCheck, RefreshCw,
   Globe, CreditCard, Check, X, Star, MapPin, Search, Filter, Heart,
   ShoppingCart, ChevronRight, MessageSquare, Award, ArrowUpRight, HelpCircle,
@@ -282,7 +282,104 @@ export default function App() {
   };
 
   // --- FEATURE 2 HELPER: WhatsApp Artisan Bot Message Handler ---
+  // WhatsApp Voice Speech Recognition states & handlers
+  const [isWhatsappRecording, setIsWhatsappRecording] = useState(false);
+  const whatsappSpeechRecRef = useRef(null);
+  const whatsappMediaStreamRef = useRef(null);
+
+  const stopWhatsappVoiceRecording = () => {
+    setIsWhatsappRecording(false);
+    if (whatsappSpeechRecRef.current) {
+      try {
+        whatsappSpeechRecRef.current.onend = null;
+        whatsappSpeechRecRef.current.onerror = null;
+        whatsappSpeechRecRef.current.stop();
+      } catch (e) {}
+      whatsappSpeechRecRef.current = null;
+    }
+    if (whatsappMediaStreamRef.current) {
+      try {
+        whatsappMediaStreamRef.current.getTracks().forEach(t => t.stop());
+      } catch (e) {}
+      whatsappMediaStreamRef.current = null;
+    }
+  };
+
+  const toggleWhatsappVoiceRecording = async () => {
+    if (isWhatsappRecording) {
+      stopWhatsappVoiceRecording();
+      showToast('🔴 WhatsApp Mic band ho gaya.');
+      return;
+    }
+
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        whatsappMediaStreamRef.current = stream;
+      }
+    } catch (micErr) {
+      console.warn('WhatsApp mic permission error:', micErr);
+      showToast('⚠️ Kripya browser me mic permission allow karein!');
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      showToast('⚠️ Aapka browser speech recognition support nahi karta. Type karein!');
+      return;
+    }
+
+    try {
+      if (whatsappSpeechRecRef.current) {
+        try { whatsappSpeechRecRef.current.stop(); } catch (e) {}
+      }
+
+      const rec = new SpeechRecognition();
+      whatsappSpeechRecRef.current = rec;
+      rec.continuous = true;
+      rec.interimResults = true;
+      rec.lang = selectedLanguage || 'hi-IN';
+
+      rec.onstart = () => {
+        setIsWhatsappRecording(true);
+        showToast('🎙️ WhatsApp Mic ACTIVE! Hindi ya Hinglish me boliye...');
+      };
+
+      rec.onresult = (event) => {
+        let transcript = '';
+        for (let i = 0; i < event.results.length; i++) {
+          const item = event.results[i];
+          if (item && item[0] && item[0].transcript) {
+            transcript += item[0].transcript + ' ';
+          }
+        }
+        const cleaned = transcript.trim();
+        if (cleaned) {
+          setWhatsappInput(cleaned);
+        }
+      };
+
+      rec.onerror = (e) => {
+        console.warn('WhatsApp speech rec error:', e.error);
+        if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+          stopWhatsappVoiceRecording();
+          showToast('⚠️ Mic access denied! Browser me mic enable karein.');
+        }
+      };
+
+      rec.onend = () => {
+        setIsWhatsappRecording(false);
+      };
+
+      rec.start();
+    } catch (err) {
+      console.error('WhatsApp mic error:', err);
+      setIsWhatsappRecording(false);
+      showToast('⚠️ Mic start nahi ho paya.');
+    }
+  };
+
   const handleWhatsappSend = (customText) => {
+    if (isWhatsappRecording) stopWhatsappVoiceRecording();
     const msg = (customText || whatsappInput).trim();
     if (!msg) return;
 
@@ -3691,17 +3788,58 @@ export default function App() {
             </button>
           </div>
 
+          {/* LIVE RECORDING NOTIFICATION BADGE INSIDE WHATSAPP */}
+          {isWhatsappRecording && (
+            <div style={{ padding: '6px 14px', background: '#FEF2F2', borderTop: '1px solid #FECACA', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: '#DC2626' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#DC2626', animation: 'pulse 1s infinite' }} />
+                <strong>🎙️ Sun raha hu...</strong> <span>Boliye (Hindi / Hinglish)</span>
+              </div>
+              <button 
+                type="button" 
+                onClick={stopWhatsappVoiceRecording}
+                style={{ background: '#DC2626', color: '#FFFFFF', border: 'none', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: '700' }}
+              >
+                Stop Mic
+              </button>
+            </div>
+          )}
+
           {/* INPUT BAR */}
           <div style={{ padding: '10px 14px', background: '#F0F2F5', display: 'flex', gap: '8px', alignItems: 'center' }}>
             <input 
               type="text" 
-              placeholder="Hindi me likhe ya bole..." 
+              placeholder="Hindi me likhe ya mic se bole..." 
               value={whatsappInput}
               onChange={(e) => setWhatsappInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleWhatsappSend()}
               style={{ flex: 1, padding: '10px 14px', borderRadius: '20px', border: '1px solid #CBD5E1', fontSize: '13px', outline: 'none', background: '#FFFFFF' }}
             />
+            {/* WHATSAPP MIC BUTTON */}
             <button
+              type="button"
+              onClick={toggleWhatsappVoiceRecording}
+              title={isWhatsappRecording ? 'Stop Recording' : 'Record Voice in Hindi'}
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                background: isWhatsappRecording ? '#DC2626' : '#25D366',
+                color: '#FFFFFF',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease',
+                boxShadow: isWhatsappRecording ? '0 0 10px rgba(220, 38, 38, 0.5)' : 'none'
+              }}
+            >
+              {isWhatsappRecording ? <MicOff size={18} /> : <Mic size={18} />}
+            </button>
+            {/* SEND BUTTON */}
+            <button
+              type="button"
               onClick={() => handleWhatsappSend()}
               style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#075E54', color: '#FFFFFF', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
