@@ -3030,7 +3030,7 @@ export default function App() {
                         className="input-artisan"
                         value={voiceText}
                         onChange={(e) => setVoiceText(e.target.value)}
-                        placeholder="Speak in Hindi/Hinglish (e.g. 'ये सेब हमने कश्मीर से मंगाया है') - auto-translates to proper English..."
+                        placeholder="Speak or type product details..."
                         style={{ resize: 'none', marginBottom: '8px', paddingRight: '120px' }}
                       />
                       <button
