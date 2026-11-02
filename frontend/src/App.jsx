@@ -1561,6 +1561,9 @@ export default function App() {
   const [extractedEntities, setExtractedEntities] = useState(null);
   const [generatedCatalog, setGeneratedCatalog] = useState(null);
   const [cataloging, setCataloging] = useState(false);
+  const [audioLevel, setAudioLevel] = useState(0);
+  const audioChunksRef = useRef([]);
+  const audioProcessorRef = useRef(null);
 
   // --- PILLAR 3: DYNAMIC COST-PLUS PRICING ASSISTANT STATES ---
   const [materialCost, setMaterialCost] = useState('');
@@ -1790,9 +1793,42 @@ export default function App() {
     voiceTextRef.current = voiceText;
   }, [voiceText]);
 
+  // Pure in-browser 16-bit PCM mono WAV Encoder
+  const encodeWavBlob = (samples, sampleRate = 16000) => {
+    const buffer = new ArrayBuffer(44 + samples.length * 2);
+    const view = new DataView(buffer);
+
+    const writeStr = (v, offset, str) => {
+      for (let i = 0; i < str.length; i++) v.setUint8(offset + i, str.charCodeAt(i));
+    };
+
+    writeStr(view, 0, 'RIFF');
+    view.setUint32(4, 36 + samples.length * 2, true);
+    writeStr(view, 8, 'WAVE');
+    writeStr(view, 12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true); // PCM format
+    view.setUint16(22, 1, true); // 1 channel (mono)
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true); // Byte rate
+    view.setUint16(32, 2, true); // Block align
+    view.setUint16(34, 16, true); // 16 bits per sample
+    writeStr(view, 36, 'data');
+    view.setUint32(40, samples.length * 2, true);
+
+    let offset = 44;
+    for (let i = 0; i < samples.length; i++, offset += 2) {
+      const s = Math.max(-1, Math.min(1, samples[i]));
+      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
+
+    return new Blob([view], { type: 'audio/wav' });
+  };
+
   const stopVoiceRecording = async () => {
     isRecordingRef.current = false;
     setIsRecording(false);
+    setAudioLevel(0);
 
     if (speechTranslateTimeoutRef.current) {
       clearTimeout(speechTranslateTimeoutRef.current);
@@ -1807,6 +1843,16 @@ export default function App() {
       speechRecRef.current = null;
     }
 
+    if (audioProcessorRef.current) {
+      try { audioProcessorRef.current.disconnect(); } catch (e) {}
+      audioProcessorRef.current = null;
+    }
+
+    if (audioContextRef.current) {
+      try { audioContextRef.current.close(); } catch (e) {}
+      audioContextRef.current = null;
+    }
+
     if (mediaStreamRef.current) {
       try {
         mediaStreamRef.current.getTracks().forEach(track => track.stop());
@@ -1816,10 +1862,59 @@ export default function App() {
 
     showToast('🔴 Mic Stopped.');
 
-    const spoken = (rawSpokenHindiRef.current || rawSpokenHindi || '').trim();
-    if (spoken) {
+    let captured = (rawSpokenHindiRef.current || rawSpokenHindi || '').trim();
+
+    // FALLBACK: If Web Speech API returned empty (due to network or browser blocks),
+    // transcribe the recorded audio chunks via Backend Speech-to-Text!
+    if (!captured && audioChunksRef.current && audioChunksRef.current.length > 0) {
+      const totalLen = audioChunksRef.current.reduce((acc, c) => acc + c.length, 0);
+      if (totalLen > 1600) {
+        const merged = new Float32Array(totalLen);
+        let offset = 0;
+        for (const chunk of audioChunksRef.current) {
+          merged.set(chunk, offset);
+          offset += chunk.length;
+        }
+
+        const wavBlob = encodeWavBlob(merged, 16000);
+        showToast('⏳ Transcribing audio via Kaarvo AI Engine...');
+        setIsTranslating(true);
+
+        try {
+          const formData = new FormData();
+          formData.append('audio', wavBlob, 'recording.wav');
+          formData.append('language', selectedLanguage || 'hi-IN');
+
+          const res = await fetch('http://127.0.0.1:8001/api/v1/voice-transcribe', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.transcript) {
+              captured = data.transcript;
+              rawSpokenHindiRef.current = data.transcript;
+              setRawSpokenHindi(data.transcript);
+
+              if (data.translated) {
+                voiceTextRef.current = data.translated;
+                setVoiceText(data.translated);
+                showToast(`✨ Captured & Translated: "${data.translated.slice(0, 26)}..."`);
+              }
+            }
+          }
+        } catch (sttErr) {
+          console.warn('Backend audio transcribe error:', sttErr);
+        } finally {
+          setIsTranslating(false);
+        }
+      }
+    }
+
+    if (captured && !voiceTextRef.current) {
       setIsTranslating(true);
-      const english = await translateHindiSpeechToEnglish(spoken);
+      const english = await translateHindiSpeechToEnglish(captured);
       if (english) {
         voiceTextRef.current = english;
         setVoiceText(english);
@@ -1834,115 +1929,147 @@ export default function App() {
       return;
     }
 
-    // 1. Explicitly request hardware Microphone stream permission from browser
+    let stream = null;
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          audio: { 
+            echoCancellation: true, 
+            noiseSuppression: true, 
+            autoGainControl: true 
+          } 
+        });
         mediaStreamRef.current = stream;
       }
     } catch (micErr) {
       console.warn('getUserMedia mic error or permission denied:', micErr);
-      showToast('⚠️ Please click "Allow" in your browser microphone permission pop-up!');
-    }
-
-    // 2. Initialize Web Speech API
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      showToast('⚠️ Speech recognition API is not supported in this browser. Please type product details in the box!');
+      showToast('⚠️ Please click "Allow" on the browser microphone permission prompt!');
       return;
     }
 
-    try {
-      if (speechRecRef.current) {
-        try { speechRecRef.current.stop(); } catch (e) {}
-      }
-
-      const recognition = new SpeechRecognition();
-      speechRecRef.current = recognition;
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = selectedLanguage || 'hi-IN';
-
-      recognition.onstart = () => {
-        isRecordingRef.current = true;
-        setIsRecording(true);
-        // Clear default terracotta placeholder text if present when starting a new mic recording
-        setVoiceText(prev => {
-          if (prev && prev.includes('Yeh Jaipur ki pure terracotta clay water pot hai')) return '';
-          return prev;
-        });
-        showToast(`🎙️ Mic ACTIVE (${selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}). Speak now!`);
-      };
-
-      recognition.onresult = (event) => {
-        let fullTranscript = '';
-        let isFinalSegment = false;
-        for (let i = 0; i < event.results.length; i++) {
-          const item = event.results[i];
-          if (item && item[0] && item[0].transcript) {
-            fullTranscript += item[0].transcript + ' ';
-            if (item.isFinal) isFinalSegment = true;
-          }
-        }
-        const cleaned = fullTranscript.trim();
-        if (cleaned) {
-          rawSpokenHindiRef.current = cleaned;
-          setRawSpokenHindi(cleaned);
-
-          if (speechTranslateTimeoutRef.current) {
-            clearTimeout(speechTranslateTimeoutRef.current);
-          }
-
-          // Debounce translation: wait 400ms after speech pause or trigger on final
-          speechTranslateTimeoutRef.current = setTimeout(async () => {
-            setIsTranslating(true);
-            const englishText = await translateHindiSpeechToEnglish(cleaned);
-            if (englishText) {
-              voiceTextRef.current = englishText;
-              setVoiceText(englishText);
-              showToast(`✨ Auto-translated to English: "${englishText.slice(0, 28)}..."`);
-            }
-            setIsTranslating(false);
-          }, isFinalSegment ? 100 : 400);
-        }
-      };
-
-      recognition.onerror = (event) => {
-        console.warn('Speech recognition notice:', event.error);
-        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-          isRecordingRef.current = false;
-          setIsRecording(false);
-          showToast('⚠️ Mic access denied! Click the lock/camera icon in your address bar to allow microphone.');
-        } else if (event.error === 'no-speech') {
-          // Ambient silence timeout, maintain recording
-        }
-      };
-
-      recognition.onend = () => {
-        if (isRecordingRef.current) {
-          try {
-            recognition.start();
-          } catch (e) {
-            setTimeout(() => {
-              if (isRecordingRef.current) {
-                try { recognition.start(); } catch (err) {}
-              }
-            }, 300);
-          }
-        } else {
-          setIsRecording(false);
-        }
-      };
-
-      isRecordingRef.current = true;
-      setIsRecording(true);
-      recognition.start();
-    } catch (err) {
-      console.error('Mic start error:', err);
-      isRecordingRef.current = false;
-      setIsRecording(false);
-      showToast('⚠️ Could not open microphone. Please allow mic permission in address bar.');
+    if (!stream) {
+      showToast('⚠️ No active microphone detected. Please check your mic connection.');
+      return;
     }
+
+    isRecordingRef.current = true;
+    setIsRecording(true);
+    setAudioLevel(0);
+    audioChunksRef.current = [];
+
+    // Clear default terracotta placeholder text if present
+    setVoiceText(prev => {
+      if (prev && prev.includes('Yeh Jaipur ki pure terracotta clay water pot hai')) return '';
+      return prev;
+    });
+
+    // 1. Setup AudioContext + ScriptProcessor for live Volume Meter & PCM Audio Recording
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        const audioCtx = new AudioCtx({ sampleRate: 16000 });
+        audioContextRef.current = audioCtx;
+        const source = audioCtx.createMediaStreamSource(stream);
+        const processor = audioCtx.createScriptProcessor(4096, 1, 1);
+        audioProcessorRef.current = processor;
+
+        processor.onaudioprocess = (e) => {
+          if (!isRecordingRef.current) return;
+          const inputData = e.inputBuffer.getChannelData(0);
+          audioChunksRef.current.push(new Float32Array(inputData));
+
+          let sum = 0;
+          for (let i = 0; i < inputData.length; i++) {
+            sum += inputData[i] * inputData[i];
+          }
+          const rms = Math.sqrt(sum / inputData.length);
+          const lvl = Math.min(100, Math.round(rms * 500));
+          setAudioLevel(lvl);
+        };
+
+        source.connect(processor);
+        processor.connect(audioCtx.destination);
+      }
+    } catch (e) {
+      console.warn('AudioContext volume meter notice:', e);
+    }
+
+    // 2. Setup Web Speech Recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      try {
+        if (speechRecRef.current) {
+          try { speechRecRef.current.stop(); } catch (e) {}
+        }
+
+        const recognition = new SpeechRecognition();
+        speechRecRef.current = recognition;
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = selectedLanguage || 'hi-IN';
+
+        recognition.onstart = () => {
+          isRecordingRef.current = true;
+          setIsRecording(true);
+        };
+
+        recognition.onresult = (event) => {
+          let fullTranscript = '';
+          let isFinalSegment = false;
+          for (let i = 0; i < event.results.length; i++) {
+            const item = event.results[i];
+            if (item && item[0] && item[0].transcript) {
+              fullTranscript += item[0].transcript + ' ';
+              if (item.isFinal) isFinalSegment = true;
+            }
+          }
+          const cleaned = fullTranscript.trim();
+          if (cleaned) {
+            rawSpokenHindiRef.current = cleaned;
+            setRawSpokenHindi(cleaned);
+
+            if (speechTranslateTimeoutRef.current) {
+              clearTimeout(speechTranslateTimeoutRef.current);
+            }
+
+            speechTranslateTimeoutRef.current = setTimeout(async () => {
+              setIsTranslating(true);
+              const englishText = await translateHindiSpeechToEnglish(cleaned);
+              if (englishText) {
+                voiceTextRef.current = englishText;
+                setVoiceText(englishText);
+                showToast(`✨ Auto-translated to English: "${englishText.slice(0, 28)}..."`);
+              }
+              setIsTranslating(false);
+            }, isFinalSegment ? 100 : 400);
+          }
+        };
+
+        recognition.onerror = (event) => {
+          console.warn('Speech recognition notice:', event.error);
+        };
+
+        recognition.onend = () => {
+          if (isRecordingRef.current) {
+            try {
+              recognition.start();
+            } catch (e) {
+              setTimeout(() => {
+                if (isRecordingRef.current) {
+                  try { recognition.start(); } catch (err) {}
+                }
+              }, 300);
+            }
+          }
+        };
+
+        recognition.start();
+      } catch (err) {
+        console.warn('SpeechRecognition notice:', err);
+      }
+    }
+
+    showToast(`🎙️ Mic ACTIVE (${selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}). Speak now!`);
   };
 
   const parseVoiceTextToCatalog = (text) => {
@@ -5901,43 +6028,64 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                     {isRecording && (
                       <div style={{
                         display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
+                        flexDirection: 'column',
+                        gap: '10px',
                         background: 'rgba(239, 68, 68, 0.15)',
                         border: '1.5px solid #ef4444',
-                        padding: '12px 16px',
+                        padding: '14px 16px',
                         borderRadius: '12px',
                         marginBottom: '14px',
-                        boxShadow: '0 0 15px rgba(239, 68, 68, 0.25)'
+                        boxShadow: '0 0 18px rgba(239, 68, 68, 0.25)'
                       }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 0.8s infinite' }} />
-                          <div>
-                            <span style={{ fontSize: '13px', fontWeight: '800', color: '#fca5a5', display: 'block' }}>
-                              🎙️ Listening live... Speak now in {selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}!
-                            </span>
-                            <span style={{ fontSize: '11px', color: '#f87171' }}>
-                              Speak craft details or tap 'Done ⏹️' to auto-translate & catalog.
-                            </span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 0.8s infinite' }} />
+                            <div>
+                              <span style={{ fontSize: '13px', fontWeight: '800', color: '#fca5a5', display: 'block' }}>
+                                🎙️ Live Mic Active — Speak now in {selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}!
+                              </span>
+                              <span style={{ fontSize: '11px', color: '#f87171' }}>
+                                Speak craft details, or click 'Done ⏹️' to auto-translate & catalog.
+                              </span>
+                            </div>
                           </div>
+                          <button
+                            type="button"
+                            onClick={stopVoiceRecording}
+                            style={{
+                              background: '#ef4444',
+                              color: '#ffffff',
+                              border: 'none',
+                              padding: '6px 16px',
+                              borderRadius: '8px',
+                              fontSize: '12px',
+                              fontWeight: '900',
+                              cursor: 'pointer',
+                              boxShadow: '0 2px 8px rgba(239, 68, 68, 0.4)'
+                            }}
+                          >
+                            Done ⏹️
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={stopVoiceRecording}
-                          style={{
-                            background: '#ef4444',
-                            color: '#ffffff',
-                            border: 'none',
-                            padding: '6px 14px',
-                            borderRadius: '8px',
-                            fontSize: '12px',
-                            fontWeight: '900',
-                            cursor: 'pointer',
-                            boxShadow: '0 2px 8px rgba(239, 68, 68, 0.4)'
-                          }}
-                        >
-                          Done ⏹️
-                        </button>
+
+                        {/* Live Microphone Sound Level Visualizer */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(0,0,0,0.4)', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                          <span style={{ fontSize: '11px', fontWeight: '700', color: audioLevel > 5 ? '#10b981' : '#a39e93' }}>
+                            {audioLevel > 5 ? '🔊 Mic Hearing Voice:' : '🎙️ Mic Active (Listening for voice):'}
+                          </span>
+                          <div style={{ flex: 1, height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
+                            <div style={{
+                              width: `${Math.max(6, audioLevel)}%`,
+                              height: '100%',
+                              background: audioLevel > 20 ? 'linear-gradient(90deg, #10b981, #f59e0b)' : '#10b981',
+                              borderRadius: '4px',
+                              transition: 'width 0.1s ease-out'
+                            }} />
+                          </div>
+                          <span style={{ fontSize: '10px', color: '#f5d794', fontWeight: '800', minWidth: '32px' }}>
+                            {audioLevel}%
+                          </span>
+                        </div>
                       </div>
                     )}
                     {/* LIVE TRANSLATION NOTIFICATION BADGE */}

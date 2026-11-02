@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from artisan_api.views import AssistantChatView, TranslateTextView, LoginView, RegisterView, TokenRefreshCustomView
+from artisan_api.views import AssistantChatView, TranslateTextView, VoiceTranscribeView, LoginView, RegisterView, TokenRefreshCustomView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -14,6 +14,10 @@ urlpatterns = [
     path('api/translate/', TranslateTextView.as_view(), name='api-translate-slash'),
     path('api/v1/translate', TranslateTextView.as_view(), name='api-v1-translate-direct'),
     path('api/v1/translate/', TranslateTextView.as_view(), name='api-v1-translate-slash'),
+    path('api/voice-transcribe', VoiceTranscribeView.as_view(), name='api-voice-transcribe-direct'),
+    path('api/voice-transcribe/', VoiceTranscribeView.as_view(), name='api-voice-transcribe-slash'),
+    path('api/v1/voice-transcribe', VoiceTranscribeView.as_view(), name='api-v1-voice-transcribe-direct'),
+    path('api/v1/voice-transcribe/', VoiceTranscribeView.as_view(), name='api-v1-voice-transcribe-slash'),
     path('api/auth/login', LoginView.as_view(), name='api-auth-login-direct'),
     path('api/auth/login/', LoginView.as_view(), name='api-auth-login-slash'),
     path('api/v1/auth/login', LoginView.as_view(), name='api-v1-auth-login-direct'),

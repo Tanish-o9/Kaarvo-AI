@@ -1029,6 +1029,72 @@ class TranslateTextView(APIView):
         return Response({'translated': cleaned, 'original': raw_text, 'engine': 'raw'})
 
 
+class VoiceTranscribeView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        import speech_recognition as sr
+        import base64, io, wave, json, urllib.request, urllib.parse, re
+
+        audio_file = request.FILES.get('audio')
+        audio_b64 = request.data.get('audio_base64')
+        lang = request.data.get('language') or 'hi-IN'
+
+        audio_bytes = None
+        if audio_file:
+            audio_bytes = audio_file.read()
+        elif audio_b64:
+            if ',' in audio_b64:
+                audio_b64 = audio_b64.split(',', 1)[1]
+            try:
+                audio_bytes = base64.b64decode(audio_b64)
+            except Exception:
+                pass
+
+        if not audio_bytes or len(audio_bytes) < 200:
+            return Response({'transcript': '', 'translated': '', 'error': 'No audio data received'}, status=400)
+
+        transcript = ''
+        r = sr.Recognizer()
+        r.energy_threshold = 200
+        r.dynamic_energy_threshold = True
+
+        try:
+            buf = io.BytesIO(audio_bytes)
+            with sr.AudioFile(buf) as source:
+                audio_data = r.record(source)
+            try:
+                transcript = r.recognize_google(audio_data, language=lang)
+            except Exception:
+                alt_lang = 'en-IN' if lang.startswith('hi') else 'hi-IN'
+                transcript = r.recognize_google(audio_data, language=alt_lang)
+        except Exception as e:
+            pass
+
+        translated = transcript
+        if transcript:
+            cleaned = re.sub(r'^(Authentic artisan product:\s*)+', '', transcript, flags=re.IGNORECASE)
+            preprocessed = re.sub(r'(होटल|हॉटेल)\s*(करनी|करना)', r'ऑर्डर ', cleaned)
+            try:
+                url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=' + urllib.parse.quote(preprocessed)
+                req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(req, timeout=5) as res:
+                    data = json.loads(res.read().decode('utf-8'))
+                    t_res = ''.join([p[0] for p in data[0] if p and p[0]]).strip()
+                    if t_res:
+                        translated = t_res[0].upper() + t_res[1:]
+                        if not translated.endswith(('.', '!', '?')):
+                            translated += '.'
+            except Exception:
+                pass
+
+        return Response({
+            'transcript': transcript,
+            'translated': translated,
+            'language': lang
+        })
+
+
 class AnalyticsOverviewView(APIView):
     permission_classes = [permissions.AllowAny]
 
