@@ -2450,13 +2450,16 @@ export default function App() {
 
   // Save generated product to DB & Publish Live to Storefront for all customers
   const handleSaveCatalogToDB = async (customOverrides = {}) => {
+    const activeImage = customOverrides.image || enhancedImage || rawImageFile;
+    if (!activeImage) {
+      showToast('⚠️ Kripya pehle Pillar 1 me apne craft ki photo upload karein!');
+      return;
+    }
+
     // ALWAYS parse the latest voiceText and inputs from Pillar 1, 2, & 3
     const { catalog, entities } = parseVoiceTextToCatalog(voiceText || 'Handcrafted Artisan Product');
     setExtractedEntities(entities);
     setGeneratedCatalog(catalog);
-
-    // Pick active image: User's uploaded/enhanced photo if present, else authentic craft image
-    const activeImage = customOverrides.image || enhancedImage || rawImageFile || getCraftSpecificImage(catalog.category, customOverrides.title || catalog.descriptor.name);
 
     // Pick active pricing from Pillar 3, overrides, or catalog calculated range
     const activePrice = customOverrides.price || pricingResult?.min || catalog.price.suggested_range.min || (parseFloat(materialCost || 0) + parseFloat(laborCost || 0)) * 1.4 || 850;
@@ -6411,11 +6414,46 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                 {/* PROPER LIVE PRODUCT PREVIEW & PRE-LAUNCH INSPECTION (PILLAR 3 KE BAAD)   */}
                 {/* ========================================================================= */}
                 {(() => {
+                  const hasUploadedImage = Boolean(enhancedImage || rawImageFile);
+
+                  if (!hasUploadedImage) {
+                    return (
+                      <div 
+                        className="card-artisan"
+                        style={{
+                          padding: '36px 24px',
+                          background: 'linear-gradient(135deg, #181614 0%, #1a1815 100%)',
+                          border: '1.5px dashed #3d3a35',
+                          borderRadius: '18px',
+                          textAlign: 'center',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '12px',
+                          boxShadow: '0 8px 30px rgba(0,0,0,0.4)'
+                        }}
+                      >
+                        <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#25221d', border: '1px solid #3d3a35', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c5a66a' }}>
+                          <Camera size={28} />
+                        </div>
+                        <div>
+                          <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#FFFFFF', margin: '4px 0' }}>
+                            📷 Upload Craft Photo in Pillar 1 to Preview
+                          </h3>
+                          <p style={{ fontSize: '13px', color: '#a39e93', maxWidth: '520px', margin: '6px auto 0', lineHeight: '1.5' }}>
+                            Live Storefront Preview card tabhi unlock hoga jab aap upar Pillar 1 (AI Studio Image Enhancer) me photo upload karenge. Bina real image ke preview display nahi hoga.
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  }
+
                   const defaultTitle = generatedCatalog?.descriptor?.name || (voiceText ? voiceText.slice(0, 45) : 'Handcrafted Jaipur Terracotta Clay Heirloom');
                   const defaultCategory = generatedCatalog?.category || craftCategory || 'Pottery / Terracotta';
                   const calculatedPrice = pricingResult?.min || generatedCatalog?.price?.suggested_range?.min || (parseFloat(materialCost || 0) + parseFloat(laborCost || 0)) * 1.4 || 850;
                   const finalDisplayPrice = Math.round(customLivePrice ? parseFloat(customLivePrice) : calculatedPrice);
-                  const activeImg = enhancedImage || rawImageFile || getCraftSpecificImage(defaultCategory, defaultTitle);
+                  const activeImg = enhancedImage || rawImageFile;
                   const finalTitle = customLiveTitle || defaultTitle;
                   const finalDesc = customLiveDesc || generatedCatalog?.descriptor?.long_desc || (voiceText ? `Handcrafted heritage item: ${voiceText}. Living wage and authenticity verified under ONDC Beckn protocol.` : 'Authentic generational handcrafted piece made with verified indigenous techniques. Quality and living wage verified under ONDC Beckn charter.');
                   const artisanDisplayName = currentUser ? (currentUser.full_name || currentUser.username) : 'Master Artisan Mohan Lal';
