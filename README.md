@@ -1,4 +1,4 @@
-# Kaarvo - Inspired by SIH (26090)
+# Kaarvo
 
 ### AI-Native Commerce OS for Artisans
 
