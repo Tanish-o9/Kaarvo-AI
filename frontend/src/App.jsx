@@ -420,6 +420,10 @@ export default function App() {
   const [enhancedImage, setEnhancedImage] = useState(null);
   const [imageEnhancing, setImageEnhancing] = useState(false);
   const [imageLightingInfo, setImageLightingInfo] = useState(null);
+  const [customLiveTitle, setCustomLiveTitle] = useState('');
+  const [customLivePrice, setCustomLivePrice] = useState('');
+  const [customLiveDesc, setCustomLiveDesc] = useState('');
+  const [isArtisanSatisfied, setIsArtisanSatisfied] = useState(false);
 
   // --- HACKATHON INNOVATION SUITE STATES ---
   // Feature 1: Digital Heritage Passport & Verifiable QR Certificate
@@ -2034,22 +2038,24 @@ export default function App() {
   };
 
   // Save generated product to DB & Publish Live to Storefront for all customers
-  const handleSaveCatalogToDB = async () => {
+  const handleSaveCatalogToDB = async (customOverrides = {}) => {
     // ALWAYS parse the latest voiceText and inputs from Pillar 1, 2, & 3
     const { catalog, entities } = parseVoiceTextToCatalog(voiceText || 'Handcrafted Artisan Product');
     setExtractedEntities(entities);
     setGeneratedCatalog(catalog);
 
     // Pick active image: User's uploaded/enhanced photo if present, else authentic craft image
-    const activeImage = enhancedImage || rawImageFile || getCraftSpecificImage(catalog.category, catalog.descriptor.name);
+    const activeImage = customOverrides.image || enhancedImage || rawImageFile || getCraftSpecificImage(catalog.category, customOverrides.title || catalog.descriptor.name);
 
-    // Pick active pricing from Pillar 3 or catalog calculated range
-    const activePrice = pricingResult?.min || catalog.price.suggested_range.min || (parseFloat(materialCost || 0) + parseFloat(laborCost || 0)) * 1.4 || 480;
+    // Pick active pricing from Pillar 3, overrides, or catalog calculated range
+    const activePrice = customOverrides.price || pricingResult?.min || catalog.price.suggested_range.min || (parseFloat(materialCost || 0) + parseFloat(laborCost || 0)) * 1.4 || 850;
+    const activeTitle = customOverrides.title || catalog.descriptor.name;
+    const activeDesc = customOverrides.description || catalog.descriptor.long_desc;
 
     const newP = {
       id: Date.now(),
-      title: catalog.descriptor.name,
-      description: catalog.descriptor.long_desc,
+      title: activeTitle,
+      description: activeDesc,
       price: Math.round(activePrice),
       originalPrice: Math.round(activePrice * 1.25),
       category: catalog.category,
@@ -2095,10 +2101,15 @@ export default function App() {
     setMaterialCost('');
     setLaborCost('');
     setPricingResult(null);
+    setCustomLiveTitle('');
+    setCustomLivePrice('');
+    setCustomLiveDesc('');
+    setIsArtisanSatisfied(false);
     if (isRecordingRef.current) {
       stopVoiceRecording();
     }
 
+    // Switch to Customer Storefront so the artisan sees their live product immediately!
     switchMode('customer');
     switchCustomerTab('shop');
   };
@@ -5680,108 +5691,284 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
 
                 </div>
 
-                {/* ALWAYS-VISIBLE POST PRODUCT LIVE ACTION CARD */}
-                <div 
-                  className="card-artisan" 
-                  style={{ 
-                    padding: '28px 32px', 
-                    background: 'linear-gradient(135deg, #1f1b16 0%, #28221a 100%)', 
-                    border: '2px solid #c5a66a', 
-                    borderRadius: '16px',
-                    boxShadow: '0 8px 32px rgba(197, 166, 106, 0.25)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '16px'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '800', background: 'rgba(197, 166, 106, 0.2)', border: '1px solid #c5a66a', color: '#f5d794', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                          ✓ Ready to Post Live
-                        </span>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '800', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid #10b981', color: '#6ee7b7', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                          ✓ ONDC Beckn Sync
-                        </span>
-                      </div>
-                      <h3 style={{ fontSize: '22px', fontWeight: '800', color: '#FFFFFF', letterSpacing: '0.01em', margin: '4px 0' }}>
-                        {generatedCatalog ? generatedCatalog.descriptor.name : 'Publish Handcrafted Product to Kaarvo Store'}
-                      </h3>
-                      <p style={{ fontSize: '14px', color: '#e5e2dc', marginTop: '4px', maxWidth: '650px', lineHeight: '1.5' }}>
-                        {generatedCatalog ? generatedCatalog.descriptor.long_desc : 'Click the button to post your product live so all customer users across India can view & purchase it!'}
-                      </p>
+                {/* ========================================================================= */}
+                {/* PROPER LIVE PRODUCT PREVIEW & PRE-LAUNCH INSPECTION (PILLAR 3 KE BAAD)   */}
+                {/* ========================================================================= */}
+                {(() => {
+                  const defaultTitle = generatedCatalog?.descriptor?.name || (voiceText ? voiceText.slice(0, 45) : 'Handcrafted Jaipur Terracotta Clay Heirloom');
+                  const defaultCategory = generatedCatalog?.category || craftCategory || 'Pottery / Terracotta';
+                  const calculatedPrice = pricingResult?.min || generatedCatalog?.price?.suggested_range?.min || (parseFloat(materialCost || 0) + parseFloat(laborCost || 0)) * 1.4 || 850;
+                  const finalDisplayPrice = Math.round(customLivePrice ? parseFloat(customLivePrice) : calculatedPrice);
+                  const activeImg = enhancedImage || rawImageFile || getCraftSpecificImage(defaultCategory, defaultTitle);
+                  const finalTitle = customLiveTitle || defaultTitle;
+                  const finalDesc = customLiveDesc || generatedCatalog?.descriptor?.long_desc || (voiceText ? `Handcrafted heritage item: ${voiceText}. Living wage and authenticity verified under ONDC Beckn protocol.` : 'Authentic generational handcrafted piece made with verified indigenous techniques. Quality and living wage verified under ONDC Beckn charter.');
+                  const artisanDisplayName = currentUser ? (currentUser.full_name || currentUser.username) : 'Master Artisan Mohan Lal';
+                  const artisanRegion = currentUser?.region || extractedEntities?.region || 'Jaipur, Rajasthan';
 
-                      {/* QUICK ACTION BUTTONS: Audio, Passport & Social Flyer */}
-                      {generatedCatalog && (
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '14px' }}>
+                  return (
+                    <div 
+                      className="card-artisan"
+                      style={{
+                        padding: '32px',
+                        background: 'linear-gradient(135deg, #181614 0%, #1e1b17 100%)',
+                        border: '2px solid #c5a66a',
+                        borderRadius: '18px',
+                        boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '24px'
+                      }}
+                    >
+                      {/* Section Header */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', borderBottom: '1px solid #2d2a26', paddingBottom: '18px' }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '800', background: 'rgba(197, 166, 106, 0.2)', border: '1px solid #c5a66a', color: '#f5d794', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                              👁️ Live Storefront Preview Section
+                            </span>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '800', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid #10b981', color: '#6ee7b7', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                              ✓ Quality Audit Score: 98/100
+                            </span>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '800', background: 'rgba(56, 189, 248, 0.2)', border: '1px solid #38bdf8', color: '#bae6fd', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                              ✓ ONDC Beckn Sync Ready
+                            </span>
+                          </div>
+                          <h2 className="font-serif" style={{ fontSize: '26px', fontWeight: '800', color: '#FFFFFF', margin: '4px 0' }}>
+                            Inspect & Review Product Before Going Live
+                          </h2>
+                          <p style={{ fontSize: '13px', color: '#b8b3a7', maxWidth: '680px', lineHeight: '1.5' }}>
+                            यह सेक्शन ठीक वही दिखाता है जैसा आपके ग्राहकों को लाइव स्टोर में दिखेगा। विवरण चेक करें, आवश्यकतानुसार शीर्षक या कीमत बदलें, और संतुष्ट होने पर ही आगे लाइव करें।
+                          </p>
+                        </div>
+
+                        {/* Quick Interactive Actions */}
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                           <button
                             type="button"
-                            onClick={() => speakText(`Aapka product ${generatedCatalog.descriptor.name} safalta-purvak list ho gaya hai. Recommended price hai rupaye ${generatedCatalog.price.suggested_range.min}. Shuddh hastkala pramanit!`, 'hi-IN')}
-                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '8px 14px', borderRadius: '8px', background: '#2d2720', border: '1px solid #c5a66a', cursor: 'pointer', color: '#f5d794' }}
+                            onClick={() => speakText(`Aapka product ${finalTitle} rupaye ${finalDisplayPrice} me ONDC par live jaane ke liye taiyar hai.`, 'hi-IN')}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: '700', padding: '7px 12px', borderRadius: '8px', background: '#26221c', border: '1px solid #c5a66a', color: '#dfbe7d', cursor: 'pointer' }}
                           >
-                            <Volume2 size={14} /> 🔊 Suniye (Hindi Audio)
+                            <Volume2 size={14} /> 🔊 Audio Verification
                           </button>
                           <button
                             type="button"
                             onClick={() => setPassportProduct({
-                              id: generatedCatalog.product_id,
-                              title: generatedCatalog.descriptor.name,
-                              category: generatedCatalog.category,
-                              price: generatedCatalog.price.suggested_range.min,
-                              location: extractedEntities?.region || 'Jaipur, Rajasthan',
-                              image: enhancedImage || rawImageFile || getCraftSpecificImage(catalog.category, catalog.descriptor.name),
-                              materials: extractedEntities?.material || 'Natural Clay / Silk',
-                              craftStory: generatedCatalog.descriptor.long_desc,
-                              artisan: currentUser ? (currentUser.full_name || currentUser.username) : 'Master Artisan'
+                              id: Date.now(),
+                              title: finalTitle,
+                              category: defaultCategory,
+                              price: finalDisplayPrice,
+                              location: artisanRegion,
+                              image: activeImg,
+                              materials: extractedEntities?.material || 'Handcrafted Heritage',
+                              craftStory: finalDesc,
+                              artisan: artisanDisplayName
                             })}
-                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '8px 14px', borderRadius: '8px', background: '#064e3b', border: '1px solid #10b981', cursor: 'pointer', color: '#a7f3d0' }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: '700', padding: '7px 12px', borderRadius: '8px', background: '#064e3b', border: '1px solid #10b981', color: '#a7f3d0', cursor: 'pointer' }}
                           >
-                            <QrCode size={14} /> 🛡️ Digital Passport & QR
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setFlyerProduct({
-                              id: generatedCatalog.product_id,
-                              title: generatedCatalog.descriptor.name,
-                              price: generatedCatalog.price.suggested_range.min,
-                              location: extractedEntities?.region || 'Jaipur, Rajasthan',
-                              image: enhancedImage || rawImageFile || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80'
-                            })}
-                            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', padding: '8px 14px', borderRadius: '8px', background: '#78350f', border: '1px solid #d97706', cursor: 'pointer', color: '#fde68a' }}
-                          >
-                            <Share2 size={14} /> 📲 WhatsApp Status Flyer
+                            <QrCode size={14} /> 🛡️ QR Certificate
                           </button>
                         </div>
-                      )}
-                    </div>
+                      </div>
 
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                      <button 
-                        onClick={handleSaveCatalogToDB} 
-                        style={{ 
-                          background: 'linear-gradient(135deg, #c5a66a 0%, #e6ca85 50%, #d4af37 100%)',
-                          color: '#121212',
-                          padding: '16px 32px', 
-                          fontSize: '15px', 
-                          fontWeight: '900',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.12em',
-                          borderRadius: '12px',
-                          border: 'none',
-                          boxShadow: '0 6px 24px rgba(197, 166, 106, 0.45)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '10px',
-                          cursor: 'pointer',
-                          transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-                        }}
-                      >
-                        <Send size={18} color="#121212" />
-                        POST PRODUCT LIVE TO ALL CUSTOMERS →
-                      </button>
+                      {/* Split Preview Layout: Left = Customer Storefront Card View, Right = Details & Quality Inspection */}
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '28px', alignItems: 'start' }}>
+                        
+                        {/* LEFT: EXACT 1:1 CUSTOMER STORE CARD PREVIEW */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <span style={{ fontSize: '11px', fontWeight: '800', color: '#c5a66a', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                            📱 Exact Customer Card Preview (ग्राहकों को ऐसा दिखेगा):
+                          </span>
+
+                          <div 
+                            style={{ 
+                              background: '#141312', 
+                              border: '1.5px solid #38342e', 
+                              borderRadius: '14px', 
+                              overflow: 'hidden', 
+                              boxShadow: '0 16px 36px rgba(0,0,0,0.5)',
+                              maxWidth: '380px',
+                              width: '100%'
+                            }}
+                          >
+                            <div style={{ position: 'relative', width: '100%', height: '240px', background: '#0e0e0e', overflow: 'hidden' }}>
+                              <img 
+                                src={activeImg} 
+                                alt={finalTitle} 
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                              />
+                              <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', borderRadius: '50%', padding: '6px', color: '#FFFFFF' }}>
+                                <Heart size={14} />
+                              </div>
+                              <div style={{ position: 'absolute', bottom: '10px', left: '10px', background: 'rgba(0,0,0,0.85)', padding: '4px 8px', borderRadius: '4px', border: '1px solid #3d3a35', fontSize: '9px', fontWeight: '800', color: '#f5d794' }}>
+                                ✨ 4K STUDIO ENHANCED • VERIFIED
+                              </div>
+                            </div>
+
+                            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                              <div>
+                                <span style={{ fontSize: '10px', fontWeight: '700', color: '#a39e93', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
+                                  {artisanDisplayName} • {artisanRegion}
+                                </span>
+                                <h4 className="font-serif" style={{ fontSize: '17px', color: '#FFFFFF', fontWeight: '700', margin: '3px 0' }}>
+                                  {finalTitle}
+                                </h4>
+                                <p style={{ fontSize: '12px', color: '#8e9192', lineClamp: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: '1.4' }}>
+                                  {finalDesc}
+                                </p>
+                              </div>
+
+                              <div style={{ paddingTop: '10px', borderTop: '1px solid #282623', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div>
+                                  <span style={{ fontSize: '9px', color: '#a39e93', display: 'block', textTransform: 'uppercase' }}>Living Wage Price</span>
+                                  <span className="font-serif" style={{ fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>
+                                    ₹{finalDisplayPrice.toLocaleString()}
+                                  </span>
+                                </div>
+                                <div style={{ display: 'flex', gap: '6px' }}>
+                                  <button
+                                    type="button"
+                                    style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid #38342e', background: '#1c1a18', color: '#dfbe7d', fontSize: '10px', fontWeight: '700', cursor: 'default' }}
+                                  >
+                                    + Cart
+                                  </button>
+                                  <button
+                                    type="button"
+                                    style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', background: 'linear-gradient(135deg, #c5a66a, #dfbe7d)', color: '#121212', fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', cursor: 'default', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                  >
+                                    <Zap size={11} className="fill-[#121212]" />
+                                    Buy Now
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* RIGHT: LIVE ADJUSTMENT & SATISFACTION INSPECTION */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                          <span style={{ fontSize: '11px', fontWeight: '800', color: '#dfbe7d', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                            ⚙️ Fine-Tune & Satisfaction Check (जांच व बदलाव):
+                          </span>
+
+                          {/* Editable Title */}
+                          <div>
+                            <label style={{ fontSize: '11px', fontWeight: '700', color: '#FFFFFF', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                              Product Title (शीर्षक)
+                            </label>
+                            <input
+                              type="text"
+                              value={finalTitle}
+                              onChange={(e) => setCustomLiveTitle(e.target.value)}
+                              placeholder="e.g. Handcrafted Jaipur Terracotta Clay Water Pot"
+                              className="input-artisan"
+                              style={{ width: '100%', fontSize: '14px', padding: '10px 14px' }}
+                            />
+                          </div>
+
+                          {/* Editable Price & Living Wage Breakdown */}
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                            <div>
+                              <label style={{ fontSize: '11px', fontWeight: '700', color: '#FFFFFF', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                                Live Selling Price (₹)
+                              </label>
+                              <input
+                                type="number"
+                                value={finalDisplayPrice}
+                                onChange={(e) => setCustomLivePrice(e.target.value)}
+                                className="input-artisan"
+                                style={{ width: '100%', fontSize: '14px', padding: '10px 14px', color: '#10b981', fontWeight: '800' }}
+                              />
+                            </div>
+                            <div style={{ background: '#1c1a18', border: '1px solid #2d2b28', padding: '10px 12px', borderRadius: '8px', fontSize: '11px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                              <span style={{ color: '#a39e93' }}>Material: ₹{materialCost || 180} | Labor: ₹{laborCost || 150}</span>
+                              <span style={{ color: '#10b981', fontWeight: '700', marginTop: '2px' }}>✓ 100% Direct Artisan Pay</span>
+                            </div>
+                          </div>
+
+                          {/* Full Story / Description */}
+                          <div>
+                            <label style={{ fontSize: '11px', fontWeight: '700', color: '#FFFFFF', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                              Product Story & Description (विवरण)
+                            </label>
+                            <textarea
+                              rows={3}
+                              value={finalDesc}
+                              onChange={(e) => setCustomLiveDesc(e.target.value)}
+                              className="input-artisan"
+                              style={{ width: '100%', fontSize: '13px', padding: '10px 14px', resize: 'vertical' }}
+                            />
+                          </div>
+
+                          {/* Satisfaction Checkbox */}
+                          <label 
+                            style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '12px', 
+                              padding: '14px 16px', 
+                              background: isArtisanSatisfied ? '#063b2c' : '#1e1c18', 
+                              border: isArtisanSatisfied ? '1.5px solid #10b981' : '1px solid #38342e', 
+                              borderRadius: '10px',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isArtisanSatisfied}
+                              onChange={(e) => setIsArtisanSatisfied(e.target.checked)}
+                              style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#10b981' }}
+                            />
+                            <div style={{ fontSize: '13px', color: isArtisanSatisfied ? '#6ee7b7' : '#FFFFFF', fontWeight: isArtisanSatisfied ? '700' : '500' }}>
+                              {isArtisanSatisfied ? '✓ मैं प्रिव्यू, फ़ोटो और प्राइस से पूरी तरह संतुष्ट हूँ! (Ready to Post Live)' : 'हाँ, मैंने प्रिव्यू चेक कर लिया है और मैं संतुष्ट हूँ।'}
+                            </div>
+                          </label>
+
+                          {/* CONFIRM & POST LIVE BUTTON */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!isArtisanSatisfied) {
+                                showToast('⚠️ कृपया पहले "संतुष्ट" चेकबॉक्स पर टिक करें!');
+                                return;
+                              }
+                              handleSaveCatalogToDB({
+                                title: finalTitle,
+                                price: finalDisplayPrice,
+                                description: finalDesc,
+                                image: activeImg
+                              });
+                            }}
+                            disabled={!isArtisanSatisfied}
+                            style={{
+                              background: isArtisanSatisfied 
+                                ? 'linear-gradient(135deg, #c5a66a 0%, #e6ca85 50%, #d4af37 100%)' 
+                                : '#2b2926',
+                              color: isArtisanSatisfied ? '#121212' : '#78756e',
+                              padding: '16px 28px',
+                              fontSize: '15px',
+                              fontWeight: '900',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.1em',
+                              borderRadius: '12px',
+                              border: 'none',
+                              cursor: isArtisanSatisfied ? 'pointer' : 'not-allowed',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '10px',
+                              boxShadow: isArtisanSatisfied ? '0 8px 25px rgba(197, 166, 106, 0.45)' : 'none',
+                              transition: 'all 0.25s ease'
+                            }}
+                          >
+                            <Send size={18} />
+                            POST PRODUCT LIVE TO ALL CUSTOMERS →
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  );
+                })()}
 
                 {/* PILLAR 5: B2B WHOLESALE EXPORT & LIVING-WAGE AI NEGOTIATOR */}
                 <div className="card-artisan" style={{ padding: '28px', border: '2px solid #3b82f6', borderRadius: '16px', background: '#181a1f' }}>
