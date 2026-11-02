@@ -6130,10 +6130,10 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
           {/* MAIN ARTISAN OS BODY */}
           <main style={{ flex: 1, padding: '24px 36px 36px', maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
             
-            {/* TOP GLOBAL BACK & BREADCRUMB BAR (Always Visible) */}
+            {/* TOP GLOBAL BREADCRUMB BAR (Always Visible) */}
             <div style={{ 
               display: 'flex', 
-              justifyContent: 'space-between', 
+              justifyContent: 'flex-end', 
               alignItems: 'center', 
               flexWrap: 'wrap', 
               gap: '12px', 
@@ -6141,29 +6141,6 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
               paddingBottom: '16px', 
               borderBottom: '1px solid var(--border-subtle)' 
             }}>
-              <button
-                type="button"
-                onClick={() => switchMode('customer')}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '9px 18px',
-                  borderRadius: '10px',
-                  background: '#25221d',
-                  border: '1.5px solid #c5a66a',
-                  color: '#f5d794',
-                  fontSize: '13px',
-                  fontWeight: '800',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-                  transition: 'all 0.2s ease'
-                }}
-                title="Go back to Customer Store / Home page"
-              >
-                <ArrowLeft size={17} />
-                <span>← Back to Customer Storefront / Home</span>
-              </button>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
                 <span 
