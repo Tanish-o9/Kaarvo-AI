@@ -1798,12 +1798,31 @@ export default function App() {
       clearTimeout(speechTranslateTimeoutRef.current);
     }
 
+    // Wait for Chrome/Edge speech recognition to flush the final audio buffer
     if (speechRecRef.current) {
-      try {
-        speechRecRef.current.onend = null;
-        speechRecRef.current.onerror = null;
-        speechRecRef.current.stop();
-      } catch (e) {}
+      await new Promise(resolve => {
+        const timeout = setTimeout(resolve, 750);
+        const rec = speechRecRef.current;
+        if (rec) {
+          const origOnResult = rec.onresult;
+          rec.onresult = (e) => {
+            if (origOnResult) origOnResult(e);
+            clearTimeout(timeout);
+            setTimeout(resolve, 150);
+          };
+          rec.onend = () => {
+            clearTimeout(timeout);
+            resolve();
+          };
+          try {
+            rec.stop();
+          } catch (err) {
+            resolve();
+          }
+        } else {
+          resolve();
+        }
+      });
       speechRecRef.current = null;
     }
 
@@ -1814,7 +1833,7 @@ export default function App() {
       mediaStreamRef.current = null;
     }
 
-    // Retrieve active text from ref or state
+    // Retrieve active text from ref or state (after Chrome flushed final speech)
     let capturedHindi = (rawSpokenHindiRef.current || rawSpokenHindi || '').trim();
     let currentEnglish = (voiceTextRef.current || voiceText || '').trim();
 
@@ -1863,7 +1882,20 @@ export default function App() {
       return;
     }
 
-    // Initialize Web Speech Recognition directly (without exclusive getUserMedia lock)
+    // 1. Explicitly prompt / check browser hardware microphone permission
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Immediately release test stream so SpeechRecognition has sole hardware access
+        stream.getTracks().forEach(track => track.stop());
+      } catch (permErr) {
+        console.warn('Microphone permission required:', permErr);
+        showToast('⚠️ Microphone permission required! Please click "Allow" on the browser permission prompt.');
+        return;
+      }
+    }
+
+    // 2. Initialize Web Speech Recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
