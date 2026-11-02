@@ -721,6 +721,10 @@ export default function App() {
     return converted.charAt(0).toUpperCase() + converted.slice(1) + (converted.endsWith('.') ? '' : '.');
   };
 
+  const getBackendApiBase = () => {
+    return (window.location.hostname === 'localhost') ? 'http://localhost:8001' : 'http://127.0.0.1:8001';
+  };
+
   const translateHindiSpeechToEnglish = async (input) => {
     let raw = (input || '').trim()
       .replace(/^(Authentic artisan product:\s*)+/gi, '')
@@ -728,33 +732,42 @@ export default function App() {
       .trim();
     if (!raw) return '';
 
-    // Preprocess speech mishearings and common Hinglish phonetic words
+    // If already fluent English (contains no Indic characters or common Hindi words)
+    const hasDevanagari = /[\u0900-\u097F]/.test(raw);
+    const hasHinglish = /\b(hai|hain|ka|ki|ke|se|yeh|ye|humne|hamne|banaya|banaye|laagat|rupaye|chahiye|karo|batao)\b/i.test(raw);
+    if (!hasDevanagari && !hasHinglish && raw.length > 5) {
+      return raw.charAt(0).toUpperCase() + raw.slice(1);
+    }
+
+    // Preprocess speech mishearings
     let preprocessed = raw
       .replace(/(होटल|हॉटेल)\s*(करनी|करना)/gi, 'ऑर्डर $2')
       .replace(/\bmangaya gaya hai\b/gi, 'mangwaya gaya hai')
       .replace(/\blaya gaya hai\b/gi, 'laya hai');
 
-    // 1. Try Backend Translate API (127.0.0.1:8001)
+    // 1. Try Backend Translate API with 2 second timeout
     try {
-      const res = await fetch('http://127.0.0.1:8001/api/translate', {
+      const baseUrl = getBackendApiBase();
+      const res = await fetch(`${baseUrl}/api/translate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: preprocessed })
+        body: JSON.stringify({ text: preprocessed }),
+        signal: AbortSignal.timeout(2000)
       });
       if (res.ok) {
         const data = await res.json();
-        if (data && data.translated) {
-          return data.translated;
+        if (data && data.translated && data.translated.trim()) {
+          return data.translated.trim();
         }
       }
     } catch (err) {
-      console.warn('Backend /api/translate error, trying direct Google API:', err);
+      console.warn('Backend translate notice:', err.message);
     }
 
-    // 2. Direct Google GTX API (Free, fast, CORS enabled)
+    // 2. Direct Google GTX API with 2 second timeout
     try {
       const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=${encodeURIComponent(preprocessed)}`;
-      const res = await fetch(url);
+      const res = await fetch(url, { signal: AbortSignal.timeout(2000) });
       if (res.ok) {
         const data = await res.json();
         if (data && data[0]) {
@@ -767,13 +780,13 @@ export default function App() {
         }
       }
     } catch (err) {
-      console.warn('Google GTX fallback error:', err);
+      console.warn('Google GTX notice:', err.message);
     }
 
-    // 3. MyMemory Free API
+    // 3. MyMemory Free API with 2 second timeout
     try {
       const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(preprocessed)}&langpair=hi|en`;
-      const res = await fetch(url);
+      const res = await fetch(url, { signal: AbortSignal.timeout(2000) });
       if (res.ok) {
         const data = await res.json();
         if (data && data.responseData && data.responseData.translatedText) {
@@ -784,10 +797,10 @@ export default function App() {
         }
       }
     } catch (err) {
-      console.warn('MyMemory fallback error:', err);
+      console.warn('MyMemory notice:', err.message);
     }
 
-    // 4. Offline domain fallback
+    // 4. Guaranteed instant domain offline fallback
     return cleanOfflineDomainTranslation(raw);
   };
 
@@ -1860,12 +1873,11 @@ export default function App() {
       mediaStreamRef.current = null;
     }
 
-    showToast('🔴 Mic Stopped.');
+    showToast('🔴 Mic Stopped. Finalizing English copy...');
 
-    let captured = (rawSpokenHindiRef.current || rawSpokenHindi || '').trim();
+    let captured = (rawSpokenHindiRef.current || rawSpokenHindi || voiceTextRef.current || voiceText || '').trim();
 
-    // FALLBACK: If Web Speech API returned empty (due to network or browser blocks),
-    // transcribe the recorded audio chunks via Backend Speech-to-Text!
+    // If WebSpeech was empty, transcribe the recorded PCM WAV audio via Backend STT
     if (!captured && audioChunksRef.current && audioChunksRef.current.length > 0) {
       const totalLen = audioChunksRef.current.reduce((acc, c) => acc + c.length, 0);
       if (totalLen > 1600) {
@@ -1877,7 +1889,7 @@ export default function App() {
         }
 
         const wavBlob = encodeWavBlob(merged, 16000);
-        showToast('⏳ Transcribing audio via Kaarvo AI Engine...');
+        showToast('⏳ Converting voice to English...');
         setIsTranslating(true);
 
         try {
@@ -1885,9 +1897,11 @@ export default function App() {
           formData.append('audio', wavBlob, 'recording.wav');
           formData.append('language', selectedLanguage || 'hi-IN');
 
-          const res = await fetch('http://127.0.0.1:8001/api/v1/voice-transcribe', {
+          const baseUrl = getBackendApiBase();
+          const res = await fetch(`${baseUrl}/api/v1/voice-transcribe`, {
             method: 'POST',
-            body: formData
+            body: formData,
+            signal: AbortSignal.timeout(6000)
           });
 
           if (res.ok) {
@@ -1900,25 +1914,35 @@ export default function App() {
               if (data.translated) {
                 voiceTextRef.current = data.translated;
                 setVoiceText(data.translated);
-                showToast(`✨ Captured & Translated: "${data.translated.slice(0, 26)}..."`);
+                showToast(`✨ Translated: "${data.translated.slice(0, 26)}..."`);
               }
             }
           }
         } catch (sttErr) {
-          console.warn('Backend audio transcribe error:', sttErr);
+          console.warn('Backend audio transcribe notice:', sttErr);
         } finally {
           setIsTranslating(false);
         }
       }
     }
 
-    if (captured && !voiceTextRef.current) {
+    // ALWAYS translate captured text into proper English and write to textarea
+    if (captured) {
       setIsTranslating(true);
-      const english = await translateHindiSpeechToEnglish(captured);
-      if (english) {
-        voiceTextRef.current = english;
-        setVoiceText(english);
+      try {
+        const english = await translateHindiSpeechToEnglish(captured);
+        const finalTxt = english || cleanOfflineDomainTranslation(captured) || captured;
+        voiceTextRef.current = finalTxt;
+        setVoiceText(finalTxt);
+        showToast('✨ Product details converted to English!');
+      } catch (err) {
+        const fallback = cleanOfflineDomainTranslation(captured) || captured;
+        voiceTextRef.current = fallback;
+        setVoiceText(fallback);
+      } finally {
+        setIsTranslating(false);
       }
+    } else {
       setIsTranslating(false);
     }
   };
@@ -1956,6 +1980,8 @@ export default function App() {
     setIsRecording(true);
     setAudioLevel(0);
     audioChunksRef.current = [];
+    rawSpokenHindiRef.current = '';
+    setRawSpokenHindi('');
 
     // Clear default terracotta placeholder text if present
     setVoiceText(prev => {
@@ -2028,20 +2054,28 @@ export default function App() {
             rawSpokenHindiRef.current = cleaned;
             setRawSpokenHindi(cleaned);
 
+            // Immediately display spoken text in the textarea so it's NEVER empty while speaking
+            setVoiceText(cleaned);
+
             if (speechTranslateTimeoutRef.current) {
               clearTimeout(speechTranslateTimeoutRef.current);
             }
 
             speechTranslateTimeoutRef.current = setTimeout(async () => {
               setIsTranslating(true);
-              const englishText = await translateHindiSpeechToEnglish(cleaned);
-              if (englishText) {
-                voiceTextRef.current = englishText;
-                setVoiceText(englishText);
-                showToast(`✨ Auto-translated to English: "${englishText.slice(0, 28)}..."`);
+              try {
+                const englishText = await translateHindiSpeechToEnglish(cleaned);
+                if (englishText) {
+                  voiceTextRef.current = englishText;
+                  setVoiceText(englishText);
+                  showToast(`✨ English: "${englishText.slice(0, 28)}..."`);
+                }
+              } catch (e) {
+                console.warn(e);
+              } finally {
+                setIsTranslating(false);
               }
-              setIsTranslating(false);
-            }, isFinalSegment ? 100 : 400);
+            }, isFinalSegment ? 80 : 350);
           }
         };
 
