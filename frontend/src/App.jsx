@@ -1798,31 +1798,12 @@ export default function App() {
       clearTimeout(speechTranslateTimeoutRef.current);
     }
 
-    // Wait for Chrome/Edge speech recognition to flush the final audio buffer
     if (speechRecRef.current) {
-      await new Promise(resolve => {
-        const timeout = setTimeout(resolve, 750);
-        const rec = speechRecRef.current;
-        if (rec) {
-          const origOnResult = rec.onresult;
-          rec.onresult = (e) => {
-            if (origOnResult) origOnResult(e);
-            clearTimeout(timeout);
-            setTimeout(resolve, 150);
-          };
-          rec.onend = () => {
-            clearTimeout(timeout);
-            resolve();
-          };
-          try {
-            rec.stop();
-          } catch (err) {
-            resolve();
-          }
-        } else {
-          resolve();
-        }
-      });
+      try {
+        speechRecRef.current.onend = null;
+        speechRecRef.current.onerror = null;
+        speechRecRef.current.stop();
+      } catch (e) {}
       speechRecRef.current = null;
     }
 
@@ -1833,79 +1814,43 @@ export default function App() {
       mediaStreamRef.current = null;
     }
 
-    // Retrieve active text from ref or state (after Chrome flushed final speech)
-    let capturedHindi = (rawSpokenHindiRef.current || rawSpokenHindi || '').trim();
-    let currentEnglish = (voiceTextRef.current || voiceText || '').trim();
+    showToast('🔴 Mic Stopped.');
 
-    if (!capturedHindi && !currentEnglish) {
-      showToast('⚠️ No voice input detected. Please speak into your microphone or type product details.');
-      return;
-    }
-
-    showToast('⏹️ Mic stopped. Translating & cataloging...');
-
-    let finalEnglish = currentEnglish;
-    if (capturedHindi) {
+    const spoken = (rawSpokenHindiRef.current || rawSpokenHindi || '').trim();
+    if (spoken) {
       setIsTranslating(true);
-      const translated = await translateHindiSpeechToEnglish(capturedHindi);
-      if (translated && translated.trim()) {
-        finalEnglish = translated;
+      const english = await translateHindiSpeechToEnglish(spoken);
+      if (english) {
+        voiceTextRef.current = english;
+        setVoiceText(english);
       }
       setIsTranslating(false);
-    }
-
-    if (finalEnglish) {
-      voiceTextRef.current = finalEnglish;
-      setVoiceText(finalEnglish);
-
-      // Automatically generate the ONDC Beckn Catalog Schema
-      const { entities, catalog } = parseVoiceTextToCatalog(finalEnglish);
-      setExtractedEntities(entities);
-      setGeneratedCatalog(catalog);
-
-      // Auto-calculate Pillar 3 pricing if not already set
-      if (!materialCost || !laborCost) {
-        const mCost = '180';
-        const lCost = '150';
-        setMaterialCost(mCost);
-        setLaborCost(lCost);
-        calculatePricing(mCost, lCost, catalog.category);
-      }
-
-      showToast('✨ Voice converted to English & Auto-Catalog generated!');
     }
   };
 
   const toggleVoiceRecording = async () => {
     if (isRecordingRef.current) {
-      await stopVoiceRecording();
+      stopVoiceRecording();
       return;
     }
 
-    // 1. Explicitly prompt / check browser hardware microphone permission
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      try {
+    // 1. Explicitly request hardware Microphone stream permission from browser
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        // Immediately release test stream so SpeechRecognition has sole hardware access
-        stream.getTracks().forEach(track => track.stop());
-      } catch (permErr) {
-        console.warn('Microphone permission required:', permErr);
-        showToast('⚠️ Microphone permission required! Please click "Allow" on the browser permission prompt.');
-        return;
+        mediaStreamRef.current = stream;
       }
+    } catch (micErr) {
+      console.warn('getUserMedia mic error or permission denied:', micErr);
+      showToast('⚠️ Please click "Allow" in your browser microphone permission pop-up!');
     }
 
-    // 2. Initialize Web Speech Recognition
+    // 2. Initialize Web Speech API
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
     if (!SpeechRecognition) {
       showToast('⚠️ Speech recognition API is not supported in this browser. Please type product details in the box!');
       return;
     }
-
-    isRecordingRef.current = true;
-    setIsRecording(true);
-    showToast(`🎙️ Microphone ACTIVE (${selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}). Speak now!`);
 
     try {
       if (speechRecRef.current) {
@@ -1916,22 +1861,27 @@ export default function App() {
       speechRecRef.current = recognition;
       recognition.continuous = true;
       recognition.interimResults = true;
-      recognition.maxAlternatives = 1;
       recognition.lang = selectedLanguage || 'hi-IN';
 
       recognition.onstart = () => {
         isRecordingRef.current = true;
         setIsRecording(true);
+        // Clear default terracotta placeholder text if present when starting a new mic recording
+        setVoiceText(prev => {
+          if (prev && prev.includes('Yeh Jaipur ki pure terracotta clay water pot hai')) return '';
+          return prev;
+        });
+        showToast(`🎙️ Mic ACTIVE (${selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}). Speak now!`);
       };
 
       recognition.onresult = (event) => {
         let fullTranscript = '';
-        let isFinal = false;
+        let isFinalSegment = false;
         for (let i = 0; i < event.results.length; i++) {
           const item = event.results[i];
           if (item && item[0] && item[0].transcript) {
             fullTranscript += item[0].transcript + ' ';
-            if (item.isFinal) isFinal = true;
+            if (item.isFinal) isFinalSegment = true;
           }
         }
         const cleaned = fullTranscript.trim();
@@ -1943,16 +1893,17 @@ export default function App() {
             clearTimeout(speechTranslateTimeoutRef.current);
           }
 
-          // Debounce translation into proper English in real time
+          // Debounce translation: wait 400ms after speech pause or trigger on final
           speechTranslateTimeoutRef.current = setTimeout(async () => {
             setIsTranslating(true);
-            const english = await translateHindiSpeechToEnglish(cleaned);
-            if (english) {
-              voiceTextRef.current = english;
-              setVoiceText(english);
+            const englishText = await translateHindiSpeechToEnglish(cleaned);
+            if (englishText) {
+              voiceTextRef.current = englishText;
+              setVoiceText(englishText);
+              showToast(`✨ Auto-translated to English: "${englishText.slice(0, 28)}..."`);
             }
             setIsTranslating(false);
-          }, isFinal ? 100 : 350);
+          }, isFinalSegment ? 100 : 400);
         }
       };
 
@@ -1963,9 +1914,7 @@ export default function App() {
           setIsRecording(false);
           showToast('⚠️ Mic access denied! Click the lock/camera icon in your address bar to allow microphone.');
         } else if (event.error === 'no-speech') {
-          // Ambient silence timeout, keep recording
-        } else if (event.error === 'network') {
-          console.warn('Speech network notice');
+          // Ambient silence timeout, maintain recording
         }
       };
 
@@ -1978,13 +1927,15 @@ export default function App() {
               if (isRecordingRef.current) {
                 try { recognition.start(); } catch (err) {}
               }
-            }, 250);
+            }, 300);
           }
         } else {
           setIsRecording(false);
         }
       };
 
+      isRecordingRef.current = true;
+      setIsRecording(true);
       recognition.start();
     } catch (err) {
       console.error('Mic start error:', err);
