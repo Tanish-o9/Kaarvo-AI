@@ -1814,46 +1814,47 @@ export default function App() {
       audioContextRef.current = null;
     }
 
-    // Retrieve active text from ref or state
-    let captured = (voiceTextRef.current || voiceText || '').trim();
+    // Retrieve active text from raw spoken or state
+    let capturedHindi = (rawSpokenHindi || '').trim();
+    let currentEnglish = (voiceTextRef.current || voiceText || '').trim();
 
-    if (!captured) {
-      showToast('⚠️ No voice input detected. Please speak into your microphone or type/pick a prompt below.');
+    if (!capturedHindi && !currentEnglish) {
+      showToast('⚠️ No voice input detected. Please speak into your microphone or type product details.');
       return;
     }
 
-    showToast('⏹️ Mic stopped. Translating & cataloging...');
+    showToast('⏹️ Mic stopped. Finalizing English translation...');
 
-    // Auto-translate to fluent English if Indic/Hinglish
-    const hasIndic = /[ऀ-ॿ]|( (hai|h|hain|ka|ki|ke|se|mangaya|banaya|yeh|ye|jisko|hath|humne|hamne) )/i.test(captured);
-    let english = captured;
-    if (hasIndic || selectedLanguage !== 'en-IN') {
+    let finalEnglish = currentEnglish;
+    if (capturedHindi) {
       setIsTranslating(true);
-      const translated = await translateHindiSpeechToEnglish(captured);
+      const translated = await translateHindiSpeechToEnglish(capturedHindi);
       if (translated && translated.trim()) {
-        english = translated;
+        finalEnglish = translated;
       }
       setIsTranslating(false);
     }
 
-    voiceTextRef.current = english;
-    setVoiceText(english);
+    if (finalEnglish) {
+      voiceTextRef.current = finalEnglish;
+      setVoiceText(finalEnglish);
 
-    // Automatically generate the ONDC Beckn Catalog Schema immediately
-    const { entities, catalog } = parseVoiceTextToCatalog(english);
-    setExtractedEntities(entities);
-    setGeneratedCatalog(catalog);
+      // Automatically generate the ONDC Beckn Catalog Schema
+      const { entities, catalog } = parseVoiceTextToCatalog(finalEnglish);
+      setExtractedEntities(entities);
+      setGeneratedCatalog(catalog);
 
-    // Auto-calculate Pillar 3 pricing
-    if (!materialCost || !laborCost) {
-      const mCost = '180';
-      const lCost = '150';
-      setMaterialCost(mCost);
-      setLaborCost(lCost);
-      calculatePricing(mCost, lCost, catalog.category);
+      // Auto-calculate Pillar 3 pricing if not already set
+      if (!materialCost || !laborCost) {
+        const mCost = '180';
+        const lCost = '150';
+        setMaterialCost(mCost);
+        setLaborCost(lCost);
+        calculatePricing(mCost, lCost, catalog.category);
+      }
+
+      showToast('✨ Voice converted to English & Auto-Catalog generated!');
     }
-
-    showToast('✨ Voice converted to English & Auto-Catalog generated!');
   };
 
   const toggleVoiceRecording = async () => {
@@ -1862,21 +1863,22 @@ export default function App() {
       return;
     }
 
-    // 1. Release hardware mic stream safely
+    // 1. Keep microphone stream alive while recording
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        stream.getTracks().forEach(track => track.stop());
+        mediaStreamRef.current = stream;
       }
     } catch (micErr) {
       console.warn('getUserMedia mic check:', micErr);
+      showToast('⚠️ Please allow microphone permission in your browser!');
     }
 
     // 2. Initialize Web Speech Recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      showToast('⚠️ Speech recognition API is not supported in this browser. You can type or pick a prompt below!');
+      showToast('⚠️ Speech recognition API is not supported in this browser. Please type product details!');
       return;
     }
 
@@ -1893,7 +1895,7 @@ export default function App() {
       speechRecRef.current = recognition;
       recognition.continuous = true;
       recognition.interimResults = true;
-      recognition.lang = selectedLanguage;
+      recognition.lang = selectedLanguage || 'hi-IN';
 
       recognition.onstart = () => {
         isRecordingRef.current = true;
@@ -1902,17 +1904,32 @@ export default function App() {
 
       recognition.onresult = (event) => {
         let fullTranscript = '';
+        let isFinal = false;
         for (let i = 0; i < event.results.length; i++) {
           const item = event.results[i];
           if (item && item[0] && item[0].transcript) {
             fullTranscript += item[0].transcript + ' ';
+            if (item.isFinal) isFinal = true;
           }
         }
         const cleaned = fullTranscript.trim();
         if (cleaned) {
-          voiceTextRef.current = cleaned;
-          setVoiceText(cleaned);
           setRawSpokenHindi(cleaned);
+
+          if (speechTranslateTimeoutRef.current) {
+            clearTimeout(speechTranslateTimeoutRef.current);
+          }
+
+          // Debounce translation into proper English in real time
+          speechTranslateTimeoutRef.current = setTimeout(async () => {
+            setIsTranslating(true);
+            const english = await translateHindiSpeechToEnglish(cleaned);
+            if (english) {
+              voiceTextRef.current = english;
+              setVoiceText(english);
+            }
+            setIsTranslating(false);
+          }, isFinal ? 100 : 400);
         }
       };
 
@@ -1922,8 +1939,8 @@ export default function App() {
           isRecordingRef.current = false;
           setIsRecording(false);
           showToast('⚠️ Mic access denied! Please allow microphone permission in your browser.');
-        } else if (event.error === 'network') {
-          console.warn('Speech network notice. Voice fallback will process on stop.');
+        } else if (event.error === 'no-speech') {
+          // Keep active
         }
       };
 
@@ -1942,7 +1959,7 @@ export default function App() {
       console.error('Mic start error:', err);
       isRecordingRef.current = false;
       setIsRecording(false);
-      showToast('⚠️ Could not activate mic. Please type or click a prompt preset.');
+      showToast('⚠️ Could not activate mic. Please type product details.');
     }
   };
 
@@ -5897,96 +5914,6 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                         <Mic size={16} className={isRecording ? 'animate-bounce' : ''} />
                         {isRecording ? '⏹️ Stop Mic' : '🎙️ Record'}
                       </button>
-                    </div>
-
-                    {/* Quick Voice Demo Presets with One-Click Full Cataloging */}
-                    <div style={{ marginBottom: '14px' }}>
-                      <span style={{ fontSize: '11px', color: '#dfbe7d', fontWeight: '800', display: 'block', marginBottom: '6px' }}>
-                        ⚡ Quick Sample Prompts (One-click instant voice & auto-catalog):
-                      </span>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                        {[
-                          { 
-                            label: '🏺 Jaipur Clay Pot', 
-                            text: 'Yeh Jaipur ki authentic terracotta clay water pot hai hand-carved floral design ke sath.',
-                            english: 'Authentic Jaipur terracotta clay water pot with hand-carved floral design and natural evaporative cooling.',
-                            mCost: '180',
-                            lCost: '150'
-                          },
-                          { 
-                            label: '🥻 Banarasi Silk Saree', 
-                            text: 'Yeh Varanasi ki pure Banarasi katan silk handloom saree hai pure gold zari weaving ke sath.',
-                            english: 'Authentic Varanasi pure Banarasi katan silk handloom saree with intricate pure gold zari weave.',
-                            mCost: '2800',
-                            lCost: '1800'
-                          },
-                          { 
-                            label: '🪔 Bastar Dhokra Diya', 
-                            text: 'Yeh Bastar Chhattisgarh ka traditional Dhokra bell-metal lost wax casting diya hai.',
-                            english: 'Traditional Bastar Dhokra bell-metal lost-wax casting ritual oil diya lamp.',
-                            mCost: '650',
-                            lCost: '450'
-                          },
-                          { 
-                            label: '🧣 Kashmir Pashmina', 
-                            text: 'Authentic Kashmir pure Pashmina wool hand-embroidered heritage craft shawl.',
-                            english: 'Authentic Kashmir pure Pashmina wool hand-embroidered heritage artisan craft shawl.',
-                            mCost: '3200',
-                            lCost: '2200'
-                          }
-                        ].map((preset, pIdx) => (
-                          <button
-                            key={pIdx}
-                            type="button"
-                            onClick={async () => {
-                              // 1. Stop mic if running
-                              if (isRecordingRef.current) {
-                                isRecordingRef.current = false;
-                                setIsRecording(false);
-                                if (speechRecRef.current) {
-                                  try { speechRecRef.current.stop(); } catch (e) {}
-                                }
-                                if (mediaStreamRef.current) {
-                                  try { mediaStreamRef.current.getTracks().forEach(t => t.stop()); } catch (e) {}
-                                }
-                              }
-
-                              // 2. Set Spoken Text & Fluent English
-                              voiceTextRef.current = preset.english;
-                              setVoiceText(preset.english);
-                              setRawSpokenHindi(preset.text);
-
-                              // 3. Immediately parse and generate ONDC Catalog Schema
-                              const { entities, catalog } = parseVoiceTextToCatalog(preset.english);
-                              setExtractedEntities(entities);
-                              setGeneratedCatalog(catalog);
-
-                              // 4. Update Pillar 3 pricing
-                              setMaterialCost(preset.mCost);
-                              setLaborCost(preset.lCost);
-                              calculatePricing(preset.mCost, preset.lCost, catalog.category);
-
-                              showToast(`✨ Auto-Cataloged ${preset.label} in fluent English!`);
-                            }}
-                            style={{
-                              fontSize: '11px',
-                              padding: '6px 11px',
-                              borderRadius: '8px',
-                              background: '#1e1c18',
-                              border: '1px solid #38342e',
-                              color: '#dfbe7d',
-                              fontWeight: '700',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              transition: 'all 0.15s ease'
-                            }}
-                          >
-                            {preset.label}
-                          </button>
-                        ))}
-                      </div>
                     </div>
 
                     {isRecording && (
