@@ -871,7 +871,13 @@ class OrderListCreateView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        orders = Order.objects.all().order_by('-created_at')
+        artisan_id = request.query_params.get('artisan_id')
+        if request.user and request.user.is_authenticated:
+            orders = Order.objects.filter(artisan=request.user).order_by('-created_at')
+        elif artisan_id:
+            orders = Order.objects.filter(artisan_id=artisan_id).order_by('-created_at')
+        else:
+            orders = Order.objects.all().order_by('-created_at')
         return Response(OrderSerializer(orders, many=True).data)
 
     def post(self, request):

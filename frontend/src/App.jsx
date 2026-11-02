@@ -291,6 +291,32 @@ export default function App() {
   const [products, setProducts] = useState([]);
 
   // DYNAMIC SELLING ARTISANS (Zero Fake Data: Only artisans who have listed real products)
+  // Compute products strictly created by the currently logged-in artisan
+  const myArtisanProducts = useMemo(() => {
+    if (!currentUser) return [];
+    return products.filter(p => {
+      const matchId = p.artisan_id && currentUser.id && String(p.artisan_id) === String(currentUser.id);
+      const matchUsername = p.artisan && currentUser.username && p.artisan.toLowerCase() === currentUser.username.toLowerCase();
+      const matchFullName = p.artisan && currentUser.full_name && p.artisan.toLowerCase() === currentUser.full_name.toLowerCase();
+      return matchId || matchUsername || matchFullName;
+    });
+  }, [products, currentUser]);
+
+  // Compute orders strictly received by the currently logged-in artisan
+  const myArtisanOrders = useMemo(() => {
+    if (!currentUser) return [];
+    return orders.filter(o => {
+      const matchId = o.artisan && currentUser.id && String(o.artisan) === String(currentUser.id);
+      const matchName = o.artisan_name && currentUser.username && o.artisan_name.toLowerCase() === currentUser.username.toLowerCase();
+      return matchId || matchName;
+    });
+  }, [orders, currentUser]);
+
+  // Compute revenue strictly from this artisan's actual orders (zero fake fallbacks)
+  const myArtisanRevenue = useMemo(() => {
+    return myArtisanOrders.reduce((sum, o) => sum + (parseFloat(o.total_price) || 0), 0);
+  }, [myArtisanOrders]);
+
   const activeArtisans = useMemo(() => {
     const map = new Map();
     products.forEach(p => {
@@ -1153,6 +1179,7 @@ export default function App() {
             rating: item.quality_score ? (item.quality_score / 20).toFixed(1) : 4.9,
             reviewsCount: item.views_count || 12,
             artisan: item.artisan_name || 'Verified Artisan',
+            artisan_id: item.artisan,
             location: item.location || 'Jaipur, Rajasthan',
             description: item.description || item.voice_transcript || 'Authentic handcrafted item produced by verified master artisan.',
             materials: item.verified_facts?.materials || 'Natural Pure Clay / Handloom Silk',
@@ -4584,27 +4611,29 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
                   <div className="card-artisan" style={{ padding: '24px' }}>
                     <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '4px' }}>Published Products</div>
-                    <div style={{ fontSize: '32px', fontWeight: '800', color: 'var(--text-main)' }}>{products.length}</div>
+                    <div style={{ fontSize: '32px', fontWeight: '800', color: 'var(--text-main)' }}>{myArtisanProducts.length}</div>
                     <span className="badge-tag badge-teal" style={{ marginTop: '8px' }}>✓ ONDC Beckn Live</span>
                   </div>
 
                   <div className="card-artisan" style={{ padding: '24px' }}>
                     <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '4px' }}>Total Customer Orders</div>
-                    <div style={{ fontSize: '32px', fontWeight: '800', color: 'var(--primary)' }}>{orders.length}</div>
+                    <div style={{ fontSize: '32px', fontWeight: '800', color: 'var(--primary)' }}>{myArtisanOrders.length}</div>
                     <span className="badge-tag badge-terracotta" style={{ marginTop: '8px' }}>✓ Real-time Sync</span>
                   </div>
 
                   <div className="card-artisan" style={{ padding: '24px' }}>
                     <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '4px' }}>Artisan Revenue</div>
                     <div style={{ fontSize: '32px', fontWeight: '800', color: '#10B981' }}>
-                      ₹{orders.reduce((s, o) => s + (parseFloat(o.total_price) || 0), 0) || 1850}
+                      ₹{myArtisanRevenue}
                     </div>
                     <span className="badge-tag badge-gold" style={{ marginTop: '8px' }}>✓ Direct Bank Transfer</span>
                   </div>
 
                   <div className="card-artisan" style={{ padding: '24px' }}>
                     <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '4px' }}>Quality Audit Score</div>
-                    <div style={{ fontSize: '32px', fontWeight: '800', color: '#D97706' }}>98/100</div>
+                    <div style={{ fontSize: '32px', fontWeight: '800', color: '#D97706' }}>
+                      {myArtisanProducts.length > 0 ? '98/100' : 'Ready'}
+                    </div>
                     <span className="badge-tag badge-gold" style={{ marginTop: '8px' }}>✓ MoSJE Certified</span>
                   </div>
                 </div>
@@ -4625,25 +4654,30 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                   </div>
 
                   <div className="card-artisan" style={{ padding: '28px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#D97706', fontWeight: '700', marginBottom: '8px' }}>
-                      <ShieldAlert size={18} /> Attention Required
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: myArtisanOrders.length > 0 ? '#D97706' : '#10B981', fontWeight: '700', marginBottom: '8px' }}>
+                      {myArtisanOrders.length > 0 ? <ShieldAlert size={18} /> : <CheckCircle size={18} />}
+                      {myArtisanOrders.length > 0 ? 'Attention Required' : 'ONDC Gateway Live'}
                     </div>
-                    <h4 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '6px' }}>Pending Shipping Pickup</h4>
+                    <h4 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '6px' }}>
+                      {myArtisanOrders.length > 0 ? 'Pending Shipping Pickup' : 'Ready to Receive Orders'}
+                    </h4>
                     <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.5', marginBottom: '16px' }}>
-                      Order #ORD-1045 requires packaging dispatch label print for courier pickup in Jaipur.
+                      {myArtisanOrders.length > 0
+                        ? `You have ${myArtisanOrders.length} order(s) requiring courier packaging & dispatch label print.`
+                        : 'Your verified artisan node is connected to the ONDC Beckn network. Publish crafts in Studio to receive buyer orders.'}
                     </p>
-                    <button className="btn-artisan-secondary" onClick={() => switchArtisanTab('orders')} style={{ padding: '8px 18px', fontSize: '13px' }}>
-                      View Orders →
+                    <button className="btn-artisan-secondary" onClick={() => switchArtisanTab(myArtisanOrders.length > 0 ? 'orders' : 'studio')} style={{ padding: '8px 18px', fontSize: '13px' }}>
+                      {myArtisanOrders.length > 0 ? 'View Orders →' : '+ Publish Craft →'}
                     </button>
                   </div>
                 </div>
 
                 {/* RECENT ORDERS TABLE */}
                 <div className="card-artisan" style={{ padding: '28px' }}>
-                  <h3 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '18px' }}>Recent Order Activity</h3>
-                  {orders.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)', fontSize: '14px' }}>
-                      No order activity yet.
+                  <h3 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '18px' }}>Recent Order Activity ({myArtisanOrders.length})</h3>
+                  {myArtisanOrders.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '36px 0', color: 'var(--text-muted)', fontSize: '14px' }}>
+                      No orders received yet. When customers purchase your handcrafted creations on ONDC, direct orders and instant UPI payments will appear here.
                     </div>
                   ) : (
                     <table style={{ width: '100%', fontSize: '14px', borderCollapse: 'collapse' }}>
@@ -4656,7 +4690,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                         </tr>
                       </thead>
                       <tbody>
-                        {orders.map((o, i) => (
+                        {myArtisanOrders.map((o, i) => (
                           <tr key={i} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                             <td style={{ padding: '12px', fontWeight: '700', color: 'var(--primary)' }}>ORD-{i + 1}</td>
                             <td style={{ padding: '12px' }}>{o.customer_name}</td>
