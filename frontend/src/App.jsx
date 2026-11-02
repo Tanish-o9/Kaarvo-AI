@@ -1549,6 +1549,11 @@ export default function App() {
   // --- PILLAR 2: MULTILINGUAL VOICE AUTO-CATALOGER STATES ---
   const [voiceText, setVoiceText] = useState('');
   const [rawSpokenHindi, setRawSpokenHindi] = useState('');
+  const rawSpokenHindiRef = useRef('');
+
+  useEffect(() => {
+    rawSpokenHindiRef.current = rawSpokenHindi;
+  }, [rawSpokenHindi]);
   const [isTranslating, setIsTranslating] = useState(false);
   const speechTranslateTimeoutRef = useRef(null);
   const [selectedLanguage, setSelectedLanguage] = useState('hi-IN');
@@ -1809,13 +1814,8 @@ export default function App() {
       mediaStreamRef.current = null;
     }
 
-    if (audioContextRef.current) {
-      try { audioContextRef.current.close(); } catch (e) {}
-      audioContextRef.current = null;
-    }
-
-    // Retrieve active text from raw spoken or state
-    let capturedHindi = (rawSpokenHindi || '').trim();
+    // Retrieve active text from ref or state
+    let capturedHindi = (rawSpokenHindiRef.current || rawSpokenHindi || '').trim();
     let currentEnglish = (voiceTextRef.current || voiceText || '').trim();
 
     if (!capturedHindi && !currentEnglish) {
@@ -1823,7 +1823,7 @@ export default function App() {
       return;
     }
 
-    showToast('⏹️ Mic stopped. Finalizing English translation...');
+    showToast('⏹️ Mic stopped. Translating & cataloging...');
 
     let finalEnglish = currentEnglish;
     if (capturedHindi) {
@@ -1863,22 +1863,11 @@ export default function App() {
       return;
     }
 
-    // 1. Keep microphone stream alive while recording
-    try {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaStreamRef.current = stream;
-      }
-    } catch (micErr) {
-      console.warn('getUserMedia mic check:', micErr);
-      showToast('⚠️ Please allow microphone permission in your browser!');
-    }
-
-    // 2. Initialize Web Speech Recognition
+    // Initialize Web Speech Recognition directly (without exclusive getUserMedia lock)
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      showToast('⚠️ Speech recognition API is not supported in this browser. Please type product details!');
+      showToast('⚠️ Speech recognition API is not supported in this browser. Please type product details in the box!');
       return;
     }
 
@@ -1895,6 +1884,7 @@ export default function App() {
       speechRecRef.current = recognition;
       recognition.continuous = true;
       recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
       recognition.lang = selectedLanguage || 'hi-IN';
 
       recognition.onstart = () => {
@@ -1914,6 +1904,7 @@ export default function App() {
         }
         const cleaned = fullTranscript.trim();
         if (cleaned) {
+          rawSpokenHindiRef.current = cleaned;
           setRawSpokenHindi(cleaned);
 
           if (speechTranslateTimeoutRef.current) {
@@ -1929,7 +1920,7 @@ export default function App() {
               setVoiceText(english);
             }
             setIsTranslating(false);
-          }, isFinal ? 100 : 400);
+          }, isFinal ? 100 : 350);
         }
       };
 
@@ -1938,9 +1929,11 @@ export default function App() {
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
           isRecordingRef.current = false;
           setIsRecording(false);
-          showToast('⚠️ Mic access denied! Please allow microphone permission in your browser.');
+          showToast('⚠️ Mic access denied! Click the lock/camera icon in your address bar to allow microphone.');
         } else if (event.error === 'no-speech') {
-          // Keep active
+          // Ambient silence timeout, keep recording
+        } else if (event.error === 'network') {
+          console.warn('Speech network notice');
         }
       };
 
@@ -1948,7 +1941,13 @@ export default function App() {
         if (isRecordingRef.current) {
           try {
             recognition.start();
-          } catch (e) {}
+          } catch (e) {
+            setTimeout(() => {
+              if (isRecordingRef.current) {
+                try { recognition.start(); } catch (err) {}
+              }
+            }, 250);
+          }
         } else {
           setIsRecording(false);
         }
@@ -1959,7 +1958,7 @@ export default function App() {
       console.error('Mic start error:', err);
       isRecordingRef.current = false;
       setIsRecording(false);
-      showToast('⚠️ Could not activate mic. Please type product details.');
+      showToast('⚠️ Could not open microphone. Please allow mic permission in address bar.');
     }
   };
 
