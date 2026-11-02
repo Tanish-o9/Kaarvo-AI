@@ -541,7 +541,7 @@ export default function App() {
   const [isArtisanSatisfied, setIsArtisanSatisfied] = useState(false);
 
   // --- HACKATHON INNOVATION SUITE STATES ---
-  // Feature 1: Digital Heritage Passport & Verifiable QR Certificate
+  // Feature 1: {appLanguage === 'hi' ? 'डिजिटल धरोहर पासपोर्ट' : 'Digital Heritage Passport'} & Verifiable QR Certificate
   const [passportProduct, setPassportProduct] = useState(null);
 
   // Feature 2: WhatsApp Artisan Commerce Bot Simulator
@@ -2890,7 +2890,7 @@ export default function App() {
     // 4. Guaranteed high-quality fallback if backend was unavailable
     if (!botAnswer) {
       if (/platform|about|kya hai|features|intro/i.test(qLower)) {
-        botAnswer = `🏛️ **Welcome to Kaarvo AI – The Artisan Commerce Operating System:**\n\nKaarvo AI connects verified Indian master artisans directly with collectors and buyers across ONDC:\n\n✨ **Key Capabilities:**\n1. **3-Pillar Smart Cataloger Studio:** AI Photo Enhancement (4K lighting), Multilingual Voice Cataloger (Hindi to English), and Living-Wage Cost-Plus Pricing.\n2. **Live Masterpiece Auctions:** English forward auctions with server-authoritative timestamps, microsecond row-locking, and anti-sniping protection.\n3. **Digital Heritage Passport:** Tamper-proof QR provenance certifying artisan identity and authentic GI craft clusters.\n4. **WhatsApp AI Sahayak:** Multilingual conversational assistant enabling non-tech artisans to list products via voice notes.`;
+        botAnswer = `🏛️ **Welcome to Kaarvo AI – The Artisan Commerce Operating System:**\n\nKaarvo AI connects verified Indian master artisans directly with collectors and buyers across ONDC:\n\n✨ **Key Capabilities:**\n1. **3-Pillar Smart Cataloger Studio:** AI Photo Enhancement (4K lighting), Multilingual Voice Cataloger (Hindi to English), and Living-Wage Cost-Plus Pricing.\n2. **Live Masterpiece Auctions:** English forward auctions with server-authoritative timestamps, microsecond row-locking, and anti-sniping protection.\n3. **{appLanguage === 'hi' ? 'डिजिटल धरोहर पासपोर्ट' : 'Digital Heritage Passport'}:** Tamper-proof QR provenance certifying artisan identity and authentic GI craft clusters.\n4. **WhatsApp AI Sahayak:** Multilingual conversational assistant enabling non-tech artisans to list products via voice notes.`;
       } else if (/can i.*(?:voice|bol kar|speak)|voice.*(?:live|list|product|sell|bech|upload)|voice.*(?:work|kaam)|how.*voice/i.test(qLower)) {
         botAnswer = `🎙️ **Yes, absolutely! You can list and publish products live using voice on Kaarvo AI:**\n\n• **Pillar 2 Multilingual Voice Cataloger:** Simply click the microphone on '3-Pillar AI Studio' and speak naturally in Hindi or regional languages (e.g. *'Maine 2 din me terracotta clay pot banaya, material laagat ₹180'*).\n• **Automated Studio Catalog Generation:** Kaarvo AI extracts materials, labor time, and care instructions, translates into professional English, and computes living-wage fair pricing.\n• **WhatsApp Voice Sahayak:** Non-tech artisans can also simply send a voice note to our WhatsApp bot (bottom-right button) to publish products live on ONDC and the storefront!`;
       } else if (/chanderi.*banarasi|banarasi.*chanderi|difference between/i.test(qLower)) {
@@ -2902,13 +2902,13 @@ export default function App() {
       } else if (/cons|kamiyan|nuksan|disadvantage|drawback|limitation|challenges|problem/i.test(qLower)) {
         botAnswer = `⚖️ **Kaarvo AI & ONDC Craft Commerce ke Pramukh Challenges / Cons:**\n\n1. **Internet & Device Dependency:** Dur-daraz ke gaon ke artisans ko photos upload karne ya voice cataloging ke liye smartphone aur 4G internet connection ki zaroorat hoti hai.\n2. **Fragile Packaging Risk:** Terracotta, blue pottery aur glass crafts lambe distance courier transit me break hone ka risk rehta hai, isliye special eco-friendly kraft padding zaroori hoti hai.\n3. **Handcrafted Natural Variations:** Machine goods ke viprit, 100% handmade items me rang aur texture me halka farak hota hai, jise buyers ko samjhana padta hai.\n4. **Initial Tech Hesitation:** Traditional artisans shuruat me automated pricing aur digital banking par bharosa karne me thoda samay lete hain.\n5. **Craft Production Lead Times:** Machine factory ki tarah instantly hazaro units nahi ban sakte; heritage weaving ya pottery me samay lagta hai.`;
       } else if (/pros|fayde|benefit|advantage|khubi|faida|why kaarvo/i.test(qLower)) {
-        botAnswer = `🌟 **Kaarvo AI ke Mukhya Fayde (Pros & Advantages):**\n\n1. **Bina Middlemen Direct ONDC Access:** Artisans bina kisi bicholiye ya private marketplace cut ke sidha national buyers se judte hain.\n2. **Voice-to-Catalog in Local Language:** Angrezi type karne ki zaroorat nahi; Hindi me bolte hi 4K enhanced photo ke sath professional English catalog ready ho jata hai.\n3. **Living-Wage Guaranteed Pricing:** Material + Kaarigar ki mehnat (hourly wage) calculate karke fair rate fix hota hai.\n4. **Digital Heritage Passport:** Har product ke sath QR-code provenance hota hai jo GI authenticity certify karta hai.\n5. **Live Masterpiece Auctions:** High-value rare crafts ko collectors ke beech competitive bidding me bechne ki suvidha.`;
+        botAnswer = `🌟 **Kaarvo AI ke Mukhya Fayde (Pros & Advantages):**\n\n1. **Bina Middlemen Direct ONDC Access:** Artisans bina kisi bicholiye ya private marketplace cut ke sidha national buyers se judte hain.\n2. **Voice-to-Catalog in Local Language:** Angrezi type karne ki zaroorat nahi; Hindi me bolte hi 4K enhanced photo ke sath professional English catalog ready ho jata hai.\n3. **Living-Wage Guaranteed Pricing:** Material + Kaarigar ki mehnat (hourly wage) calculate karke fair rate fix hota hai.\n4. **{appLanguage === 'hi' ? 'डिजिटल धरोहर पासपोर्ट' : 'Digital Heritage Passport'}:** Har product ke sath QR-code provenance hota hai jo GI authenticity certify karta hai.\n5. **Live Masterpiece Auctions:** High-value rare crafts ko collectors ke beech competitive bidding me bechne ki suvidha.`;
       } else if (/kaise start|how to start|kaise judein|how to join|kaise register|onboarding|shuru kaise/i.test(qLower)) {
         botAnswer = `🚀 **Kaarvo AI par Shuruat Karne ke 3 Aasan Steps:**\n\n1. **Step 1 - Photo Lijiye:** Apne craft ki photo khinchein aur '3-Pillar AI Studio' me dalein (AI auto-enhance karega).\n2. **Step 2 - Voice Note Boliye:** Mic par Hindi me bole craft ka naam, laagat aur samay (e.g. *'Terracotta matka, ₹200 laagat'*).\n3. **Step 3 - Live Publish:** 'Publish to Store' dabate hi aapka item Kaarvo Store aur ONDC network par live ho jayega!\n\nNiche right corner me **WhatsApp Artisan Bot** se bhi seedha bol kar shuru kar sakte hain.`;
       } else if (/free hai|fees|commission|charges|kitna charge|cost kitna|paisa lagta hai/i.test(qLower)) {
         botAnswer = `💰 **Pricing & Platform Fee Structure:**\n\n• **Artisan Registration & Voice Cataloging:** Bilkul 100% Free hai.\n• **Zero Hidden Middleman Fee:** Traditional marketplaces 25%–35% commission kaat leti hain, jabki Kaarvo ONDC open-network standard par kaam karta hai jisme maximum kamai seedha artisan ke bank me aati hai.\n• **Fair Pricing Guarantee:** Har product me living-wage margin pehle se add hota hai taaki artisan ko fair labhaansh mile.`;
       } else if (/safe hai|security|fraud|dhokha|payment safe|fake|trust/i.test(qLower)) {
-        botAnswer = `🛡️ **Security & Anti-Fraud Architecture:**\n\n• **Database Row-Locking:** Auctions aur payments me microsecond concurrency protection hai taaki double-bidding ya payment mismatch na ho.\n• **Escrow Protected Settlement:** Buyer ka payment secure gateway me hold hota hai aur delivery confirmation ke baad artisan ko dispatch settlement milta hai.\n• **Tamper-Proof Provenance:** Har craft ke sath Digital Heritage Passport hota hai jo fake nakli products ko eliminate karta hai.`;
+        botAnswer = `🛡️ **Security & Anti-Fraud Architecture:**\n\n• **Database Row-Locking:** Auctions aur payments me microsecond concurrency protection hai taaki double-bidding ya payment mismatch na ho.\n• **Escrow Protected Settlement:** Buyer ka payment secure gateway me hold hota hai aur delivery confirmation ke baad artisan ko dispatch settlement milta hai.\n• **Tamper-Proof Provenance:** Har craft ke sath {appLanguage === 'hi' ? 'डिजिटल धरोहर पासपोर्ट' : 'Digital Heritage Passport'} hota hai jo fake nakli products ko eliminate karta hai.`;
       } else if (/auction|bid|bidding|boli/i.test(qLower)) {
         botAnswer = `🔨 **How Kaarvo Live Masterpiece Auctions Work:**\n\n1. Master artisans list rare artifacts with starting price and minimum increment.\n2. Verified buyers place competitive live bids with PostgreSQL row-locking protection.\n3. Anti-sniping auto-extends deadline by 5 minutes if bids arrive in the last 2 minutes.\n4. Winning bidder completes secure settlement to receive insured delivery.`;
       } else {
@@ -2976,7 +2976,7 @@ export default function App() {
 1. **Bina Middlemen Direct ONDC Access:** Artisans bina kisi private marketplace ke 25%–35% commission cut ke sidha national buyers se judte hain.
 2. **Voice-to-Catalog in Local Language:** Angrezi type karne ki zaroorat nahi; Hindi ya regional bhasha me bolte hi 4K enhanced photo ke sath professional English catalog ready ho jata hai.
 3. **Living-Wage Guaranteed Pricing:** Material + Kaarigar ki mehnat (hourly wage) calculate karke fair cost-plus rate fix hota hai.
-4. **Digital Heritage Passport:** Har product ke sath QR-code provenance hota hai jo GI authenticity aur artisan identity certify karta hai.
+4. **{appLanguage === 'hi' ? 'डिजिटल धरोहर पासपोर्ट' : 'Digital Heritage Passport'}:** Har product ke sath QR-code provenance hota hai jo GI authenticity aur artisan identity certify karta hai.
 5. **Live Masterpiece Auctions:** High-value rare crafts ko verified collectors ke beech competitive live bidding me bechne ki suvidha.`;
 
     // Intent: Voice Listing / Can I list via voice / Bol kar live karna
@@ -3012,7 +3012,7 @@ Aap niche right corner me **WhatsApp Artisan Bot** se bhi seedha jud kar voice n
 
 • **Database Row-Locking:** Auctions aur payments me microsecond concurrency protection hai taaki double-bidding ya payment mismatch na ho.
 • **Escrow Protected Settlement:** Buyer ka payment secure gateway me hold hota hai aur delivery confirmation ke baad artisan ko dispatch settlement milta hai.
-• **Tamper-Proof Provenance:** Har craft ke sath Digital Heritage Passport hota hai jo fake nakli products ko eliminate karta hai.`;
+• **Tamper-Proof Provenance:** Har craft ke sath {appLanguage === 'hi' ? 'डिजिटल धरोहर पासपोर्ट' : 'Digital Heritage Passport'} hota hai jo fake nakli products ko eliminate karta hai.`;
 
     // Intent: Auctions & Live Bidding Protocol
     } else if (/auction|bid|bidding|boli|how.*auction|auction.*rule/i.test(qLower)) {
@@ -3060,7 +3060,7 @@ Kaarvo AI Indian artisans ko direct ONDC aur national buyers se jodta hai:
 ✨ 1. **AI Visual Studio:** Craft photos ko auto-lighting aur 4K clarity deta hai.
 🎙️ 2. **Multilingual Voice Cataloger:** Hindi me bolein, professional English catalog instant ready!
 ⚖️ 3. **Cost-Plus Fair Pricing:** Material + Labor hours ke hisaab se living-wage rate fix karta hai.
-📜 4. **Digital Heritage Passport:** QR provenance ke sath GI authenticity certify karta hai.
+📜 4. **{appLanguage === 'hi' ? 'डिजिटल धरोहर पासपोर्ट' : 'Digital Heritage Passport'}:** QR provenance ke sath GI authenticity certify karta hai.
 🔨 5. **Live Masterpiece Auctions:** Rare crafts ke liye real-time English forward bidding engine.
 💬 6. **WhatsApp AI Sahayak:** Voice notes aur photos bhejkar direct mobile se store manage karein.
 
@@ -3126,7 +3126,7 @@ In 3 actions se aapka conversion rate 35% tak badh sakta hai!`;
 
 Kaarvo AI aapke sawal ko poori tarah samajhta hai. Chahe aap artisan hon ya collector:
 • **Kaarvo Platform Features:** 3-Pillar Voice & Photo AI Studio, Direct ONDC Listing, aur Live English Auctions.
-• **Handcrafted Authenticity:** Har product certified GI cluster se aata hai aur Digital Heritage Passport se verified hota hai.
+• **Handcrafted Authenticity:** Har product certified GI cluster se aata hai aur {appLanguage === 'hi' ? 'डिजिटल धरोहर पासपोर्ट' : 'Digital Heritage Passport'} se verified hota hai.
 • **Fair Living-Wages:** Kaarigar ko bina kisi middlemen cut ke direct bank settlement milta hai.
 
 Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery), pricing strategy, order shipping ya auction bidding ke baare me detail me pooch sakte hain!`;
@@ -4229,16 +4229,24 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                         <div className="inline-flex items-center gap-2.5 px-3 py-1 bg-[#1c1a18] border border-[#33302c]">
                           <span className="w-1.5 h-1.5 bg-[#c5a66a] rounded-full"></span>
                           <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#e8e4dc]">
-                            DIRECT LIVING HERITAGE PATRONAGE
+                            {appLanguage === 'hi' ? 'प्रत्यक्ष सजीव धरोहर संरक्षण' : 'DIRECT LIVING HERITAGE PATRONAGE'}
                           </span>
                         </div>
 
                         <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.12]">
-                          Tradition,<br />Crafted to Last.
+                          {appLanguage === 'hi' ? (
+                            <>परंपरा,<br />पीढ़ियों के लिए निर्मित।</>
+                          ) : (
+                            <>Tradition,<br />Crafted to Last.</>
+                          )}
                         </h1>
 
                         <p className="text-[15px] sm:text-[16px] text-[#b8b3a7] max-w-xl leading-relaxed">
-                          Discover extraordinary handmade heirlooms from India’s master artisan guilds. Every artifact is verified with GI provenance and engineered with centuries of ancestral mastery.
+                        <p className="text-[15px] sm:text-[16px] text-[#b8b3a7] max-w-xl leading-relaxed">
+                          {appLanguage === 'hi'
+                            ? "भारत के मास्टर कारीगर गिल्ड से असाधारण हस्तनिर्मित धरोहर खोजें। प्रत्येक उत्पाद जीआई प्रामाणिकता और सदियों के कौशल से निर्मित है।"
+                            : "Discover extraordinary handmade heirlooms from India’s master artisan guilds. Every artifact is verified with GI provenance and engineered with centuries of ancestral mastery."}
+                        </p>
                         </p>
 
                         {/* Editorial CTAs */}
@@ -4260,18 +4268,18 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                         {/* Provenance Micro-Meta */}
                         <div className="pt-6 border-t border-[#262422] w-full flex items-center gap-8 text-[11px] text-[#a39e93]">
                           <div>
-                            <span className="text-white font-bold block">28 HUBS</span>
-                            <span>Certified GI Clusters</span>
+                            <span className="text-white font-bold block">{appLanguage === 'hi' ? '२८ केंद्र' : '28 HUBS'}</span>
+                            <span>{appLanguage === 'hi' ? 'प्रमाणित जीआई क्लस्टर' : 'Certified GI Clusters'}</span>
                           </div>
                           <div className="w-px h-7 bg-[#2d2b28]"></div>
                           <div>
-                            <span className="text-white font-bold block">100% DIRECT</span>
-                            <span>Zero Broker Markup</span>
+                            <span className="text-white font-bold block">{appLanguage === 'hi' ? '१००% सीधा' : '100% DIRECT'}</span>
+                            <span>{appLanguage === 'hi' ? 'शून्य दलाल कमीशन' : 'Zero Broker Markup'}</span>
                           </div>
                           <div className="w-px h-7 bg-[#2d2b28]"></div>
                           <div>
-                            <span className="text-white font-bold block">ONDC COMPLIANT</span>
-                            <span>Digital Heritage Passport</span>
+                            <span className="text-white font-bold block">{appLanguage === 'hi' ? 'ओएनडीसी अनुकूल' : 'ONDC COMPLIANT'}</span>
+                            <span>{appLanguage === 'hi' ? 'डिजिटल धरोहर पासपोर्ट' : 'Digital Heritage Passport'}</span>
                           </div>
                         </div>
                       </div>
@@ -4288,13 +4296,13 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                           
                           <div className="absolute bottom-5 left-5 right-5 p-4 bg-[#141312]/90 backdrop-blur-md border border-[#2d2b28] space-y-1">
                             <span className="text-[9px] font-bold text-[#c5a66a] uppercase tracking-widest block">
-                              HERITAGE GUILD REGISTRY
+                              {appLanguage === 'hi' ? 'विरासत गिल्ड रजिस्ट्री' : 'HERITAGE GUILD REGISTRY'}
                             </span>
                             <span className="font-serif text-lg text-white block">
-                              Jaipur Blue Pottery & Terracotta
+                              {appLanguage === 'hi' ? 'जयपुर ब्लू पॉटरी और टेराकोटा' : 'Jaipur Blue Pottery & Terracotta'}
                             </span>
                             <span className="text-[12px] text-[#a39e93] block">
-                              Single-fire quartz & natural mineral cobalt reduction
+                              {appLanguage === 'hi' ? 'क्वार्ट्ज और प्राकृतिक कोबाल्ट खनिज से निर्मित' : 'Single-fire quartz & natural mineral cobalt reduction'}
                             </span>
                           </div>
                         </div>
@@ -4636,7 +4644,7 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                 <section className="relative w-full py-16 bg-[#121110] border-b border-[#262422]">
                   <div className="max-w-7xl mx-auto px-4 lg:px-12 space-y-3">
                     <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#c5a66a]">
-                      ATELIER ARCHIVES • 28 HUBS
+                      ATELIER ARCHIVES • {appLanguage === 'hi' ? '२८ केंद्र' : '28 HUBS'}
                     </span>
                     <h1 className="font-serif text-3xl sm:text-5xl text-white">
                       The Masterwork Vitrine
@@ -5826,7 +5834,7 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                     <strong className="text-white">2. Direct Escrow Payout (ONDC):</strong> 88.4% of transaction proceeds are cryptographically routed directly into verified master artisan bank accounts upon dispatch confirmation.
                   </p>
                   <p>
-                    <strong className="text-white">3. Digital Heritage Passport:</strong> Every masterwork is minted with a verifiable cryptographic QR certificate detailing craft hours, raw material mineralogy, artisan genealogy, and fair cost breakdown.
+                    <strong className="text-white">3. {appLanguage === 'hi' ? 'डिजिटल धरोहर पासपोर्ट' : 'Digital Heritage Passport'}:</strong> Every masterwork is minted with a verifiable cryptographic QR certificate detailing craft hours, raw material mineralogy, artisan genealogy, and fair cost breakdown.
                   </p>
                   <p>
                     <strong className="text-white">4. Horological Quality Assurance:</strong> Artifacts undergo physical guild inspection for material purity—ensuring zero plastic adulteration, genuine pitloom weaves, lead-free glazes, and seasoned hardwoods.
@@ -7957,7 +7965,7 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                 Certificate of Authentic Craftsmanship
               </h2>
               <p style={{ fontSize: '12px', color: '#6B7280', marginTop: '4px' }}>
-                Official Digital Heritage Passport • Direct-from-Artisan Guarantee
+                Official {appLanguage === 'hi' ? 'डिजिटल धरोहर पासपोर्ट' : 'Digital Heritage Passport'} • Direct-from-Artisan Guarantee
               </p>
             </div>
 
