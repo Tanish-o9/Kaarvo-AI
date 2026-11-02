@@ -2396,7 +2396,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                   letterSpacing: '0.08em',
                   marginBottom: '20px'
                 }}>
-                  <Sparkles size={13} color="#dfbe7d" /> SIH26090 ONDC BHARAT REGISTRY
+                  <Sparkles size={13} color="#dfbe7d" /> ONDC BHARAT ARTISAN REGISTRY
                 </div>
 
                 <h2 className="font-serif" style={{ fontSize: '28px', fontWeight: '800', lineHeight: '1.25', marginBottom: '14px', color: '#ffffff' }}>
@@ -3033,7 +3033,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
 
               <div className="flex items-center gap-4 text-xs font-semibold text-[#a8a29e]">
                 <span className="hidden md:flex items-center gap-1.5 text-[#dfbe7d]">
-                  <Sparkles size={14} /> SIH26090 ONDC Linkage
+                  <Sparkles size={14} /> ONDC Beckn Linkage
                 </span>
                 <span className="flex items-center gap-1.5 text-[#d6d3cd]">
                   <ShieldCheck size={14} color="#c5a66a" /> 100% Living-Wage Verified
@@ -5128,7 +5128,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                 </div>
                 <div>
                   <div style={{ fontWeight: '800', fontSize: '16px' }}>Artisan Business OS</div>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>MoSJE SIH26090 Platform</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>ONDC Artisan Business Suite</div>
                 </div>
               </div>
 
@@ -5420,11 +5420,11 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
               </div>
             )}
 
-            {/* ARTISAN VIEW 2: 3-PILLAR AI STUDIO (SIH26090 CORE SOLUTION) */}
+            {/* ARTISAN VIEW 2: 3-PILLAR AI STUDIO */}
             {artisanTab === 'studio' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 <div>
-                  <span className="badge-tag badge-terracotta" style={{ marginBottom: '6px' }}>SIH26090 Core Solution</span>
+                  <span className="badge-tag badge-terracotta" style={{ marginBottom: '6px' }}>AI Studio Suite</span>
                   <h1 className="font-serif" style={{ fontSize: '32px', fontWeight: '700' }}>3-Pillar Smart Cataloger Studio</h1>
                   <p style={{ fontSize: '15px', color: 'var(--text-secondary)' }}>Turn phone photos & regional voice notes into studio catalog & ONDC Beckn schema.</p>
                 </div>

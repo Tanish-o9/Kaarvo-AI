@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class SupervisorAgent:
     """
-    Supervisor Agent for SIH26090 Artisan AI Marketplace.
+    Supervisor Agent for Kaarvo Artisan Commerce OS.
     Routes tasks to specialized agents (Voice, Vision, Catalog, Translation, Pricing, Quality).
     Maintains workflow execution state and records audit logs & metrics.
     """

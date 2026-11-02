@@ -3,7 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-sih26090-artisan-ai-marketplace-secret-key-super-secure'
+SECRET_KEY = 'django-insecure-kaarvo-artisan-ai-commerce-os-secret-key-super-secure'
 
 DEBUG = True
 
