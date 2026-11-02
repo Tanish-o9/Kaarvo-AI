@@ -1952,6 +1952,665 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
     return matchesCategory && matchesSearch;
   });
 
+  // --- REUSABLE DEDICATED AUTH CARD (FOR LANDING PAGE & POPUP MODAL) ---
+  const renderAuthCard = (showCloseButton = true) => (
+    <div className="stitch-auth-modal" style={{ position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+      {showCloseButton && (
+        <button
+          onClick={() => setIsAuthModalOpen(false)}
+          aria-label="Close Modal"
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '16px',
+            background: 'rgba(255, 255, 255, 0.08)',
+            border: '1px solid rgba(197, 166, 106, 0.3)',
+            width: '36px',
+            height: '36px',
+            borderRadius: '50%',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 10,
+            color: '#ffffff',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = '#c5a66a'; e.currentTarget.style.color = '#000000'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'; e.currentTarget.style.color = '#ffffff'; }}
+        >
+          <X size={18} />
+        </button>
+      )}
+
+      {/* LEFT HERO PANEL (STITCH ARTISAN LUXURY BRANDING) */}
+            <div className="stitch-auth-hero">
+              <div>
+                {/* LOGO & SEAL */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
+                  <div style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '50%',
+                    border: '2px solid #c5a66a',
+                    background: '#1a1917',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#c5a66a',
+                    fontFamily: 'serif',
+                    fontWeight: '900',
+                    fontSize: '18px',
+                    boxShadow: '0 0 15px rgba(197,166,106,0.25)'
+                  }}>
+                    K
+                  </div>
+                  <div>
+                    <div className="font-serif" style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '0.15em', color: '#ffffff' }}>
+                      KAARVO
+                    </div>
+                    <div style={{ fontSize: '9px', fontWeight: '700', letterSpacing: '0.25em', color: '#c5a66a', textTransform: 'uppercase' }}>
+                      Artisan Commerce OS
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  background: 'rgba(197, 166, 106, 0.15)',
+                  border: '1px solid rgba(197, 166, 106, 0.4)',
+                  color: '#dfbe7d',
+                  padding: '6px 14px',
+                  borderRadius: '20px',
+                  fontSize: '10px',
+                  fontWeight: '800',
+                  letterSpacing: '0.08em',
+                  marginBottom: '20px'
+                }}>
+                  <Sparkles size={13} color="#dfbe7d" /> SIH26090 ONDC BHARAT REGISTRY
+                </div>
+
+                <h2 className="font-serif" style={{ fontSize: '28px', fontWeight: '800', lineHeight: '1.25', marginBottom: '14px', color: '#ffffff' }}>
+                  Direct Fair-Trade Market Linkage for India's Master Artisans.
+                </h2>
+
+                <p style={{ fontSize: '13px', color: '#d6d3cd', lineHeight: '1.6', marginBottom: '24px' }}>
+                  Zero broker deductions, automated 4K AI studio enhancements, and multi-lingual voice cataloging built directly on the open ONDC Beckn protocol.
+                </p>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', color: '#ffffff' }}>
+                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(197,166,106,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Check size={14} color="#c5a66a" />
+                    </div>
+                    <span><strong>100% Fair Living-Wage Guarantee</strong> with GI verification</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', color: '#ffffff' }}>
+                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(197,166,106,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Check size={14} color="#c5a66a" />
+                    </div>
+                    <span><strong>AI Regional Voice-to-Catalog</strong> in 12+ Indian dialects</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', color: '#ffffff' }}>
+                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(197,166,106,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Check size={14} color="#c5a66a" />
+                    </div>
+                    <span><strong>Cryptographic Heritage Passport</strong> with offline QR provenance</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ borderTop: '1px solid rgba(197,166,106,0.2)', paddingTop: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: '#a8a29e' }}>
+                <span>Certified by ONDC & MoSJE</span>
+                <span style={{ color: '#c5a66a' }}>🇮🇳 Built for Bharat</span>
+              </div>
+            </div>
+
+            {/* RIGHT AUTH FORM PANEL */}
+            <div className="stitch-auth-panel">
+              {/* TABS: SIGN IN vs CREATE ACCOUNT */}
+              <div className="stitch-tab-group">
+                <button
+                  type="button"
+                  className={`stitch-tab-btn ${authMode === 'login' ? 'active' : ''}`}
+                  onClick={() => { setAuthMode('login'); setAuthError(''); }}
+                >
+                  <LogIn size={15} /> Sign In
+                </button>
+                <button
+                  type="button"
+                  className={`stitch-tab-btn ${authMode === 'register' ? 'active' : ''}`}
+                  onClick={() => { setAuthMode('register'); setAuthError(''); }}
+                >
+                  <Sparkles size={15} /> Create Account
+                </button>
+              </div>
+
+              {/* 1-CLICK DEMO ACCESS BOX */}
+              <div className="stitch-demo-box">
+                <div className="stitch-demo-box-header">
+                  <span>⚡ 1-Click Demo Access (Evaluators & Judges)</span>
+                  <span style={{ fontSize: '9px', background: 'rgba(197,166,106,0.2)', padding: '2px 8px', borderRadius: '10px', color: '#dfbe7d' }}>TEST READY</span>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="stitch-demo-chip"
+                    onClick={() => handleAuthLogin(null, { username: 'artisan_demo', password: 'demo123' })}
+                  >
+                    <span>👤</span>
+                    <span><strong>Artisan:</strong> Mohan Lal (Jaipur Pottery)</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="stitch-demo-chip"
+                    onClick={() => handleAuthLogin(null, { username: 'customer_demo', password: 'demo123' })}
+                  >
+                    <span>🛍️</span>
+                    <span><strong>Customer:</strong> Priya Sharma (Buyer)</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* FORGOT PASSWORD QUICK HELPER POPUP */}
+              {forgotPassOpen && (
+                <div style={{ background: '#1c1917', border: '1px solid #c5a66a', borderRadius: '10px', padding: '14px', marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#dfbe7d', fontSize: '12px', fontWeight: '800' }}>
+                      <HelpCircle size={15} /> Password Recovery & Demo Credentials
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setForgotPassOpen(false)}
+                      style={{ background: 'transparent', border: 'none', color: '#a8a29e', cursor: 'pointer' }}
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                  <p style={{ fontSize: '12px', color: '#d6d3cd', lineHeight: '1.5', margin: '0 0 10px 0' }}>
+                    For evaluation, use password <strong>demo123</strong> for <em>artisan_demo</em> or <em>customer_demo</em>. For new accounts, credentials are encrypted and stored in your browser session.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLoginUsername('artisan_demo');
+                      setLoginPassword('demo123');
+                      setForgotPassOpen(false);
+                    }}
+                    style={{ background: '#c5a66a', color: '#000', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
+                  >
+                    Auto-fill Master Artisan Credentials
+                  </button>
+                </div>
+              )}
+
+              {/* ERROR ALERT */}
+              {authError && (
+                <div style={{ padding: '12px 14px', background: 'rgba(239, 68, 68, 0.12)', border: '1px solid #EF4444', borderRadius: '10px', color: '#FCA5A5', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <ShieldAlert size={18} color="#EF4444" />
+                  <span>{authError}</span>
+                </div>
+              )}
+
+              {/* SIGN IN VIEW */}
+              {authMode === 'login' ? (
+                <div>
+                  {/* SUB-METHOD TOGGLE: PASSWORD VS MOBILE OTP */}
+                  <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', borderBottom: '1px solid #2a2723', paddingBottom: '12px' }}>
+                    <button
+                      type="button"
+                      onClick={() => { setLoginMethod('password'); setAuthError(''); }}
+                      style={{
+                        background: loginMethod === 'password' ? 'rgba(197, 166, 106, 0.15)' : 'transparent',
+                        border: `1px solid ${loginMethod === 'password' ? '#c5a66a' : 'transparent'}`,
+                        color: loginMethod === 'password' ? '#dfbe7d' : '#8c857b',
+                        padding: '6px 14px',
+                        borderRadius: '20px',
+                        fontSize: '12px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      🔑 Password Login
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setLoginMethod('otp'); setAuthError(''); }}
+                      style={{
+                        background: loginMethod === 'otp' ? 'rgba(197, 166, 106, 0.15)' : 'transparent',
+                        border: `1px solid ${loginMethod === 'otp' ? '#c5a66a' : 'transparent'}`,
+                        color: loginMethod === 'otp' ? '#dfbe7d' : '#8c857b',
+                        padding: '6px 14px',
+                        borderRadius: '20px',
+                        fontSize: '12px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      📱 Mobile OTP (Artisan Direct)
+                    </button>
+                  </div>
+
+                  {loginMethod === 'password' ? (
+                    <form onSubmit={(e) => handleAuthLogin(e)}>
+                      <div style={{ marginBottom: '14px' }}>
+                        <label className="stitch-form-label">
+                          <span>Username or Email Address *</span>
+                          <span style={{ color: '#c5a66a', fontSize: '10px' }}>REQUIRED</span>
+                        </label>
+                        <div className="stitch-input-wrapper">
+                          <User size={18} className="stitch-input-icon" />
+                          <input
+                            type="text"
+                            className="stitch-input"
+                            placeholder="e.g. artisan_demo or your_email@domain.com"
+                            value={loginUsername}
+                            onChange={(e) => setLoginUsername(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ marginBottom: '12px' }}>
+                        <div className="stitch-form-label">
+                          <span>Password *</span>
+                          <button
+                            type="button"
+                            onClick={() => setForgotPassOpen(true)}
+                            style={{ background: 'transparent', border: 'none', color: '#c5a66a', fontSize: '11px', cursor: 'pointer', textDecoration: 'underline' }}
+                          >
+                            Forgot Password?
+                          </button>
+                        </div>
+                        <div className="stitch-input-wrapper">
+                          <Lock size={18} className="stitch-input-icon" />
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            className="stitch-input"
+                            placeholder="Enter your password (e.g. demo123)"
+                            value={loginPassword}
+                            onChange={(e) => setLoginPassword(e.target.value)}
+                            required
+                            style={{ paddingRight: '44px' }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{ position: 'absolute', right: '12px', background: 'transparent', border: 'none', color: '#c5a66a', cursor: 'pointer', padding: '4px' }}
+                          >
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* REMEMBER ME & TRUST BADGE */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', fontSize: '12px', color: '#d6d3cd' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            style={{ accentColor: '#c5a66a' }}
+                          />
+                          <span>Remember me on this device</span>
+                        </label>
+                        <span style={{ color: '#a8a29e', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <ShieldCheck size={13} color="#c5a66a" /> 256-bit Encrypted
+                        </span>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={authLoading}
+                        className="stitch-btn-gold"
+                      >
+                        {authLoading ? '⏳ Authenticating via JWT...' : 'SIGN IN TO KAARVO AI →'}
+                      </button>
+                    </form>
+                  ) : (
+                    /* MOBILE OTP LOGIN FORM */
+                    <form onSubmit={otpSent ? handleVerifyOtp : handleRequestOtp}>
+                      <div style={{ marginBottom: '14px' }}>
+                        <label className="stitch-form-label">
+                          <span>Artisan Mobile Number (India) *</span>
+                          <span style={{ color: '#c5a66a', fontSize: '10px' }}>ONDC SMS GATEWAY</span>
+                        </label>
+                        <div className="stitch-input-wrapper">
+                          <Phone size={18} className="stitch-input-icon" />
+                          <input
+                            type="tel"
+                            className="stitch-input"
+                            placeholder="Enter 10-digit mobile number"
+                            value={loginPhone}
+                            onChange={(e) => setLoginPhone(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      {otpSent && (
+                        <div style={{ marginBottom: '16px' }}>
+                          <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid #10B981', padding: '10px 14px', borderRadius: '8px', marginBottom: '12px', fontSize: '12px', color: '#A7F3D0' }}>
+                            📲 <strong>OTP Sent!</strong> For evaluation demo, use OTP: <strong>882601</strong>
+                          </div>
+                          <label className="stitch-form-label">
+                            <span>Enter 6-Digit OTP *</span>
+                            <button
+                              type="button"
+                              onClick={handleRequestOtp}
+                              style={{ background: 'transparent', border: 'none', color: '#c5a66a', fontSize: '11px', cursor: 'pointer' }}
+                            >
+                              Resend OTP
+                            </button>
+                          </label>
+                          <div className="stitch-input-wrapper">
+                            <Lock size={18} className="stitch-input-icon" />
+                            <input
+                              type="text"
+                              className="stitch-input"
+                              placeholder="Enter 6-digit OTP (882601)"
+                              value={loginOtp}
+                              onChange={(e) => setLoginOtp(e.target.value)}
+                              maxLength={6}
+                              required
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      <button
+                        type="submit"
+                        disabled={authLoading}
+                        className="stitch-btn-gold"
+                        style={{ marginTop: '8px' }}
+                      >
+                        {authLoading ? '⏳ Verifying...' : otpSent ? 'VERIFY OTP & SIGN IN →' : 'REQUEST OTP VIA SMS / WHATSAPP →'}
+                      </button>
+                    </form>
+                  )}
+
+                  <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '12px', color: '#a8a29e' }}>
+                    Don't have an account yet?{' '}
+                    <button
+                      type="button"
+                      onClick={() => { setAuthMode('register'); setAuthError(''); }}
+                      style={{ background: 'transparent', border: 'none', color: '#c5a66a', fontWeight: '800', cursor: 'pointer', textDecoration: 'underline' }}
+                    >
+                      Create Account Now
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* REGISTRATION / CREATE ACCOUNT VIEW */
+                <form onSubmit={(e) => handleAuthRegister(e)}>
+                  <div style={{ marginBottom: '16px' }}>
+                    <label className="stitch-form-label">
+                      <span>Account Role & Purpose *</span>
+                      <span style={{ color: '#c5a66a', fontSize: '10px' }}>SELECT PROFILE TYPE</span>
+                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div
+                        className={`stitch-role-card ${authRole === 'artisan' ? 'active' : ''}`}
+                        onClick={() => setAuthRole('artisan')}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <span style={{ fontSize: '18px' }}>🎨</span>
+                          {authRole === 'artisan' && <Check size={16} color="#c5a66a" />}
+                        </div>
+                        <strong style={{ fontSize: '13px', color: authRole === 'artisan' ? '#ffffff' : '#d6d3cd' }}>
+                          Artisan / Seller
+                        </strong>
+                        <span style={{ fontSize: '11px', color: '#a8a29e', lineHeight: '1.3' }}>
+                          Sell authentic crafts directly with living-wage guarantee via ONDC.
+                        </span>
+                      </div>
+
+                      <div
+                        className={`stitch-role-card ${authRole === 'customer' ? 'active' : ''}`}
+                        onClick={() => setAuthRole('customer')}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <span style={{ fontSize: '18px' }}>🛍️</span>
+                          {authRole === 'customer' && <Check size={16} color="#c5a66a" />}
+                        </div>
+                        <strong style={{ fontSize: '13px', color: authRole === 'customer' ? '#ffffff' : '#d6d3cd' }}>
+                          Customer / Connoisseur
+                        </strong>
+                        <span style={{ fontSize: '11px', color: '#a8a29e', lineHeight: '1.3' }}>
+                          Acquire certified GI masterworks directly from certified masters.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* FULL NAME & EMAIL */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label className="stitch-form-label">Full Name *</label>
+                      <div className="stitch-input-wrapper">
+                        <User size={16} className="stitch-input-icon" />
+                        <input
+                          type="text"
+                          className="stitch-input"
+                          placeholder="e.g. Ramesh Prajapati"
+                          value={regFullName}
+                          onChange={(e) => setRegFullName(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="stitch-form-label">Email Address *</label>
+                      <div className="stitch-input-wrapper">
+                        <Mail size={16} className="stitch-input-icon" />
+                        <input
+                          type="email"
+                          className="stitch-input"
+                          placeholder="ramesh@artisan.in"
+                          value={regEmail}
+                          onChange={(e) => setRegEmail(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* USERNAME & PASSWORD */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label className="stitch-form-label">Choose Username *</label>
+                      <div className="stitch-input-wrapper">
+                        <User size={16} className="stitch-input-icon" />
+                        <input
+                          type="text"
+                          className="stitch-input"
+                          placeholder="e.g. ramesh_pottery"
+                          value={regUsername}
+                          onChange={(e) => setRegUsername(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="stitch-form-label">
+                        <span>Create Password *</span>
+                        {regPassword && (
+                          <span style={{ fontSize: '10px', color: getPasswordStrength(regPassword).color, fontWeight: '800' }}>
+                            {getPasswordStrength(regPassword).label}
+                          </span>
+                        )}
+                      </div>
+                      <div className="stitch-input-wrapper" style={{ marginBottom: '6px' }}>
+                        <Lock size={16} className="stitch-input-icon" />
+                        <input
+                          type="password"
+                          className="stitch-input"
+                          placeholder="Min 4 characters"
+                          value={regPassword}
+                          onChange={(e) => setRegPassword(e.target.value)}
+                          required
+                        />
+                      </div>
+                      {/* PASSWORD STRENGTH VISUAL BAR */}
+                      <div style={{ width: '100%', height: '3px', background: '#262422', borderRadius: '2px', overflow: 'hidden', marginBottom: '12px' }}>
+                        <div
+                          style={{
+                            height: '100%',
+                            width: getPasswordStrength(regPassword).width,
+                            background: getPasswordStrength(regPassword).color,
+                            transition: 'all 0.3s ease'
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ARTISAN SPECIFIC FIELDS */}
+                  {authRole === 'artisan' ? (
+                    <>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div>
+                          <label className="stitch-form-label">GI Craft Specialization *</label>
+                          <select
+                            className="stitch-input"
+                            style={{ paddingLeft: '14px', height: '46px' }}
+                            value={regCraftType}
+                            onChange={(e) => setRegCraftType(e.target.value)}
+                          >
+                            <option value="Terracotta Pottery & Clay Murals [GI Certified]">🏺 Terracotta Pottery & Clay Murals [GI]</option>
+                            <option value="Handloom Silk & Zari Weaving [GI Certified]">🥻 Handloom Silk & Zari Weaving [GI]</option>
+                            <option value="Bastar Dhokra Bell Metal [GI Certified]">🪔 Bastar Dhokra Bell Metal [GI]</option>
+                            <option value="Channapatna Lacquerware Woodcraft [GI Certified]">🐘 Channapatna Lacquerware [GI]</option>
+                            <option value="Kashmiri Pashmina & Kani Shawl [GI Certified]">🧣 Kashmiri Pashmina & Shawls [GI]</option>
+                            <option value="Madhubani Folk Art & Painting [GI Certified]">🎨 Madhubani Folk Art [GI]</option>
+                            <option value="Blue Pottery of Jaipur [GI Certified]">🏺 Blue Pottery of Jaipur [GI]</option>
+                            <option value="Thanjavur Bronze & Metal Casting [GI Certified]">🛡️ Thanjavur Bronze Casting [GI]</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="stitch-form-label">Heritage Cluster Region *</label>
+                          <select
+                            className="stitch-input"
+                            style={{ paddingLeft: '14px', height: '46px' }}
+                            value={regRegion}
+                            onChange={(e) => setRegRegion(e.target.value)}
+                          >
+                            <option value="Jaipur, Rajasthan">Jaipur, Rajasthan</option>
+                            <option value="Varanasi, Uttar Pradesh">Varanasi, Uttar Pradesh</option>
+                            <option value="Bastar & Kondagaon, Chhattisgarh">Bastar & Kondagaon, Chhattisgarh</option>
+                            <option value="Kashmir (Srinagar Valley)">Kashmir (Srinagar Valley)</option>
+                            <option value="Channapatna, Karnataka">Channapatna, Karnataka</option>
+                            <option value="Kutch, Gujarat">Kutch, Gujarat</option>
+                            <option value="Madhubani, Bihar">Madhubani, Bihar</option>
+                            <option value="Molela, Rajasthan">Molela, Rajasthan</option>
+                            <option value="Kolkata & Bishnupur, West Bengal">Kolkata & Bishnupur, West Bengal</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div>
+                          <label className="stitch-form-label">
+                            <span>Artisan Pehchan ID (Optional)</span>
+                            <span style={{ color: '#c5a66a', fontSize: '9px' }}>MOSJE / DC-HANDICRAFTS</span>
+                          </label>
+                          <div className="stitch-input-wrapper">
+                            <Award size={16} className="stitch-input-icon" />
+                            <input
+                              type="text"
+                              className="stitch-input"
+                              placeholder="e.g. RJ/MOSJE/2026/8941"
+                              value={regPehchanId}
+                              onChange={(e) => setRegPehchanId(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="stitch-form-label">
+                            <span>WhatsApp Order Alerts</span>
+                            <span style={{ color: '#10B981', fontSize: '9px' }}>DIRECT ORDERS</span>
+                          </label>
+                          <div className="stitch-input-wrapper">
+                            <Phone size={16} className="stitch-input-icon" />
+                            <input
+                              type="tel"
+                              className="stitch-input"
+                              placeholder="+91 98765 43210"
+                              value={regPhone}
+                              onChange={(e) => setRegPhone(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    /* CUSTOMER SPECIFIC FIELDS */
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      <div>
+                        <label className="stitch-form-label">Craft Collection Interest *</label>
+                        <select
+                          className="stitch-input"
+                          style={{ paddingLeft: '14px', height: '46px' }}
+                          value={regBuyerInterest}
+                          onChange={(e) => setRegBuyerInterest(e.target.value)}
+                        >
+                          <option value="Handloom & Zari Silk Textiles">🥻 Handloom & Zari Silk Textiles</option>
+                          <option value="Terracotta & Ceramic Art">🏺 Terracotta & Ceramic Art</option>
+                          <option value="Tribal Dhokra & Bell Metal">🪔 Tribal Dhokra & Bell Metal</option>
+                          <option value="Heritage Woodcraft & Sculptures">🪵 Heritage Woodcraft & Sculptures</option>
+                          <option value="Folk & Tribal Heritage Art">🎨 Folk & Tribal Heritage Art</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="stitch-form-label">Delivery City & State *</label>
+                        <div className="stitch-input-wrapper">
+                          <MapPin size={16} className="stitch-input-icon" />
+                          <input
+                            type="text"
+                            className="stitch-input"
+                            placeholder="e.g. Mumbai, Maharashtra"
+                            value={regRegion}
+                            onChange={(e) => setRegRegion(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ fontSize: '11px', color: '#a8a29e', margin: '8px 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <CheckCircle size={14} color="#c5a66a" />
+                    <span>By registering, you agree to Kaarvo Living-Wage Standards and Fair-Trade ONDC Protocols.</span>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    className="stitch-btn-gold"
+                  >
+                    {authLoading ? '⏳ Creating Account...' : authRole === 'artisan' ? 'COMPLETE REGISTRATION & START SELLING →' : 'CREATE ACCOUNT & EXPLORE CRAFTS →'}
+                  </button>
+
+                  <div style={{ marginTop: '16px', textAlign: 'center', fontSize: '12px', color: '#a8a29e' }}>
+                    Already registered?{' '}
+                    <button
+                      type="button"
+                      onClick={() => { setAuthMode('login'); setAuthError(''); }}
+                      style={{ background: 'transparent', border: 'none', color: '#c5a66a', fontWeight: '800', cursor: 'pointer', textDecoration: 'underline' }}
+                    >
+                      Sign In to existing account
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+    </div>
+  );
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-body)' }}>
       
@@ -1965,6 +2624,55 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
         </div>
       )}
 
+      {/* ========================================================================= */}
+      {/* CASE 1: UN-AUTHENTICATED NEW VISITOR / LOGGED-OUT: LANDING SIGN UP PAGE   */}
+      {/* ========================================================================= */}
+      {!currentUser ? (
+        <div className="landing-auth-container min-h-screen bg-[#0e0d0c] text-[#f5f2eb] flex flex-col justify-between font-sans selection:bg-[#c5a66a] selection:text-[#0e0d0c]">
+          
+          {/* TOP LUXURY BRANDING HEADER */}
+          <header className="w-full bg-[#121212]/95 border-b border-[#2d2b28]/60 py-3.5 px-4 lg:px-12 backdrop-blur-md sticky top-0 z-40">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
+              <div className="flex items-center gap-3 select-none">
+                <div className="w-9 h-9 rounded bg-[#1c1a18] border border-[#c5a66a]/80 flex items-center justify-center text-[#c5a66a] font-serif font-bold text-lg shadow-sm">
+                  K
+                </div>
+                <div>
+                  <span className="font-serif text-lg tracking-[0.2em] uppercase font-bold text-white">KAARVO</span>
+                  <span className="hidden sm:inline text-[9px] uppercase tracking-[0.25em] text-[#c5a66a] ml-2 font-semibold">Artisan Commerce OS</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 text-xs font-semibold text-[#a8a29e]">
+                <span className="hidden md:flex items-center gap-1.5 text-[#dfbe7d]">
+                  <Sparkles size={14} /> SIH26090 ONDC Linkage
+                </span>
+                <span className="flex items-center gap-1.5 text-[#d6d3cd]">
+                  <ShieldCheck size={14} color="#c5a66a" /> 100% Living-Wage Verified
+                </span>
+              </div>
+            </div>
+          </header>
+
+          {/* MAIN DEDICATED SIGN UP / AUTHENTICATION PORTAL */}
+          <main className="flex-1 flex items-center justify-center p-4 py-8 lg:p-10">
+            <div style={{ maxWidth: '960px', width: '100%', margin: '0 auto', boxShadow: '0 30px 80px rgba(0,0,0,0.95), 0 0 35px rgba(197,166,106,0.15)' }}>
+              {renderAuthCard(false)}
+            </div>
+          </main>
+
+          {/* FOOTER */}
+          <footer className="w-full bg-[#0a0a09] border-t border-[#262422]/60 py-3.5 px-4 text-center text-xs text-[#8c857b]">
+            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+              <span>© 2026 KAARVO AI • Direct Market Linkage for India's Master Artisans</span>
+              <span className="text-[#c5a66a]">🇮🇳 Certified by ONDC & MoSJE • 100% Living-Wage Guarantee</span>
+            </div>
+          </footer>
+
+        </div>
+      ) : (
+        /* CASE 2: AUTHENTICATED USER (CUSTOMER STOREFRONT OR ARTISAN STUDIO) */
+        <>
       {/* ========================================================================= */}
       {/* MODE 1: CUSTOMER MARKETPLACE & SHOPPING EXPERIENCE                        */}
       {/* ========================================================================= */}
@@ -5041,667 +5749,13 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
 
 
       {/* ========================================================================= */}
-      {/* GOOGLE STITCH AUTHENTICATION MODAL: SIGN IN & SIGN UP (JWT & REFRESH) */}
-      {/* ========================================================================= */}
+            {/* MODAL FOR AUTHENTICATED USER SWITCHING OR RE-AUTHENTICATION */}
       {isAuthModalOpen && (
         <div className="stitch-modal-backdrop" onClick={() => setIsAuthModalOpen(false)}>
-          <div className="stitch-auth-modal" onClick={(e) => e.stopPropagation()}>
-            
-            {/* CLOSE BUTTON */}
-            <button
-              onClick={() => setIsAuthModalOpen(false)}
-              aria-label="Close Modal"
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(197, 166, 106, 0.3)',
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 10,
-                color: '#ffffff',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#c5a66a'; e.currentTarget.style.color = '#000000'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'; e.currentTarget.style.color = '#ffffff'; }}
-            >
-              <X size={18} />
-            </button>
-
-            {/* LEFT HERO PANEL (STITCH ARTISAN LUXURY BRANDING) */}
-            <div className="stitch-auth-hero">
-              <div>
-                {/* LOGO & SEAL */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-                  <div style={{
-                    width: '38px',
-                    height: '38px',
-                    borderRadius: '50%',
-                    border: '2px solid #c5a66a',
-                    background: '#1a1917',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#c5a66a',
-                    fontFamily: 'serif',
-                    fontWeight: '900',
-                    fontSize: '18px',
-                    boxShadow: '0 0 15px rgba(197,166,106,0.25)'
-                  }}>
-                    K
-                  </div>
-                  <div>
-                    <div className="font-serif" style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '0.15em', color: '#ffffff' }}>
-                      KAARVO
-                    </div>
-                    <div style={{ fontSize: '9px', fontWeight: '700', letterSpacing: '0.25em', color: '#c5a66a', textTransform: 'uppercase' }}>
-                      Artisan Commerce OS
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  background: 'rgba(197, 166, 106, 0.15)',
-                  border: '1px solid rgba(197, 166, 106, 0.4)',
-                  color: '#dfbe7d',
-                  padding: '6px 14px',
-                  borderRadius: '20px',
-                  fontSize: '10px',
-                  fontWeight: '800',
-                  letterSpacing: '0.08em',
-                  marginBottom: '20px'
-                }}>
-                  <Sparkles size={13} color="#dfbe7d" /> SIH26090 ONDC BHARAT REGISTRY
-                </div>
-
-                <h2 className="font-serif" style={{ fontSize: '28px', fontWeight: '800', lineHeight: '1.25', marginBottom: '14px', color: '#ffffff' }}>
-                  Direct Fair-Trade Market Linkage for India's Master Artisans.
-                </h2>
-
-                <p style={{ fontSize: '13px', color: '#d6d3cd', lineHeight: '1.6', marginBottom: '24px' }}>
-                  Zero broker deductions, automated 4K AI studio enhancements, and multi-lingual voice cataloging built directly on the open ONDC Beckn protocol.
-                </p>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', color: '#ffffff' }}>
-                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(197,166,106,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Check size={14} color="#c5a66a" />
-                    </div>
-                    <span><strong>100% Fair Living-Wage Guarantee</strong> with GI verification</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', color: '#ffffff' }}>
-                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(197,166,106,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Check size={14} color="#c5a66a" />
-                    </div>
-                    <span><strong>AI Regional Voice-to-Catalog</strong> in 12+ Indian dialects</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', color: '#ffffff' }}>
-                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(197,166,106,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Check size={14} color="#c5a66a" />
-                    </div>
-                    <span><strong>Cryptographic Heritage Passport</strong> with offline QR provenance</span>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ borderTop: '1px solid rgba(197,166,106,0.2)', paddingTop: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: '#a8a29e' }}>
-                <span>Certified by ONDC & MoSJE</span>
-                <span style={{ color: '#c5a66a' }}>🇮🇳 Built for Bharat</span>
-              </div>
-            </div>
-
-            {/* RIGHT AUTH FORM PANEL */}
-            <div className="stitch-auth-panel">
-              {/* TABS: SIGN IN vs CREATE ACCOUNT */}
-              <div className="stitch-tab-group">
-                <button
-                  type="button"
-                  className={`stitch-tab-btn ${authMode === 'login' ? 'active' : ''}`}
-                  onClick={() => { setAuthMode('login'); setAuthError(''); }}
-                >
-                  <LogIn size={15} /> Sign In
-                </button>
-                <button
-                  type="button"
-                  className={`stitch-tab-btn ${authMode === 'register' ? 'active' : ''}`}
-                  onClick={() => { setAuthMode('register'); setAuthError(''); }}
-                >
-                  <Sparkles size={15} /> Create Account
-                </button>
-              </div>
-
-              {/* 1-CLICK DEMO ACCESS BOX */}
-              <div className="stitch-demo-box">
-                <div className="stitch-demo-box-header">
-                  <span>⚡ 1-Click Demo Access (Evaluators & Judges)</span>
-                  <span style={{ fontSize: '9px', background: 'rgba(197,166,106,0.2)', padding: '2px 8px', borderRadius: '10px', color: '#dfbe7d' }}>TEST READY</span>
-                </div>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    className="stitch-demo-chip"
-                    onClick={() => handleAuthLogin(null, { username: 'artisan_demo', password: 'demo123' })}
-                  >
-                    <span>👤</span>
-                    <span><strong>Artisan:</strong> Mohan Lal (Jaipur Pottery)</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="stitch-demo-chip"
-                    onClick={() => handleAuthLogin(null, { username: 'customer_demo', password: 'demo123' })}
-                  >
-                    <span>🛍️</span>
-                    <span><strong>Customer:</strong> Priya Sharma (Buyer)</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* FORGOT PASSWORD QUICK HELPER POPUP */}
-              {forgotPassOpen && (
-                <div style={{ background: '#1c1917', border: '1px solid #c5a66a', borderRadius: '10px', padding: '14px', marginBottom: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#dfbe7d', fontSize: '12px', fontWeight: '800' }}>
-                      <HelpCircle size={15} /> Password Recovery & Demo Credentials
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setForgotPassOpen(false)}
-                      style={{ background: 'transparent', border: 'none', color: '#a8a29e', cursor: 'pointer' }}
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                  <p style={{ fontSize: '12px', color: '#d6d3cd', lineHeight: '1.5', margin: '0 0 10px 0' }}>
-                    For evaluation, use password <strong>demo123</strong> for <em>artisan_demo</em> or <em>customer_demo</em>. For new accounts, credentials are encrypted and stored in your browser session.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLoginUsername('artisan_demo');
-                      setLoginPassword('demo123');
-                      setForgotPassOpen(false);
-                    }}
-                    style={{ background: '#c5a66a', color: '#000', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
-                  >
-                    Auto-fill Master Artisan Credentials
-                  </button>
-                </div>
-              )}
-
-              {/* ERROR ALERT */}
-              {authError && (
-                <div style={{ padding: '12px 14px', background: 'rgba(239, 68, 68, 0.12)', border: '1px solid #EF4444', borderRadius: '10px', color: '#FCA5A5', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <ShieldAlert size={18} color="#EF4444" />
-                  <span>{authError}</span>
-                </div>
-              )}
-
-              {/* SIGN IN VIEW */}
-              {authMode === 'login' ? (
-                <div>
-                  {/* SUB-METHOD TOGGLE: PASSWORD VS MOBILE OTP */}
-                  <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', borderBottom: '1px solid #2a2723', paddingBottom: '12px' }}>
-                    <button
-                      type="button"
-                      onClick={() => { setLoginMethod('password'); setAuthError(''); }}
-                      style={{
-                        background: loginMethod === 'password' ? 'rgba(197, 166, 106, 0.15)' : 'transparent',
-                        border: `1px solid ${loginMethod === 'password' ? '#c5a66a' : 'transparent'}`,
-                        color: loginMethod === 'password' ? '#dfbe7d' : '#8c857b',
-                        padding: '6px 14px',
-                        borderRadius: '20px',
-                        fontSize: '12px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
-                      }}
-                    >
-                      🔑 Password Login
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setLoginMethod('otp'); setAuthError(''); }}
-                      style={{
-                        background: loginMethod === 'otp' ? 'rgba(197, 166, 106, 0.15)' : 'transparent',
-                        border: `1px solid ${loginMethod === 'otp' ? '#c5a66a' : 'transparent'}`,
-                        color: loginMethod === 'otp' ? '#dfbe7d' : '#8c857b',
-                        padding: '6px 14px',
-                        borderRadius: '20px',
-                        fontSize: '12px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
-                      }}
-                    >
-                      📱 Mobile OTP (Artisan Direct)
-                    </button>
-                  </div>
-
-                  {loginMethod === 'password' ? (
-                    <form onSubmit={(e) => handleAuthLogin(e)}>
-                      <div style={{ marginBottom: '14px' }}>
-                        <label className="stitch-form-label">
-                          <span>Username or Email Address *</span>
-                          <span style={{ color: '#c5a66a', fontSize: '10px' }}>REQUIRED</span>
-                        </label>
-                        <div className="stitch-input-wrapper">
-                          <User size={18} className="stitch-input-icon" />
-                          <input
-                            type="text"
-                            className="stitch-input"
-                            placeholder="e.g. artisan_demo or your_email@domain.com"
-                            value={loginUsername}
-                            onChange={(e) => setLoginUsername(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div style={{ marginBottom: '12px' }}>
-                        <div className="stitch-form-label">
-                          <span>Password *</span>
-                          <button
-                            type="button"
-                            onClick={() => setForgotPassOpen(true)}
-                            style={{ background: 'transparent', border: 'none', color: '#c5a66a', fontSize: '11px', cursor: 'pointer', textDecoration: 'underline' }}
-                          >
-                            Forgot Password?
-                          </button>
-                        </div>
-                        <div className="stitch-input-wrapper">
-                          <Lock size={18} className="stitch-input-icon" />
-                          <input
-                            type={showPassword ? 'text' : 'password'}
-                            className="stitch-input"
-                            placeholder="Enter your password (e.g. demo123)"
-                            value={loginPassword}
-                            onChange={(e) => setLoginPassword(e.target.value)}
-                            required
-                            style={{ paddingRight: '44px' }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            style={{ position: 'absolute', right: '12px', background: 'transparent', border: 'none', color: '#c5a66a', cursor: 'pointer', padding: '4px' }}
-                          >
-                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* REMEMBER ME & TRUST BADGE */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', fontSize: '12px', color: '#d6d3cd' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                          <input
-                            type="checkbox"
-                            checked={rememberMe}
-                            onChange={(e) => setRememberMe(e.target.checked)}
-                            style={{ accentColor: '#c5a66a' }}
-                          />
-                          <span>Remember me on this device</span>
-                        </label>
-                        <span style={{ color: '#a8a29e', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <ShieldCheck size={13} color="#c5a66a" /> 256-bit Encrypted
-                        </span>
-                      </div>
-
-                      <button
-                        type="submit"
-                        disabled={authLoading}
-                        className="stitch-btn-gold"
-                      >
-                        {authLoading ? '⏳ Authenticating via JWT...' : 'SIGN IN TO KAARVO AI →'}
-                      </button>
-                    </form>
-                  ) : (
-                    /* MOBILE OTP LOGIN FORM */
-                    <form onSubmit={otpSent ? handleVerifyOtp : handleRequestOtp}>
-                      <div style={{ marginBottom: '14px' }}>
-                        <label className="stitch-form-label">
-                          <span>Artisan Mobile Number (India) *</span>
-                          <span style={{ color: '#c5a66a', fontSize: '10px' }}>ONDC SMS GATEWAY</span>
-                        </label>
-                        <div className="stitch-input-wrapper">
-                          <Phone size={18} className="stitch-input-icon" />
-                          <input
-                            type="tel"
-                            className="stitch-input"
-                            placeholder="Enter 10-digit mobile number"
-                            value={loginPhone}
-                            onChange={(e) => setLoginPhone(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      {otpSent && (
-                        <div style={{ marginBottom: '16px' }}>
-                          <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid #10B981', padding: '10px 14px', borderRadius: '8px', marginBottom: '12px', fontSize: '12px', color: '#A7F3D0' }}>
-                            📲 <strong>OTP Sent!</strong> For evaluation demo, use OTP: <strong>882601</strong>
-                          </div>
-                          <label className="stitch-form-label">
-                            <span>Enter 6-Digit OTP *</span>
-                            <button
-                              type="button"
-                              onClick={handleRequestOtp}
-                              style={{ background: 'transparent', border: 'none', color: '#c5a66a', fontSize: '11px', cursor: 'pointer' }}
-                            >
-                              Resend OTP
-                            </button>
-                          </label>
-                          <div className="stitch-input-wrapper">
-                            <Lock size={18} className="stitch-input-icon" />
-                            <input
-                              type="text"
-                              className="stitch-input"
-                              placeholder="Enter 6-digit OTP (882601)"
-                              value={loginOtp}
-                              onChange={(e) => setLoginOtp(e.target.value)}
-                              maxLength={6}
-                              required
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      <button
-                        type="submit"
-                        disabled={authLoading}
-                        className="stitch-btn-gold"
-                        style={{ marginTop: '8px' }}
-                      >
-                        {authLoading ? '⏳ Verifying...' : otpSent ? 'VERIFY OTP & SIGN IN →' : 'REQUEST OTP VIA SMS / WHATSAPP →'}
-                      </button>
-                    </form>
-                  )}
-
-                  <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '12px', color: '#a8a29e' }}>
-                    Don't have an account yet?{' '}
-                    <button
-                      type="button"
-                      onClick={() => { setAuthMode('register'); setAuthError(''); }}
-                      style={{ background: 'transparent', border: 'none', color: '#c5a66a', fontWeight: '800', cursor: 'pointer', textDecoration: 'underline' }}
-                    >
-                      Create Account Now
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                /* REGISTRATION / CREATE ACCOUNT VIEW */
-                <form onSubmit={(e) => handleAuthRegister(e)}>
-                  <div style={{ marginBottom: '16px' }}>
-                    <label className="stitch-form-label">
-                      <span>Account Role & Purpose *</span>
-                      <span style={{ color: '#c5a66a', fontSize: '10px' }}>SELECT PROFILE TYPE</span>
-                    </label>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                      <div
-                        className={`stitch-role-card ${authRole === 'artisan' ? 'active' : ''}`}
-                        onClick={() => setAuthRole('artisan')}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <span style={{ fontSize: '18px' }}>🎨</span>
-                          {authRole === 'artisan' && <Check size={16} color="#c5a66a" />}
-                        </div>
-                        <strong style={{ fontSize: '13px', color: authRole === 'artisan' ? '#ffffff' : '#d6d3cd' }}>
-                          Artisan / Seller
-                        </strong>
-                        <span style={{ fontSize: '11px', color: '#a8a29e', lineHeight: '1.3' }}>
-                          Sell authentic crafts directly with living-wage guarantee via ONDC.
-                        </span>
-                      </div>
-
-                      <div
-                        className={`stitch-role-card ${authRole === 'customer' ? 'active' : ''}`}
-                        onClick={() => setAuthRole('customer')}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <span style={{ fontSize: '18px' }}>🛍️</span>
-                          {authRole === 'customer' && <Check size={16} color="#c5a66a" />}
-                        </div>
-                        <strong style={{ fontSize: '13px', color: authRole === 'customer' ? '#ffffff' : '#d6d3cd' }}>
-                          Customer / Connoisseur
-                        </strong>
-                        <span style={{ fontSize: '11px', color: '#a8a29e', lineHeight: '1.3' }}>
-                          Acquire certified GI masterworks directly from certified masters.
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* FULL NAME & EMAIL */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    <div>
-                      <label className="stitch-form-label">Full Name *</label>
-                      <div className="stitch-input-wrapper">
-                        <User size={16} className="stitch-input-icon" />
-                        <input
-                          type="text"
-                          className="stitch-input"
-                          placeholder="e.g. Ramesh Prajapati"
-                          value={regFullName}
-                          onChange={(e) => setRegFullName(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="stitch-form-label">Email Address *</label>
-                      <div className="stitch-input-wrapper">
-                        <Mail size={16} className="stitch-input-icon" />
-                        <input
-                          type="email"
-                          className="stitch-input"
-                          placeholder="ramesh@artisan.in"
-                          value={regEmail}
-                          onChange={(e) => setRegEmail(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* USERNAME & PASSWORD */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    <div>
-                      <label className="stitch-form-label">Choose Username *</label>
-                      <div className="stitch-input-wrapper">
-                        <User size={16} className="stitch-input-icon" />
-                        <input
-                          type="text"
-                          className="stitch-input"
-                          placeholder="e.g. ramesh_pottery"
-                          value={regUsername}
-                          onChange={(e) => setRegUsername(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="stitch-form-label">
-                        <span>Create Password *</span>
-                        {regPassword && (
-                          <span style={{ fontSize: '10px', color: getPasswordStrength(regPassword).color, fontWeight: '800' }}>
-                            {getPasswordStrength(regPassword).label}
-                          </span>
-                        )}
-                      </div>
-                      <div className="stitch-input-wrapper" style={{ marginBottom: '6px' }}>
-                        <Lock size={16} className="stitch-input-icon" />
-                        <input
-                          type="password"
-                          className="stitch-input"
-                          placeholder="Min 4 characters"
-                          value={regPassword}
-                          onChange={(e) => setRegPassword(e.target.value)}
-                          required
-                        />
-                      </div>
-                      {/* PASSWORD STRENGTH VISUAL BAR */}
-                      <div style={{ width: '100%', height: '3px', background: '#262422', borderRadius: '2px', overflow: 'hidden', marginBottom: '12px' }}>
-                        <div
-                          style={{
-                            height: '100%',
-                            width: getPasswordStrength(regPassword).width,
-                            background: getPasswordStrength(regPassword).color,
-                            transition: 'all 0.3s ease'
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* ARTISAN SPECIFIC FIELDS */}
-                  {authRole === 'artisan' ? (
-                    <>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                        <div>
-                          <label className="stitch-form-label">GI Craft Specialization *</label>
-                          <select
-                            className="stitch-input"
-                            style={{ paddingLeft: '14px', height: '46px' }}
-                            value={regCraftType}
-                            onChange={(e) => setRegCraftType(e.target.value)}
-                          >
-                            <option value="Terracotta Pottery & Clay Murals [GI Certified]">🏺 Terracotta Pottery & Clay Murals [GI]</option>
-                            <option value="Handloom Silk & Zari Weaving [GI Certified]">🥻 Handloom Silk & Zari Weaving [GI]</option>
-                            <option value="Bastar Dhokra Bell Metal [GI Certified]">🪔 Bastar Dhokra Bell Metal [GI]</option>
-                            <option value="Channapatna Lacquerware Woodcraft [GI Certified]">🐘 Channapatna Lacquerware [GI]</option>
-                            <option value="Kashmiri Pashmina & Kani Shawl [GI Certified]">🧣 Kashmiri Pashmina & Shawls [GI]</option>
-                            <option value="Madhubani Folk Art & Painting [GI Certified]">🎨 Madhubani Folk Art [GI]</option>
-                            <option value="Blue Pottery of Jaipur [GI Certified]">🏺 Blue Pottery of Jaipur [GI]</option>
-                            <option value="Thanjavur Bronze & Metal Casting [GI Certified]">🛡️ Thanjavur Bronze Casting [GI]</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="stitch-form-label">Heritage Cluster Region *</label>
-                          <select
-                            className="stitch-input"
-                            style={{ paddingLeft: '14px', height: '46px' }}
-                            value={regRegion}
-                            onChange={(e) => setRegRegion(e.target.value)}
-                          >
-                            <option value="Jaipur, Rajasthan">Jaipur, Rajasthan</option>
-                            <option value="Varanasi, Uttar Pradesh">Varanasi, Uttar Pradesh</option>
-                            <option value="Bastar & Kondagaon, Chhattisgarh">Bastar & Kondagaon, Chhattisgarh</option>
-                            <option value="Kashmir (Srinagar Valley)">Kashmir (Srinagar Valley)</option>
-                            <option value="Channapatna, Karnataka">Channapatna, Karnataka</option>
-                            <option value="Kutch, Gujarat">Kutch, Gujarat</option>
-                            <option value="Madhubani, Bihar">Madhubani, Bihar</option>
-                            <option value="Molela, Rajasthan">Molela, Rajasthan</option>
-                            <option value="Kolkata & Bishnupur, West Bengal">Kolkata & Bishnupur, West Bengal</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                        <div>
-                          <label className="stitch-form-label">
-                            <span>Artisan Pehchan ID (Optional)</span>
-                            <span style={{ color: '#c5a66a', fontSize: '9px' }}>MOSJE / DC-HANDICRAFTS</span>
-                          </label>
-                          <div className="stitch-input-wrapper">
-                            <Award size={16} className="stitch-input-icon" />
-                            <input
-                              type="text"
-                              className="stitch-input"
-                              placeholder="e.g. RJ/MOSJE/2026/8941"
-                              value={regPehchanId}
-                              onChange={(e) => setRegPehchanId(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="stitch-form-label">
-                            <span>WhatsApp Order Alerts</span>
-                            <span style={{ color: '#10B981', fontSize: '9px' }}>DIRECT ORDERS</span>
-                          </label>
-                          <div className="stitch-input-wrapper">
-                            <Phone size={16} className="stitch-input-icon" />
-                            <input
-                              type="tel"
-                              className="stitch-input"
-                              placeholder="+91 98765 43210"
-                              value={regPhone}
-                              onChange={(e) => setRegPhone(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    /* CUSTOMER SPECIFIC FIELDS */
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                      <div>
-                        <label className="stitch-form-label">Craft Collection Interest *</label>
-                        <select
-                          className="stitch-input"
-                          style={{ paddingLeft: '14px', height: '46px' }}
-                          value={regBuyerInterest}
-                          onChange={(e) => setRegBuyerInterest(e.target.value)}
-                        >
-                          <option value="Handloom & Zari Silk Textiles">🥻 Handloom & Zari Silk Textiles</option>
-                          <option value="Terracotta & Ceramic Art">🏺 Terracotta & Ceramic Art</option>
-                          <option value="Tribal Dhokra & Bell Metal">🪔 Tribal Dhokra & Bell Metal</option>
-                          <option value="Heritage Woodcraft & Sculptures">🪵 Heritage Woodcraft & Sculptures</option>
-                          <option value="Folk & Tribal Heritage Art">🎨 Folk & Tribal Heritage Art</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="stitch-form-label">Delivery City & State *</label>
-                        <div className="stitch-input-wrapper">
-                          <MapPin size={16} className="stitch-input-icon" />
-                          <input
-                            type="text"
-                            className="stitch-input"
-                            placeholder="e.g. Mumbai, Maharashtra"
-                            value={regRegion}
-                            onChange={(e) => setRegRegion(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div style={{ fontSize: '11px', color: '#a8a29e', margin: '8px 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <CheckCircle size={14} color="#c5a66a" />
-                    <span>By registering, you agree to Kaarvo Living-Wage Standards and Fair-Trade ONDC Protocols.</span>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={authLoading}
-                    className="stitch-btn-gold"
-                  >
-                    {authLoading ? '⏳ Creating Account...' : authRole === 'artisan' ? 'COMPLETE REGISTRATION & START SELLING →' : 'CREATE ACCOUNT & EXPLORE CRAFTS →'}
-                  </button>
-
-                  <div style={{ marginTop: '16px', textAlign: 'center', fontSize: '12px', color: '#a8a29e' }}>
-                    Already registered?{' '}
-                    <button
-                      type="button"
-                      onClick={() => { setAuthMode('login'); setAuthError(''); }}
-                      style={{ background: 'transparent', border: 'none', color: '#c5a66a', fontWeight: '800', cursor: 'pointer', textDecoration: 'underline' }}
-                    >
-                      Sign In to existing account
-                    </button>
-                  </div>
-                </form>
-              )}
-            </div>
-
-          </div>
+          {renderAuthCard(true)}
         </div>
+      )}
+        </>
       )}
 
     </div>
