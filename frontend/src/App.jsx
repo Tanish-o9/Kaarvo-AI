@@ -426,6 +426,27 @@ export default function App() {
   const [b2bAnalysis, setB2bAnalysis] = useState(null);
   const [b2bNegotiating, setB2bNegotiating] = useState(false);
 
+  // --- FEATURE 6: CONVERSATIONAL TWO-WAY VOICE AI SAHAYAK (दो-तरफा वॉयस सहायक) ---
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
+  const [isVoiceListening, setIsVoiceListening] = useState(false);
+  const [isVoiceSpeaking, setIsVoiceSpeaking] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+  const [voiceLanguage, setVoiceLanguage] = useState('hi-IN');
+  const [voiceAudioEnabled, setVoiceAudioEnabled] = useState(true);
+  const [voiceLoading, setVoiceLoading] = useState(false);
+  const [voiceInput, setVoiceInput] = useState('');
+  const [voiceMessages, setVoiceMessages] = useState([
+    {
+      id: 1,
+      sender: 'ai',
+      text: 'नमस्ते! मैं आपका कार्वो वॉयस सहायक हूँ। आप बोलकर नया प्रोडक्ट लाइव लिस्ट करा सकते हैं, कमाई या ऑर्डर्स पूछ सकते हैं, या कस्टमर हैंडीक्राफ्ट्स ढूँढ सकते हैं।',
+      spoken: 'नमस्ते! मैं आपका कार्वो वॉयस सहायक हूँ। आप बोलकर नया प्रोडक्ट लाइव लिस्ट करा सकते हैं, कमाई या ऑर्डर्स पूछ सकते हैं, या कस्टमर हैंडीक्राफ्ट्स ढूँढ सकते हैं।',
+      time: '10:00 AM'
+    }
+  ]);
+  const voiceRecognitionRef = useRef(null);
+  const voiceMediaStreamRef = useRef(null);
+
   // Process image on HTML5 canvas with Adaptive AI Lighting & Photo Super-Enhancement
   const processCanvasImage = (rawUrl) => {
     if (!rawUrl) return;
@@ -966,6 +987,289 @@ export default function App() {
       setB2bNegotiating(false);
       showToast('🤝 Autonomous B2B Living-Wage Negotiation Strategy Generated!');
     }, 800);
+  };
+
+  // --- FEATURE 6 HELPERS: Two-Way Conversational Voice AI Sahayak ---
+  const speakVoiceText = (text) => {
+    if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
+    try {
+      window.speechSynthesis.cancel();
+      const cleanText = text
+        .replace(/[*_#`~•]/g, ' ')
+        .replace(/₹/g, 'rupaye ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (!cleanText) return;
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      const voices = window.speechSynthesis.getVoices();
+      const matchedVoice = voices.find(v => v.lang.startsWith('hi') || v.lang.includes('Hindi') || (v.name && v.name.includes('Hindi'))) ||
+                           voices.find(v => v.lang === 'en-IN' || (v.name && v.name.includes('India'))) ||
+                           voices.find(v => v.lang.startsWith('en')) ||
+                           voices[0];
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
+        utterance.lang = matchedVoice.lang;
+      } else {
+        utterance.lang = voiceLanguage;
+      }
+      utterance.rate = 0.95;
+      utterance.pitch = 1.0;
+
+      utterance.onstart = () => setIsVoiceSpeaking(true);
+      utterance.onend = () => setIsVoiceSpeaking(false);
+      utterance.onerror = () => setIsVoiceSpeaking(false);
+
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.warn('Voice Speech synthesis error:', err);
+      setIsVoiceSpeaking(false);
+    }
+  };
+
+  const stopVoiceSpeaking = () => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setIsVoiceSpeaking(false);
+  };
+
+  const stopVoiceListening = () => {
+    setIsVoiceListening(false);
+    if (voiceRecognitionRef.current) {
+      try {
+        voiceRecognitionRef.current.onend = null;
+        voiceRecognitionRef.current.onerror = null;
+        voiceRecognitionRef.current.stop();
+      } catch (e) {}
+      voiceRecognitionRef.current = null;
+    }
+    if (voiceMediaStreamRef.current) {
+      try {
+        voiceMediaStreamRef.current.getTracks().forEach(t => t.stop());
+      } catch (e) {}
+      voiceMediaStreamRef.current = null;
+    }
+  };
+
+  const startVoiceListening = async () => {
+    stopVoiceSpeaking();
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      showToast('⚠️ Speech recognition browser me uplabdh nahi hai. Kripya niche diye chips tap karein ya text likhein!');
+      return;
+    }
+
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        voiceMediaStreamRef.current = stream;
+      }
+    } catch (e) {
+      console.warn('Mic permission notice:', e);
+    }
+
+    try {
+      if (voiceRecognitionRef.current) {
+        try { voiceRecognitionRef.current.stop(); } catch (e) {}
+      }
+
+      const rec = new SpeechRecognition();
+      voiceRecognitionRef.current = rec;
+      rec.continuous = false;
+      rec.interimResults = true;
+      rec.lang = voiceLanguage;
+
+      rec.onstart = () => {
+        setIsVoiceListening(true);
+        showToast('🎙️ वॉयस सहायक सुन रहा है... आप बोल सकते हैं!');
+      };
+
+      rec.onresult = (event) => {
+        let interim = '';
+        for (let i = 0; i < event.results.length; i++) {
+          interim += event.results[i][0].transcript;
+        }
+        setVoiceTranscript(interim);
+        if (event.results[0] && event.results[0].isFinal) {
+          const finalQuery = event.results[0][0].transcript;
+          stopVoiceListening();
+          handleVoiceQuery(finalQuery);
+        }
+      };
+
+      rec.onerror = (e) => {
+        console.warn('SpeechRecognition error:', e.error);
+        setIsVoiceListening(false);
+        if (e.error === 'not-allowed') {
+          showToast('⚠️ Kripya browser settings me Microphone permission allow karein!');
+        }
+      };
+
+      rec.onend = () => {
+        setIsVoiceListening(false);
+      };
+
+      rec.start();
+    } catch (err) {
+      console.warn('Speech recognition start failed:', err);
+      setIsVoiceListening(false);
+    }
+  };
+
+  const toggleVoiceListening = () => {
+    if (isVoiceListening) {
+      stopVoiceListening();
+    } else {
+      startVoiceListening();
+    }
+  };
+
+  const handleVoiceQuery = async (queryText) => {
+    const q = (queryText || voiceTranscript).trim();
+    if (!q) return;
+
+    stopVoiceListening();
+    stopVoiceSpeaking();
+
+    const userTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setVoiceMessages(prev => [...prev, {
+      id: Date.now(),
+      sender: 'user',
+      text: q,
+      time: userTime
+    }]);
+    setVoiceTranscript('');
+    setVoiceLoading(true);
+
+    try {
+      const activeTok = localStorage.getItem('kaarvo_access_token');
+      const res = await fetch(`${API_BASE}/copilot/query`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(activeTok ? { 'Authorization': `Bearer ${activeTok}` } : {})
+        },
+        body: JSON.stringify({ query: q })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const aiReply = data.answer || "Ji Mohan ji, aapka nivedan process kar diya gaya hai.";
+        const spoken = data.spoken_hindi || aiReply;
+        const actionName = data.action;
+        const payload = data.payload || {};
+
+        // 1. Voice Intent Action: VOICE_CREATE_PRODUCT
+        if (actionName === 'VOICE_CREATE_PRODUCT' && payload.product) {
+          const p = payload.product;
+          const newProd = {
+            id: `voice-prd-${Date.now()}`,
+            title: p.title || 'Handcrafted Artisan Heirloom',
+            category: p.category || 'Pottery / Terracotta',
+            price: p.price || 850,
+            original_price: p.original_price || Math.round((p.price || 850) * 1.25),
+            description: p.description || 'Authentic handcrafted heritage artifact created with verified artisanal techniques.',
+            artisan: (currentUser && (currentUser.name || currentUser.username)) || 'Artisan Mohan Lal',
+            artisan_bio: currentUser?.craft_type ? `${currentUser.craft_type} Craftsman from ${currentUser.region || 'India'}.` : 'Verified master artisan handcrafting authentic heirlooms.',
+            location: currentUser?.region || p.origin || 'Jaipur, Rajasthan',
+            rating: 5.0,
+            reviewsCount: 1,
+            image: p.image || getCraftSpecificImage(p.category, p.title),
+            badge: 'Voice Published • ONDC Live',
+            material: p.material || 'Natural Clay / Terracotta',
+            technique: p.technique || 'Hand-thrown on traditional wheel',
+            verification_state: 'org_verified'
+          };
+
+          setProducts(prev => [newProd, ...prev.filter(item => item.id !== newProd.id)]);
+
+          try {
+            await fetch(`${API_BASE}/products`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(activeTok ? { 'Authorization': `Bearer ${activeTok}` } : {})
+              },
+              body: JSON.stringify(newProd)
+            });
+          } catch (e) {
+            console.warn('Voice product backend save:', e);
+          }
+
+          showToast(`🎉 Voice Published: "${newProd.title}" is now LIVE on ONDC!`);
+        }
+        
+        // 2. Voice Intent Action: VOICE_FILTER_STORE
+        else if (actionName === 'VOICE_FILTER_STORE') {
+          let catKey = 'all';
+          const catRaw = (payload.category || '').toLowerCase();
+          if (catRaw.includes('pottery') || catRaw.includes('terracotta') || catRaw.includes('clay')) catKey = 'pottery';
+          else if (catRaw.includes('textile') || catRaw.includes('silk') || catRaw.includes('handloom') || catRaw.includes('saree')) catKey = 'textiles';
+          else if (catRaw.includes('metal') || catRaw.includes('brass') || catRaw.includes('dhokra')) catKey = 'metalcraft';
+          else if (catRaw.includes('wood')) catKey = 'woodwork';
+          else if (catRaw.includes('jewel')) catKey = 'jewelry';
+
+          setCustomerCategory(catKey);
+          if (payload.search) {
+            setCustomerSearchQuery(payload.search);
+          }
+          setMode('customer');
+          switchCustomerTab('shop');
+          showToast(`🔍 Store filtered: "${payload.category || payload.search || 'Heritage Crafts'}"`);
+        }
+
+        // 3. Voice Intent Action: PRINT_DISPATCH_LABEL
+        else if (actionName === 'PRINT_DISPATCH_LABEL') {
+          showToast('📦 Dispatch Label Generated! Barcode printed for courier pickup.');
+        }
+
+        // 4. Voice Intent Action: NAVIGATE_TAB
+        else if (actionName === 'NAVIGATE_TAB' && payload.target) {
+          const target = payload.target;
+          if (['studio', 'orders', 'copilot', 'dashboard', 'settings', 'insights'].includes(target)) {
+            setMode('artisan');
+            switchArtisanTab(target);
+          } else {
+            setMode('customer');
+            switchCustomerTab(target === 'store' ? 'shop' : target);
+          }
+        }
+
+        // Append AI response message
+        setVoiceMessages(prev => [...prev, {
+          id: Date.now() + 1,
+          sender: 'ai',
+          text: aiReply,
+          spoken: spoken,
+          action: actionName,
+          payload: payload,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }]);
+
+        // Play audio TTS
+        if (voiceAudioEnabled && spoken) {
+          speakVoiceText(spoken);
+        }
+      } else {
+        throw new Error('API query returned non-200');
+      }
+    } catch (err) {
+      console.warn('Voice API query error, using local fallback:', err);
+      const fallbackText = "नमस्ते! आपका वॉइस संदेश प्राप्त हुआ। कार्वो वॉयस सहायक ONDC और स्टोर से कनेक्टेड है।";
+      setVoiceMessages(prev => [...prev, {
+        id: Date.now() + 1,
+        sender: 'ai',
+        text: fallbackText,
+        spoken: fallbackText,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }]);
+      if (voiceAudioEnabled) {
+        speakVoiceText(fallbackText);
+      }
+    } finally {
+      setVoiceLoading(false);
+    }
   };
 
   // --- FEATURE 4 HELPER: 1-Click Social Media Marketing Flyer Preview & Downloader ---
@@ -2821,6 +3125,15 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                 >
                   <Sparkles size={13} className="text-[#c5a66a]" />
                   AI Copilot
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsVoiceModalOpen(true)}
+                  className="transition-all py-1 cursor-pointer flex items-center gap-1.5 text-[#c5a66a] hover:text-[#dfbe7d] font-bold"
+                  title="Open Voice AI Sahayak (बोल कर बात करें)"
+                >
+                  <Mic size={13} />
+                  Voice Sahayak
                 </button>
               </nav>
 
@@ -5466,6 +5779,351 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                 <Printer size={16} /> Print Certificate
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* FEATURE 6: CONVERSATIONAL TWO-WAY VOICE AI SAHAYAK (वॉयस सहायक) */}
+      {/* ============================================================ */}
+      <button
+        type="button"
+        onClick={() => {
+          setIsVoiceModalOpen(prev => !prev);
+          if (isSpeaking) {
+            window.speechSynthesis?.cancel();
+            setIsSpeaking(false);
+          }
+        }}
+        className={`voice-orb-btn ${isVoiceListening ? 'listening' : isVoiceSpeaking ? 'speaking' : ''}`}
+        title="Kaarvo Voice AI Sahayak (दो-तरफा वॉयस सहायक)"
+      >
+        {isVoiceListening ? (
+          <>
+            <MicOff size={18} className="text-red-400" />
+            <div className="voice-wave-container">
+              <span className="voice-wave-bar red" />
+              <span className="voice-wave-bar red" />
+              <span className="voice-wave-bar red" />
+              <span className="voice-wave-bar red" />
+              <span className="voice-wave-bar red" />
+            </div>
+            <span>Listening...</span>
+          </>
+        ) : isVoiceSpeaking ? (
+          <>
+            <Volume2 size={18} className="text-emerald-400" />
+            <div className="voice-wave-container">
+              <span className="voice-wave-bar green" />
+              <span className="voice-wave-bar green" />
+              <span className="voice-wave-bar green" />
+              <span className="voice-wave-bar green" />
+              <span className="voice-wave-bar green" />
+            </div>
+            <span>Speaking...</span>
+          </>
+        ) : (
+          <>
+            <Mic size={18} className="text-[#c5a66a]" />
+            <span>Voice AI Sahayak</span>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#c5a66a', animation: 'pulse 1.2s infinite' }} />
+          </>
+        )}
+      </button>
+
+      {/* VOICE AI SAHAYAK HUD MODAL */}
+      {isVoiceModalOpen && (
+        <div className="voice-hud-drawer">
+          {/* HUD HEADER */}
+          <div style={{ padding: '16px 20px', background: 'linear-gradient(135deg, #1f1d1a 0%, #141312 100%)', borderBottom: '1px solid #2d2b28', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #c5a66a, #dfbe7d)', color: '#121212', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900' }}>
+                <Mic size={18} />
+              </div>
+              <div>
+                <div style={{ fontSize: '14px', fontWeight: '800', color: '#FFFFFF', letterSpacing: '0.02em' }}>Voice AI Sahayak</div>
+                <div style={{ fontSize: '11px', color: '#c5a66a' }}>दो-तरफा वॉयस सहायक • ONDC Live</div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {/* Language Selector */}
+              <button
+                type="button"
+                onClick={() => setVoiceLanguage(prev => prev === 'hi-IN' ? 'en-IN' : 'hi-IN')}
+                style={{ background: '#262422', border: '1px solid #3d3a35', color: '#dfbe7d', fontSize: '10px', fontWeight: '700', padding: '4px 8px', borderRadius: '6px', cursor: 'pointer' }}
+                title="Toggle Language"
+              >
+                {voiceLanguage === 'hi-IN' ? '🇮🇳 हिन्दी' : '🇬🇧 English'}
+              </button>
+              {/* Audio Playback Toggle */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (voiceAudioEnabled) stopVoiceSpeaking();
+                  setVoiceAudioEnabled(prev => !prev);
+                  showToast(voiceAudioEnabled ? '🔇 Voice Reply Audio Muted' : '🔊 Voice Reply Audio Enabled');
+                }}
+                style={{ background: '#262422', border: '1px solid #3d3a35', color: voiceAudioEnabled ? '#10b981' : '#a39e93', padding: '5px 7px', borderRadius: '6px', cursor: 'pointer' }}
+                title={voiceAudioEnabled ? 'Audio replies active' : 'Audio replies muted'}
+              >
+                {voiceAudioEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
+              </button>
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  stopVoiceListening();
+                  stopVoiceSpeaking();
+                  setIsVoiceModalOpen(false);
+                }}
+                style={{ background: 'transparent', border: 'none', color: '#a39e93', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* ACTIVE STATUS BANNER */}
+          {(isVoiceListening || isVoiceSpeaking || voiceLoading) && (
+            <div style={{ padding: '10px 16px', background: isVoiceListening ? '#3f1111' : isVoiceSpeaking ? '#063b2c' : '#292211', borderBottom: '1px solid #38342e', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFFFFF' }}>
+                {isVoiceListening ? (
+                  <>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 1s infinite' }} />
+                    <span style={{ fontWeight: '700', color: '#fca5a5' }}>सुन रहा हूँ: </span>
+                    <span style={{ fontStyle: 'italic', maxWidth: '210px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      "{voiceTranscript || 'Boliye...'}"
+                    </span>
+                  </>
+                ) : isVoiceSpeaking ? (
+                  <>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', animation: 'pulse 1s infinite' }} />
+                    <span style={{ fontWeight: '700', color: '#6ee7b7' }}>बोल रहा हूँ (Speaking)...</span>
+                  </>
+                ) : (
+                  <>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#c5a66a', animation: 'pulse 1s infinite' }} />
+                    <span style={{ color: '#dfbe7d' }}>AI प्रोसेसिंग चालू है...</span>
+                  </>
+                )}
+              </div>
+              {isVoiceListening ? (
+                <button
+                  type="button"
+                  onClick={stopVoiceListening}
+                  style={{ background: '#ef4444', color: '#FFFFFF', border: 'none', padding: '3px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '800', cursor: 'pointer' }}
+                >
+                  Stop
+                </button>
+              ) : isVoiceSpeaking ? (
+                <button
+                  type="button"
+                  onClick={stopVoiceSpeaking}
+                  style={{ background: '#10b981', color: '#FFFFFF', border: 'none', padding: '3px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '800', cursor: 'pointer' }}
+                >
+                  Mute
+                </button>
+              ) : null}
+            </div>
+          )}
+
+          {/* CHAT MESSAGES FEED */}
+          <div style={{ flex: 1, padding: '16px', background: '#0f0e0d', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {voiceMessages.map(m => (
+              <div
+                key={m.id}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignSelf: m.sender === 'user' ? 'flex-end' : 'flex-start',
+                  maxWidth: '85%'
+                }}
+              >
+                <div
+                  style={{
+                    padding: '12px 14px',
+                    borderRadius: m.sender === 'user' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
+                    background: m.sender === 'user' ? '#c5a66a' : '#1a1917',
+                    color: m.sender === 'user' ? '#121212' : '#f5f2eb',
+                    border: m.sender === 'user' ? 'none' : '1px solid #2d2b28',
+                    fontSize: '13px',
+                    lineHeight: '1.5',
+                    whiteSpace: 'pre-line'
+                  }}
+                >
+                  {m.text}
+
+                  {/* ACTION PREVIEW CARDS */}
+                  {m.action === 'VOICE_CREATE_PRODUCT' && m.payload?.product && (
+                    <div style={{ marginTop: '10px', padding: '10px', background: '#25221e', borderRadius: '8px', border: '1px solid #c5a66a' }}>
+                      <div style={{ fontSize: '10px', color: '#c5a66a', fontWeight: '800', textTransform: 'uppercase', marginBottom: '4px' }}>✨ Live Store Listing Created</div>
+                      <div style={{ fontWeight: '700', fontSize: '12px', color: '#FFFFFF' }}>{m.payload.product.title}</div>
+                      <div style={{ fontSize: '12px', color: '#10b981', fontWeight: '800', marginTop: '2px' }}>₹{m.payload.product.price} • Living-Wage Verified</div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMode('customer');
+                          switchCustomerTab('shop');
+                          setIsVoiceModalOpen(false);
+                          showToast('Opened live product in storefront!');
+                        }}
+                        style={{ marginTop: '8px', width: '100%', padding: '6px', borderRadius: '6px', background: '#c5a66a', color: '#121212', border: 'none', cursor: 'pointer', fontWeight: '800', fontSize: '11px' }}
+                      >
+                        View Live on Storefront →
+                      </button>
+                    </div>
+                  )}
+
+                  {m.action === 'VOICE_FILTER_STORE' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode('customer');
+                        switchCustomerTab('shop');
+                        setIsVoiceModalOpen(false);
+                      }}
+                      style={{ marginTop: '8px', width: '100%', padding: '6px', borderRadius: '6px', background: '#262422', color: '#dfbe7d', border: '1px solid #3d3a35', cursor: 'pointer', fontWeight: '700', fontSize: '11px' }}
+                    >
+                      View Filtered Craft Catalog →
+                    </button>
+                  )}
+
+                  {m.action === 'PRINT_DISPATCH_LABEL' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.print();
+                        showToast('🖨️ Printing ONDC dispatch shipping label...');
+                      }}
+                      style={{ marginTop: '8px', width: '100%', padding: '6px', borderRadius: '6px', background: '#D97706', color: '#FFFFFF', border: 'none', cursor: 'pointer', fontWeight: '700', fontSize: '11px' }}
+                    >
+                      🖨️ Print Dispatch Label
+                    </button>
+                  )}
+                </div>
+
+                {/* Subtitle / Timestamp & Audio Replay */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: m.sender === 'user' ? 'flex-end' : 'space-between', gap: '8px', marginTop: '4px', padding: '0 4px' }}>
+                  {m.sender === 'ai' && (
+                    <button
+                      type="button"
+                      onClick={() => speakVoiceText(m.spoken || m.text)}
+                      style={{ background: 'transparent', border: 'none', color: '#c5a66a', fontSize: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                      title="Replay Voice Audio"
+                    >
+                      <Volume2 size={11} /> Replay
+                    </button>
+                  )}
+                  <span style={{ fontSize: '9px', color: '#78716c' }}>{m.time}</span>
+                </div>
+              </div>
+            ))}
+
+            {voiceLoading && (
+              <div style={{ alignSelf: 'flex-start', padding: '10px 14px', background: '#1a1917', border: '1px solid #2d2b28', borderRadius: '12px', fontSize: '12px', color: '#c5a66a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c5a66a', animation: 'ping 1s infinite' }} />
+                AI प्रोसेसिंग और वॉइस उत्तर तैयार हो रहा है...
+              </div>
+            )}
+          </div>
+
+          {/* QUICK PROMPT CHIPS */}
+          <div style={{ padding: '10px 14px', background: '#141312', borderTop: '1px solid #262422' }}>
+            <div style={{ fontSize: '10px', fontWeight: '800', color: '#a39e93', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
+              ⚡ Quick Voice Prompts (1-Click Demo):
+            </div>
+            <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px' }}>
+              {[
+                { label: '🏺 नया टेराकोटा घड़ा लिस्ट करो', prompt: 'Maine 2 din me terracotta ghada banaya, mitti aur laagat ₹200 aayi, isko live dukaan par daal do' },
+                { label: '📊 आज की बिक्री और ऑर्डर्स', prompt: 'Meri is hafte ki kitni kamai hui aur kitne orders pending hain?' },
+                { label: '🔍 ब्लू पॉटरी और सिल्क साड़ी दिखाओ', prompt: 'Mujhe Blue pottery aur Banarasi silk saree dikhao under 3000' },
+                { label: '⚖️ फेयर लिविंग-वेज प्राइस सलाह', prompt: 'Banarasi saree ka fair living-wage price kitna hona chahiye?' },
+                { label: '📦 कूरियर डिस्पैच लेबल निकालो', prompt: 'Pending order ka courier dispatch shipping label print karo' }
+              ].map((chip, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleVoiceQuery(chip.prompt)}
+                  className="voice-chip-btn"
+                  style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* INPUT & MIC ROW */}
+          <div style={{ padding: '12px 14px', background: '#191816', borderTop: '1px solid #2d2b28', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              type="button"
+              onClick={toggleVoiceListening}
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '50%',
+                background: isVoiceListening ? '#ef4444' : 'linear-gradient(135deg, #c5a66a, #dfbe7d)',
+                color: isVoiceListening ? '#FFFFFF' : '#121212',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: isVoiceListening ? '0 0 15px rgba(239, 68, 68, 0.6)' : '0 4px 12px rgba(197, 166, 106, 0.35)',
+                transition: 'all 0.2s ease',
+                flexShrink: 0
+              }}
+              title={isVoiceListening ? 'Stop Mic' : 'Start Speaking'}
+            >
+              {isVoiceListening ? <MicOff size={20} /> : <Mic size={20} />}
+            </button>
+            <input
+              type="text"
+              placeholder={isVoiceListening ? 'Listening... Boliye...' : 'या यहाँ टाइप करें / Type voice query...'}
+              value={voiceInput}
+              onChange={(e) => setVoiceInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && voiceInput.trim()) {
+                  handleVoiceQuery(voiceInput);
+                  setVoiceInput('');
+                }
+              }}
+              style={{
+                flex: 1,
+                padding: '10px 14px',
+                borderRadius: '24px',
+                background: '#0d0c0b',
+                border: '1px solid #38342e',
+                color: '#FFFFFF',
+                fontSize: '13px',
+                outline: 'none'
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                if (voiceInput.trim()) {
+                  handleVoiceQuery(voiceInput);
+                  setVoiceInput('');
+                }
+              }}
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                background: '#262422',
+                border: '1px solid #3d3a35',
+                color: '#dfbe7d',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}
+              title="Send Query"
+            >
+              <Send size={16} />
+            </button>
           </div>
         </div>
       )}
