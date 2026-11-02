@@ -178,11 +178,9 @@ export default function App() {
       setIsAuthModalOpen(false);
       setLoginPassword('');
 
-      if (data.user.role === 'artisan') {
-        switchMode('artisan');
-      } else {
-        switchMode('customer');
-      }
+      // Always land on Main Dashboard upon login
+      switchMode('customer');
+      switchCustomerTab('home');
 
       showToast(`🎉 Namaste, ${data.user.full_name || data.user.username}! Signed in as ${data.user.role === 'artisan' ? 'Verified Artisan' : 'Customer'}.`);
     } catch (err) {
@@ -237,11 +235,9 @@ export default function App() {
       setCurrentUser(data.user);
       setIsAuthModalOpen(false);
 
-      if (data.user.role === 'artisan') {
-        switchMode('artisan');
-      } else {
-        switchMode('customer');
-      }
+      // Always land on Main Dashboard upon registration
+      switchMode('customer');
+      switchCustomerTab('home');
 
       showToast(`🎉 Welcome to Kaarvo AI, ${data.user.full_name}! Registration successful.`);
     } catch (err) {
@@ -266,7 +262,8 @@ export default function App() {
 
     // Tab Persistence: Customer vs Artisan views
   const getInitialMode = () => {
-    return localStorage.getItem('kaarvo_app_mode') || 'customer';
+    // Always open on the Main Dashboard (Customer Storefront) by default
+    return 'customer';
   };
 
   const getInitialCustomerTab = () => {
@@ -3210,7 +3207,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                   onClick={() => switchMode('artisan')}
                   className="border border-[#c5a66a] text-[#c5a66a] hover:bg-[#c5a66a] hover:text-[#121212] text-[10px] font-bold uppercase tracking-[0.18em] px-3 sm:px-4 py-2 transition-all cursor-pointer whitespace-nowrap"
                 >
-                  Start Selling
+                  {currentUser?.role === 'artisan' ? 'Artisan Business OS →' : 'Start Selling'}
                 </button>
               </div>
             </div>
