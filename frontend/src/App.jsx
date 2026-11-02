@@ -8,6 +8,7 @@ import {
   QrCode, Volume2, VolumeX, Download, Share2, Phone, MessageCircle, Printer, Briefcase,
   Lock, Mail, User, Eye, EyeOff, LogIn, LogOut, ExternalLink, Plus, Bookmark, Gavel } from 'lucide-react';
 import { AuctionMarketplace } from './features/auctions';
+import { t, applyLanguageToDOM } from './i18n';
 
 const API_BASE = 'http://127.0.0.1:8001/api/v1';
 
@@ -39,6 +40,91 @@ const getCraftSpecificImage = (category, title) => {
 // ============================================================================
 export default function App() {
   // --- AUTHENTICATION & JWT STATE (Stitch Integration) ---
+  // --- GLOBAL WEBSITE LANGUAGE (EN / HI) ---
+  const [appLanguage, setAppLanguage] = useState(() => {
+    try {
+      return localStorage.getItem('kaarvo_web_lang') || 'en';
+    } catch (e) {
+      return 'en';
+    }
+  });
+
+  const handleLanguageToggle = (lang) => {
+    setAppLanguage(lang);
+    try {
+      localStorage.setItem('kaarvo_web_lang', lang);
+    } catch (e) {}
+    if (lang === 'hi') {
+      try { setVoiceLanguage('hi-IN'); } catch(e){}
+      try { setSelectedLanguage('hi-IN'); } catch(e){}
+      showToast('🌐 भाषा: संपूर्ण वेबसाइट अब हिंदी में है');
+    } else {
+      try { setVoiceLanguage('en-IN'); } catch(e){}
+      try { setSelectedLanguage('en-IN'); } catch(e){}
+      showToast('🌐 Language: Switched to English');
+    }
+    applyLanguageToDOM(lang);
+  };
+
+  const renderLanguageSwitcher = () => (
+    <div
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        background: '#191816',
+        border: '1.5px solid #3d3933',
+        borderRadius: '9999px',
+        padding: '2px',
+        gap: '2px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.45)',
+        zIndex: 50
+      }}
+      title={appLanguage === 'hi' ? 'भाषा: हिंदी (Click to toggle)' : 'Language: English (Click to toggle)'}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '6px', paddingRight: '2px', color: '#c5a66a' }}>
+        <Globe size={13} />
+      </div>
+      <button
+        type="button"
+        onClick={() => handleLanguageToggle('en')}
+        style={{
+          padding: '4px 10px',
+          borderRadius: '9999px',
+          fontSize: '11px',
+          fontWeight: '800',
+          letterSpacing: '0.04em',
+          cursor: 'pointer',
+          border: 'none',
+          background: appLanguage === 'en' ? 'linear-gradient(135deg, #c5a66a 0%, #dfbe7d 100%)' : 'transparent',
+          color: appLanguage === 'en' ? '#121212' : '#a39e93',
+          transition: 'all 0.2s ease',
+          boxShadow: appLanguage === 'en' ? '0 1px 4px rgba(0,0,0,0.3)' : 'none'
+        }}
+      >
+        EN
+      </button>
+      <button
+        type="button"
+        onClick={() => handleLanguageToggle('hi')}
+        style={{
+          padding: '4px 10px',
+          borderRadius: '9999px',
+          fontSize: '11px',
+          fontWeight: '800',
+          letterSpacing: '0.04em',
+          cursor: 'pointer',
+          border: 'none',
+          background: appLanguage === 'hi' ? 'linear-gradient(135deg, #c5a66a 0%, #dfbe7d 100%)' : 'transparent',
+          color: appLanguage === 'hi' ? '#121212' : '#a39e93',
+          transition: 'all 0.2s ease',
+          boxShadow: appLanguage === 'hi' ? '0 1px 4px rgba(0,0,0,0.3)' : 'none'
+        }}
+      >
+        हिंदी
+      </button>
+    </div>
+  );
+
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const stored = localStorage.getItem('kaarvo_user');
@@ -307,6 +393,11 @@ export default function App() {
   const [mode, setMode] = useState(getInitialMode);
   const [customerTab, setCustomerTab] = useState(getInitialCustomerTab);
   const [artisanTab, setArtisanTab] = useState(getInitialArtisanTab);
+
+  // Sync Full Page Language (English / Hindi)
+  useEffect(() => {
+    applyLanguageToDOM(appLanguage);
+  }, [appLanguage, mode, customerTab, artisanTab]);
 
   // DB State
   const [products, setProducts] = useState([]);
@@ -4047,8 +4138,11 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                   onClick={() => switchMode('artisan')}
                   className="border border-[#c5a66a] text-[#c5a66a] hover:bg-[#c5a66a] hover:text-[#121212] text-[10px] font-bold uppercase tracking-[0.18em] px-3 sm:px-4 py-2 transition-all cursor-pointer whitespace-nowrap"
                 >
-                  {currentUser?.role === 'artisan' ? 'Artisan Business OS →' : 'Start Selling'}
+                  {t(currentUser?.role === 'artisan' ? 'Artisan Business OS →' : 'Start Selling', appLanguage)}
                 </button>
+
+                {/* Top Corner Language Switcher (EN / हिंदी) */}
+                {renderLanguageSwitcher()}
               </div>
             </div>
 
@@ -6045,7 +6139,7 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                       }}
                     >
                       <Icon size={18} color={isActive ? 'var(--primary)' : 'var(--text-muted)'} />
-                      {item.label}
+                      {t(item.label, appLanguage)}
                     </button>
                   );
                 })}
@@ -6159,6 +6253,8 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                   ONDC Studio Live
                 </span>
               </div>
+              {/* Top Corner Language Switcher (EN / हिंदी) */}
+              {renderLanguageSwitcher()}
             </div>
 
             {/* ARTISAN VIEW 1: DASHBOARD OVERVIEW */}
