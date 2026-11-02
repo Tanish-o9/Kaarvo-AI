@@ -1716,39 +1716,43 @@ export default function App() {
       mediaStreamRef.current = null;
     }
 
-    showToast('🔴 Mic Stopped.');
+    showToast('⏹️ Mic stopped. Audio captured.');
 
-    if (rawSpokenHindi && rawSpokenHindi.trim()) {
-      setIsTranslating(true);
-      const english = await translateHindiSpeechToEnglish(rawSpokenHindi);
-      if (english) {
-        setVoiceText(english);
+    // If vernacular language was spoken and not yet translated, offer auto-translation
+    if (selectedLanguage !== 'en-IN' && voiceText && voiceText.trim()) {
+      const hasIndic = /[ऀ-ॿ]|( (hai|h|hain|ka|ki|ke|se|mangaya|banaya|yeh|ye|jisko|hath|humne|hamne) )/i.test(voiceText);
+      if (hasIndic) {
+        setIsTranslating(true);
+        const english = await translateHindiSpeechToEnglish(voiceText);
+        if (english && english.trim() && english.toLowerCase() !== voiceText.toLowerCase()) {
+          setVoiceText(english);
+          showToast('✨ Auto-translated to English for cataloging!');
+        }
+        setIsTranslating(false);
       }
-      setIsTranslating(false);
     }
   };
 
-    const toggleVoiceRecording = async () => {
+  const toggleVoiceRecording = async () => {
     if (isRecordingRef.current) {
       stopVoiceRecording();
       return;
     }
 
-    // 1. Explicitly request hardware Microphone stream permission from browser
+    // 1. Request microphone permission safely and release track immediately
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaStreamRef.current = stream;
+        stream.getTracks().forEach(track => track.stop());
       }
     } catch (micErr) {
-      console.warn('getUserMedia mic error or permission denied:', micErr);
-      showToast('⚠️ Please click "Allow" in your browser microphone permission pop-up!');
+      console.warn('getUserMedia mic check:', micErr);
     }
 
-    // 2. Initialize Web Speech API
+    // 2. Initialize Web Speech Recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      showToast('⚠️ Speech recognition API not supported on this browser window. You can type or select a voice preset below!');
+      showToast('⚠️ Speech recognition API not supported on this browser window. You can type or use the voice presets below!');
       return;
     }
 
@@ -1766,42 +1770,27 @@ export default function App() {
       recognition.onstart = () => {
         isRecordingRef.current = true;
         setIsRecording(true);
-        // Clear default terracotta placeholder text if present when starting a new mic recording
+        // Clear placeholder if starting fresh recording
         setVoiceText(prev => {
-          if (prev.includes('Yeh Jaipur ki pure terracotta clay water pot hai')) return '';
+          if (prev.includes('Yeh Jaipur ki pure terracotta clay water pot hai') || prev.includes('Authentic artisan product:')) return '';
           return prev;
         });
-        showToast(`🎙️ Mic ACTIVE (${selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}). Speak now!`);
+        showToast(`🎙️ Microphone ACTIVE (${selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}). Speak now!`);
       };
 
       recognition.onresult = (event) => {
         let fullTranscript = '';
-        let isFinalSegment = false;
         for (let i = 0; i < event.results.length; i++) {
           const item = event.results[i];
           if (item && item[0] && item[0].transcript) {
             fullTranscript += item[0].transcript + ' ';
-            if (item.isFinal) isFinalSegment = true;
           }
         }
         const cleaned = fullTranscript.trim();
         if (cleaned) {
+          // Immediately update textarea in real time so the user sees their words!
+          setVoiceText(cleaned);
           setRawSpokenHindi(cleaned);
-
-          if (speechTranslateTimeoutRef.current) {
-            clearTimeout(speechTranslateTimeoutRef.current);
-          }
-
-          // Debounce translation: wait 500ms after speech pause or trigger on final
-          speechTranslateTimeoutRef.current = setTimeout(async () => {
-            setIsTranslating(true);
-            const englishText = await translateHindiSpeechToEnglish(cleaned);
-            if (englishText) {
-              setVoiceText(englishText);
-              showToast(`✨ Auto-translated to English: "${englishText.slice(0, 28)}..."`);
-            }
-            setIsTranslating(false);
-          }, isFinalSegment ? 100 : 500);
         }
       };
 
@@ -1812,7 +1801,7 @@ export default function App() {
           setIsRecording(false);
           showToast('⚠️ Mic access denied! Click the lock/mic icon in your address bar to enable mic.');
         } else if (event.error === 'no-speech') {
-          // Ambient silence timeout, maintain recording
+          // Ambient silence timeout, keep listening
         }
       };
 
@@ -5523,42 +5512,97 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                         <option value="en-IN">🇬🇧 English (India)</option>
                       </select>
                       <button 
+                        type="button"
                         className="btn-artisan-secondary" 
                         onClick={toggleVoiceRecording}
                         style={{ 
                           display: 'flex', 
                           alignItems: 'center', 
                           gap: '6px',
-                          background: isRecording ? 'rgba(239, 68, 68, 0.1)' : undefined,
+                          background: isRecording ? '#dc2626' : undefined,
                           borderColor: isRecording ? '#ef4444' : undefined,
-                          color: isRecording ? '#ef4444' : undefined
+                          color: isRecording ? '#ffffff' : undefined,
+                          fontWeight: isRecording ? '800' : '600',
+                          boxShadow: isRecording ? '0 0 12px rgba(239, 68, 68, 0.6)' : undefined
                         }}
                       >
-                        <Mic size={16} className={isRecording ? 'animate-pulse' : ''} />
-                        {isRecording ? 'Listening...' : 'Record'}
+                        <Mic size={16} className={isRecording ? 'animate-bounce' : ''} />
+                        {isRecording ? '⏹️ Stop Mic' : '🎙️ Record'}
                       </button>
+                    </div>
+
+                    {/* Quick Voice Demo Presets */}
+                    <div style={{ marginBottom: '14px' }}>
+                      <span style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: '700', display: 'block', marginBottom: '6px' }}>
+                        ⚡ Quick Sample Prompts (Click to test voice):
+                      </span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {[
+                          { label: '🏺 Jaipur Clay Pot', text: 'Yeh Jaipur ki authentic terracotta clay water pot hai hand-carved floral design ke sath.' },
+                          { label: '🥻 Banarasi Silk Saree', text: 'Yeh Varanasi ki pure Banarasi katan silk handloom saree hai pure gold zari weaving ke sath.' },
+                          { label: '🪔 Bastar Dhokra Diya', text: 'Yeh Bastar Chhattisgarh ka traditional Dhokra bell-metal lost wax casting diya hai.' },
+                          { label: '🧣 Kashmir Pashmina', text: 'Authentic Kashmir pure Pashmina wool hand-embroidered heritage craft shawl.' }
+                        ].map((preset, pIdx) => (
+                          <button
+                            key={pIdx}
+                            type="button"
+                            onClick={() => {
+                              setVoiceText(preset.text);
+                              setRawSpokenHindi(preset.text);
+                              showToast(`Loaded voice preset: ${preset.label}`);
+                            }}
+                            style={{
+                              fontSize: '11px',
+                              padding: '5px 9px',
+                              borderRadius: '6px',
+                              background: '#1e1c18',
+                              border: '1px solid #38342e',
+                              color: '#dfbe7d',
+                              fontWeight: '600',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {preset.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
 
                     {isRecording && (
                       <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '10px',
-                        background: 'rgba(239, 68, 68, 0.08)',
-                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        justifyContent: 'space-between',
+                        background: 'rgba(239, 68, 68, 0.12)',
+                        border: '1.5px solid #ef4444',
                         padding: '10px 14px',
                         borderRadius: '10px',
                         marginBottom: '12px'
                       }}>
-                        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 1s infinite' }} />
-                        <span style={{ fontSize: '13px', fontWeight: '600', color: '#ef4444' }}>
-                          🎙️ Live Mic Hardware Active — Listening... Speak your craft details!
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 1s infinite' }} />
+                          <span style={{ fontSize: '13px', fontWeight: '700', color: '#f87171' }}>
+                            🎙️ Listening live... Speak in {selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}!
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={stopVoiceRecording}
+                          style={{
+                            background: '#ef4444',
+                            color: '#ffffff',
+                            border: 'none',
+                            padding: '4px 10px',
+                            borderRadius: '6px',
+                            fontSize: '11px',
+                            fontWeight: '800',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Done ⏹️
+                        </button>
                       </div>
                     )}
-
-
-
                     {/* LIVE TRANSLATION NOTIFICATION BADGE */}
                     {rawSpokenHindi && (
                       <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '8px 12px', borderRadius: '8px', marginBottom: '10px', fontSize: '12px', color: '#065F46', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
