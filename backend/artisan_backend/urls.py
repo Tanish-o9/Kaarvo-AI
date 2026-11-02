@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/v1/auth/refresh', TokenRefreshCustomView.as_view(), name='api-v1-auth-refresh-direct'),
     path('api/v1/auth/refresh/', TokenRefreshCustomView.as_view(), name='api-v1-auth-refresh-slash'),
     path('api/v1/', include('artisan_api.urls')),
+    path('api/v1/', include('auctions.urls')),
 ]
 
 if settings.DEBUG:

@@ -6,7 +6,8 @@ import {
   ShoppingCart, ChevronRight, MessageSquare, Award, ArrowUpRight, HelpCircle,
   Truck, ShieldAlert, Zap, Compass, Store, Settings, PieChart, Tag, RefreshCcw, Home, Trash2,
   QrCode, Volume2, VolumeX, Download, Share2, Phone, MessageCircle, Printer, Briefcase,
-  Lock, Mail, User, Eye, EyeOff, LogIn, LogOut, ExternalLink, Plus, Bookmark } from 'lucide-react';
+  Lock, Mail, User, Eye, EyeOff, LogIn, LogOut, ExternalLink, Plus, Bookmark, Gavel } from 'lucide-react';
+import { AuctionMarketplace } from './features/auctions';
 
 const API_BASE = 'http://127.0.0.1:8001/api/v1';
 
@@ -433,6 +434,15 @@ export default function App() {
   const [isWhatsappOpen, setIsWhatsappOpen] = useState(false);
   const [whatsappInput, setWhatsappInput] = useState('');
   const [whatsappTyping, setWhatsappTyping] = useState(false);
+  const [whatsappAttachedImage, setWhatsappAttachedImage] = useState(null);
+  const [isWhatsappCustomFillOpen, setIsWhatsappCustomFillOpen] = useState(false);
+  const [whatsappCustomTitle, setWhatsappCustomTitle] = useState('');
+  const [whatsappCustomCategory, setWhatsappCustomCategory] = useState('Terracotta Pottery');
+  const [whatsappCustomPrice, setWhatsappCustomPrice] = useState('850');
+  const [whatsappCustomDesc, setWhatsappCustomDesc] = useState('');
+  const [whatsappCustomImage, setWhatsappCustomImage] = useState('');
+  const whatsappFileInputRef = useRef(null);
+  const whatsappCustomFileInputRef = useRef(null);
   const [whatsappMessages, setWhatsappMessages] = useState([
     {
       id: 1,
@@ -656,35 +666,40 @@ export default function App() {
     // 1. Region & Origin Detection
     let region = '';
     let regionShort = '';
-    if (/kashmir|srinagar|कश्मीर|श्रीनगर/i.test(lower)) { region = 'Kashmir, India'; regionShort = 'Kashmir'; }
+    if (/kashmir|srinagar|कश्मीर|श्रीनगर/i.test(lower)) { region = 'Kashmir, India'; regionShort = 'Kashmiri'; }
     else if (/jaipur|rajasthan|जयपुर|राजस्थान/i.test(lower)) { region = 'Jaipur, Rajasthan'; regionShort = 'Jaipur'; }
-    else if (/banaras|varanasi|kashi|बनारस|वाराणसी|काशी/i.test(lower)) { region = 'Varanasi, Uttar Pradesh'; regionShort = 'Varanasi'; }
+    else if (/banaras|varanasi|kashi|बनारस|वाराणसी|काशी/i.test(lower)) { region = 'Varanasi, Uttar Pradesh'; regionShort = 'Banarasi'; }
+    else if (/bastar|chhattisgarh|बस्तर|छत्तीसगढ़/i.test(lower)) { region = 'Bastar, Chhattisgarh'; regionShort = 'Bastar'; }
     else if (/channapatna|karnataka|चन्नापटना|कर्नाटक/i.test(lower)) { region = 'Channapatna, Karnataka'; regionShort = 'Channapatna'; }
     else if (/kanchipuram|tamil|कांचीपुरम/i.test(lower)) { region = 'Kanchipuram, Tamil Nadu'; regionShort = 'Kanchipuram'; }
     else if (/khurja|खुर्जा/i.test(lower)) { region = 'Khurja, Uttar Pradesh'; regionShort = 'Khurja'; }
-    else if (/madhubani|mithila|bihar|मधुबनी|मिथिला/i.test(lower)) { region = 'Mithila, Bihar'; regionShort = 'Mithila'; }
+    else if (/madhubani|mithila|bihar|मधुबनी|मिथिला/i.test(lower)) { region = 'Mithila, Bihar'; regionShort = 'Madhubani'; }
     else if (/bengal|kolkata|shantiniketan|बंगाल/i.test(lower)) { region = 'Kolkata, West Bengal'; regionShort = 'Bengal'; }
     else if (/kutch|gujarat|कच्छ|गुजरात/i.test(lower)) { region = 'Kutch, Gujarat'; regionShort = 'Kutch'; }
     else if (/moradabad|मुरादाबाद/i.test(lower)) { region = 'Moradabad, Uttar Pradesh'; regionShort = 'Moradabad'; }
     else if (/saharanpur|सहारनपुर/i.test(lower)) { region = 'Saharanpur, Uttar Pradesh'; regionShort = 'Saharanpur'; }
 
-    const isProcured = /mangaya|mangwaya|laya|procured|sourced|आयात|मंगाया|लाया/i.test(lower);
-    const isHandmade = /banaya|bana hua|hath se|handcrafted|handmade|बनाया|हाथ से/i.test(lower);
-
     // 2. Product Detection
     let product = '';
-    if (/matka|ghada|kalash|घड़ा|घड़ा|मटका|कलश/i.test(lower)) product = 'earthen terracotta water pot (matka)';
-    else if (/surahi|सुराही/i.test(lower)) product = 'traditional long-neck earthen water flask (surahi)';
-    else if (/saree|sari|साड़ी|साड़ी/i.test(lower)) product = 'heritage handloom saree';
-    else if (/shawl|stole|pashmina|शॉल|पश्मीना/i.test(lower)) product = 'warm handwoven artisan shawl';
-    else if (/toy|khilona|खिलौना/i.test(lower)) product = 'hand-carved wooden toy';
-    else if (/diya|deepak|दीया|दीपक/i.test(lower)) product = 'hand-cast solid brass oil diya lamp';
+    if (/pot|pottery|clay|matka|ghada|terracotta|kalash|mitti|घड़ा|घड़ा|मटका|कलश/i.test(lower)) {
+      product = 'terracotta clay water pot with natural cooling and floral carving';
+    } else if (/saree|sari|silk|katan|zari|handloom|साड़ी|साड़ी/i.test(lower)) {
+      product = 'handloom pure silk saree with traditional zari embroidery';
+    } else if (/diya|deepak|dhokra|bell-metal|bell metal|brass|peetal|दीया|दीपक/i.test(lower)) {
+      product = 'traditional Dhokra lost-wax bell-metal ceremonial diya lamp';
+    } else if (/shawl|pashmina|stole|wool|शॉल|पश्मीना/i.test(lower)) {
+      product = 'pure Pashmina wool hand-embroidered heritage craft shawl';
+    } else if (/toy|wood|wooden|elephant|khilona|खिलौना|lakdi/i.test(lower)) {
+      product = 'natural lacquered eco-friendly wooden craft artifact';
+    } else if (/painting|mural|art|folk/i.test(lower)) {
+      product = 'traditional GI certified hand-painted folk art piece';
+    }
 
     if (product) {
       let sentence = 'Authentic ';
       if (regionShort) sentence += `${regionShort} `;
       sentence += product;
-      if (isProcured && region) sentence += `, sourced directly from ${region}`;
+      if (region && !sentence.includes(region)) sentence += `, handcrafted in ${region}`;
       return sentence.trim() + '.';
     }
 
@@ -692,7 +707,18 @@ export default function App() {
       return `Authentic handcrafted artisan piece, sourced directly from the heritage craft clusters of ${region}.`;
     }
 
-    return raw;
+    // Convert common Hinglish speech connectors if present
+    let converted = raw
+      .replace(/\byeh\b/gi, 'This is an authentic')
+      .replace(/\bki\b/gi, 'from')
+      .replace(/\bhai\b/gi, '')
+      .replace(/\bke sath\b/gi, 'with')
+      .replace(/\bka\b/gi, 'of')
+      .replace(/\bse\b/gi, 'using')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    return converted.charAt(0).toUpperCase() + converted.slice(1) + (converted.endsWith('.') ? '' : '.');
   };
 
   const translateHindiSpeechToEnglish = async (input) => {
@@ -940,9 +966,10 @@ export default function App() {
           description: catalog.descriptor.long_desc,
           materials: entities.material || 'Natural Kiln-Fired Clay / Pure Handloom',
           craftStory: catalog.descriptor.long_desc,
-          image: enhancedImage || rawImageFile || getCraftSpecificImage(catalog.category, catalog.descriptor.name),
+          image: whatsappAttachedImage || enhancedImage || rawImageFile || getCraftSpecificImage(catalog.category, catalog.descriptor.name),
           badge: 'ONDC Verified'
         };
+        setWhatsappAttachedImage(null);
 
         // IMMEDIATELY ADD TO STOREFRONT!
         setProducts(prev => [liveNewProduct, ...prev]);
@@ -991,6 +1018,65 @@ export default function App() {
       setWhatsappMessages(prev => [...prev, replyObj]);
       setWhatsappTyping(false);
     }, 800);
+  };
+
+  const handleWhatsappCustomProductSubmit = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!whatsappCustomTitle.trim()) {
+      showToast('⚠️ Please enter a product title.');
+      return;
+    }
+
+    const priceNum = parseFloat(whatsappCustomPrice) || 850;
+    const finalImg = whatsappCustomImage || whatsappAttachedImage || getCraftSpecificImage(whatsappCustomCategory, whatsappCustomTitle);
+
+    const customProd = {
+      id: `KAARVO-${Date.now().toString().slice(-6)}`,
+      title: whatsappCustomTitle.trim(),
+      category: whatsappCustomCategory,
+      price: priceNum,
+      rating: 5.0,
+      reviewsCount: 1,
+      artisan: currentUser ? (currentUser.full_name || currentUser.username) : 'Verified Master Artisan',
+      artisan_bio: currentUser?.craft_type ? `${currentUser.craft_type} Craftsman from ${currentUser.region || 'India'}.` : 'Verified master artisan handcrafting authentic heirlooms.',
+      location: currentUser?.region || 'Jaipur, Rajasthan',
+      description: whatsappCustomDesc.trim() || `Authentic ${whatsappCustomCategory} piece created by verified master artisans.`,
+      materials: 'Authentic Traditional Craft Material',
+      craftStory: whatsappCustomDesc.trim() || `Authentic ${whatsappCustomCategory} piece created by verified master artisans.`,
+      image: finalImg,
+      badge: 'ONDC Custom Verified'
+    };
+
+    setProducts(prev => [customProd, ...prev]);
+
+    const userMsg = {
+      id: Date.now(),
+      sender: 'artisan',
+      text: `📝 Custom Product: "${customProd.title}" (₹${customProd.price})`,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    const botMsg = {
+      id: Date.now() + 1,
+      sender: 'bot',
+      text: `🎉 Shandaar! Aapka custom product "${customProd.title}" ₹${customProd.price} me live storefront aur ONDC network par successfully publish ho gaya hai!`,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      card: {
+        title: customProd.title,
+        price: customProd.price,
+        region: customProd.location,
+        image: customProd.image,
+        productObj: customProd
+      }
+    };
+
+    setWhatsappMessages(prev => [...prev, userMsg, botMsg]);
+    setIsWhatsappCustomFillOpen(false);
+    setWhatsappCustomTitle('');
+    setWhatsappCustomDesc('');
+    setWhatsappCustomImage('');
+    setWhatsappAttachedImage(null);
+    showToast(`🎉 "${customProd.title}" Published Live to Customers!`);
   };
 
   // --- FEATURE 5 HELPER: B2B Living-Wage AI Price Negotiator ---
@@ -1691,6 +1777,13 @@ export default function App() {
   const speechRecRef = useRef(null);
   const isRecordingRef = useRef(false);
   const mediaStreamRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const voiceTextRef = useRef('');
+
+  // Keep voiceTextRef in sync with voiceText
+  useEffect(() => {
+    voiceTextRef.current = voiceText;
+  }, [voiceText]);
 
   const stopVoiceRecording = async () => {
     isRecordingRef.current = false;
@@ -1716,30 +1809,60 @@ export default function App() {
       mediaStreamRef.current = null;
     }
 
-    showToast('⏹️ Mic stopped. Audio captured.');
-
-    // If vernacular language was spoken and not yet translated, offer auto-translation
-    if (selectedLanguage !== 'en-IN' && voiceText && voiceText.trim()) {
-      const hasIndic = /[ऀ-ॿ]|( (hai|h|hain|ka|ki|ke|se|mangaya|banaya|yeh|ye|jisko|hath|humne|hamne) )/i.test(voiceText);
-      if (hasIndic) {
-        setIsTranslating(true);
-        const english = await translateHindiSpeechToEnglish(voiceText);
-        if (english && english.trim() && english.toLowerCase() !== voiceText.toLowerCase()) {
-          setVoiceText(english);
-          showToast('✨ Auto-translated to English for cataloging!');
-        }
-        setIsTranslating(false);
-      }
+    if (audioContextRef.current) {
+      try { audioContextRef.current.close(); } catch (e) {}
+      audioContextRef.current = null;
     }
+
+    // Retrieve active text from ref or state
+    let captured = (voiceTextRef.current || voiceText || '').trim();
+
+    if (!captured) {
+      showToast('⚠️ No voice input detected. Please speak into your microphone or type/pick a prompt below.');
+      return;
+    }
+
+    showToast('⏹️ Mic stopped. Translating & cataloging...');
+
+    // Auto-translate to fluent English if Indic/Hinglish
+    const hasIndic = /[ऀ-ॿ]|( (hai|h|hain|ka|ki|ke|se|mangaya|banaya|yeh|ye|jisko|hath|humne|hamne) )/i.test(captured);
+    let english = captured;
+    if (hasIndic || selectedLanguage !== 'en-IN') {
+      setIsTranslating(true);
+      const translated = await translateHindiSpeechToEnglish(captured);
+      if (translated && translated.trim()) {
+        english = translated;
+      }
+      setIsTranslating(false);
+    }
+
+    voiceTextRef.current = english;
+    setVoiceText(english);
+
+    // Automatically generate the ONDC Beckn Catalog Schema immediately
+    const { entities, catalog } = parseVoiceTextToCatalog(english);
+    setExtractedEntities(entities);
+    setGeneratedCatalog(catalog);
+
+    // Auto-calculate Pillar 3 pricing
+    if (!materialCost || !laborCost) {
+      const mCost = '180';
+      const lCost = '150';
+      setMaterialCost(mCost);
+      setLaborCost(lCost);
+      calculatePricing(mCost, lCost, catalog.category);
+    }
+
+    showToast('✨ Voice converted to English & Auto-Catalog generated!');
   };
 
   const toggleVoiceRecording = async () => {
     if (isRecordingRef.current) {
-      stopVoiceRecording();
+      await stopVoiceRecording();
       return;
     }
 
-    // 1. Request microphone permission safely and release track immediately
+    // 1. Release hardware mic stream safely
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1751,10 +1874,15 @@ export default function App() {
 
     // 2. Initialize Web Speech Recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
     if (!SpeechRecognition) {
-      showToast('⚠️ Speech recognition API not supported on this browser window. You can type or use the voice presets below!');
+      showToast('⚠️ Speech recognition API is not supported in this browser. You can type or pick a prompt below!');
       return;
     }
+
+    isRecordingRef.current = true;
+    setIsRecording(true);
+    showToast(`🎙️ Microphone ACTIVE (${selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}). Speak now!`);
 
     try {
       if (speechRecRef.current) {
@@ -1770,12 +1898,6 @@ export default function App() {
       recognition.onstart = () => {
         isRecordingRef.current = true;
         setIsRecording(true);
-        // Clear placeholder if starting fresh recording
-        setVoiceText(prev => {
-          if (prev.includes('Yeh Jaipur ki pure terracotta clay water pot hai') || prev.includes('Authentic artisan product:')) return '';
-          return prev;
-        });
-        showToast(`🎙️ Microphone ACTIVE (${selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}). Speak now!`);
       };
 
       recognition.onresult = (event) => {
@@ -1788,7 +1910,7 @@ export default function App() {
         }
         const cleaned = fullTranscript.trim();
         if (cleaned) {
-          // Immediately update textarea in real time so the user sees their words!
+          voiceTextRef.current = cleaned;
           setVoiceText(cleaned);
           setRawSpokenHindi(cleaned);
         }
@@ -1799,9 +1921,9 @@ export default function App() {
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
           isRecordingRef.current = false;
           setIsRecording(false);
-          showToast('⚠️ Mic access denied! Click the lock/mic icon in your address bar to enable mic.');
-        } else if (event.error === 'no-speech') {
-          // Ambient silence timeout, keep listening
+          showToast('⚠️ Mic access denied! Please allow microphone permission in your browser.');
+        } else if (event.error === 'network') {
+          console.warn('Speech network notice. Voice fallback will process on stop.');
         }
       };
 
@@ -1809,26 +1931,18 @@ export default function App() {
         if (isRecordingRef.current) {
           try {
             recognition.start();
-          } catch (e) {
-            setTimeout(() => {
-              if (isRecordingRef.current) {
-                try { recognition.start(); } catch (err) {}
-              }
-            }, 300);
-          }
+          } catch (e) {}
         } else {
           setIsRecording(false);
         }
       };
 
-      isRecordingRef.current = true;
-      setIsRecording(true);
       recognition.start();
     } catch (err) {
       console.error('Mic start error:', err);
       isRecordingRef.current = false;
       setIsRecording(false);
-      showToast('⚠️ Could not open microphone. Please verify mic permissions.');
+      showToast('⚠️ Could not activate mic. Please type or click a prompt preset.');
     }
   };
 
@@ -2007,22 +2121,47 @@ export default function App() {
   };
 
   const handleGenerateCatalogFromVoice = async () => {
-    if (!voiceText || !voiceText.trim()) {
-      showToast('⚠️ Please enter or record a voice note first!');
+    let textToUse = (voiceTextRef.current || voiceText || '').trim();
+    if (!textToUse) {
+      showToast('⚠️ Please speak, type, or pick a craft prompt preset first!');
       return;
     }
+
     setCataloging(true);
     try {
-      setTimeout(() => {
-        const { entities, catalog } = parseVoiceTextToCatalog(voiceText);
-        setExtractedEntities(entities);
-        setGeneratedCatalog(catalog);
-        setCataloging(false);
-        showToast('✨ ONDC Beckn Catalog Schema Generated via AI Voice NLP!');
-      }, 600);
+      // Check if translation is needed
+      const hasIndic = /[ऀ-ॿ]|( (hai|h|hain|ka|ki|ke|se|mangaya|banaya|yeh|ye|jisko|hath|humne|hamne) )/i.test(textToUse);
+      let english = textToUse;
+      if (hasIndic) {
+        setIsTranslating(true);
+        const translated = await translateHindiSpeechToEnglish(textToUse);
+        if (translated && translated.trim()) {
+          english = translated;
+          voiceTextRef.current = english;
+          setVoiceText(english);
+        }
+        setIsTranslating(false);
+      }
+
+      const { entities, catalog } = parseVoiceTextToCatalog(english);
+      setExtractedEntities(entities);
+      setGeneratedCatalog(catalog);
+
+      // Auto-populate pricing if empty
+      if (!materialCost || !laborCost) {
+        const mCost = '180';
+        const lCost = '150';
+        setMaterialCost(mCost);
+        setLaborCost(lCost);
+        calculatePricing(mCost, lCost, catalog.category);
+      }
+
+      setCataloging(false);
+      showToast('✨ ONDC Beckn Catalog Schema Generated via AI Voice NLP!');
     } catch (err) {
       console.error(err);
       setCataloging(false);
+      showToast('⚠️ Error generating catalog. Please try again.');
     }
   };
 
@@ -2129,35 +2268,98 @@ export default function App() {
     showToast(`🗑️ Product "${title.slice(0, 22)}..." deleted successfully!`);
   };
 
-  // Customer AI Shopping query handler
-  const handleAiShoppingQuery = (promptText) => {
-    const q = promptText || aiShoppingInput;
-    if (!q.trim()) return;
+  // Customer AI Shopping & Craft Intelligence query handler (Real AI Backend Connected)
+  const handleAiShoppingQuery = async (promptText) => {
+    const q = (promptText || aiShoppingInput).trim();
+    if (!q) return;
 
     setAiShoppingInput('');
     setAiShoppingLoading(true);
 
-    setTimeout(() => {
-      let recs = products.slice(0, 2);
-      if (q.toLowerCase().includes('gift') || q.toLowerCase().includes('1500')) {
-        recs = products.filter(p => p.price <= 1500);
-      } else if (q.toLowerCase().includes('silk') || q.toLowerCase().includes('saree')) {
-        recs = products.filter(p => p.category.includes('Textiles'));
-      } else if (q.toLowerCase().includes('pottery') || q.toLowerCase().includes('terracotta')) {
-        recs = products.filter(p => p.category.includes('Pottery'));
-      }
+    // 1. Instantly display user query in chat
+    setAiShoppingHistory(prev => [
+      ...prev,
+      { sender: 'user', text: q }
+    ]);
 
-      setAiShoppingHistory(prev => [
-        ...prev,
-        { sender: 'user', text: q },
-        {
-          sender: 'ai',
-          text: `Based on your query "${q}", here are authentic handcrafted recommendations directly from verified Indian artisans:`,
-          recommendedProducts: recs.length > 0 ? recs : products.slice(0, 2)
+    let botAnswer = '';
+    let recs = [];
+
+    // 2. Query real Backend AI Copilot
+    try {
+      const res = await fetch(`${API_BASE}/copilot/query`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.answer) {
+          botAnswer = data.answer;
+          if (data.payload && data.payload.products && data.payload.products.length > 0) {
+            recs = data.payload.products;
+          }
         }
-      ]);
-      setAiShoppingLoading(false);
-    }, 800);
+      }
+    } catch (err) {
+      console.warn('Backend copilot error, applying intelligent fallback:', err);
+    }
+
+    // 3. Fallback / Craft Shopping Recommendations
+    const qLower = q.toLowerCase();
+    if (recs.length === 0 && (qLower.includes('gift') || qLower.includes('saree') || qLower.includes('silk') || qLower.includes('pottery') || qLower.includes('terracotta') || qLower.includes('brass') || qLower.includes('chahiye') || qLower.includes('dikhao') || qLower.includes('recommend') || qLower.includes('under') || qLower.includes('craft'))) {
+      if (qLower.includes('gift') || qLower.includes('1500') || qLower.includes('2000') || qLower.includes('5000') || qLower.includes('5,000')) {
+        recs = products.filter(p => p.price <= 5000).slice(0, 3);
+      } else if (qLower.includes('silk') || qLower.includes('saree') || qLower.includes('chanderi') || qLower.includes('banarasi')) {
+        recs = products.filter(p => (p.category || '').includes('Textiles') || (p.title || '').toLowerCase().includes('silk') || (p.title || '').toLowerCase().includes('saree')).slice(0, 3);
+      } else if (qLower.includes('pottery') || qLower.includes('terracotta') || qLower.includes('clay')) {
+        recs = products.filter(p => (p.category || '').includes('Pottery') || (p.title || '').toLowerCase().includes('pottery') || (p.title || '').toLowerCase().includes('terracotta')).slice(0, 3);
+      } else if (qLower.includes('brass') || qLower.includes('metal') || qLower.includes('diya') || qLower.includes('dhokra')) {
+        recs = products.filter(p => (p.category || '').includes('Metal') || (p.title || '').toLowerCase().includes('brass') || (p.title || '').toLowerCase().includes('diya')).slice(0, 3);
+      }
+      if (recs.length === 0 && products.length > 0) {
+        recs = products.slice(0, 2);
+      }
+    }
+
+    // 4. Guaranteed high-quality fallback if backend was unavailable
+    if (!botAnswer) {
+      if (/platform|about|kya hai|features|intro/i.test(qLower)) {
+        botAnswer = `🏛️ **Welcome to Kaarvo AI – The Artisan Commerce Operating System:**\n\nKaarvo AI connects verified Indian master artisans directly with collectors and buyers across ONDC:\n\n✨ **Key Capabilities:**\n1. **3-Pillar Smart Cataloger Studio:** AI Photo Enhancement (4K lighting), Multilingual Voice Cataloger (Hindi to English), and Living-Wage Cost-Plus Pricing.\n2. **Live Masterpiece Auctions:** English forward auctions with server-authoritative timestamps, microsecond row-locking, and anti-sniping protection.\n3. **Digital Heritage Passport:** Tamper-proof QR provenance certifying artisan identity and authentic GI craft clusters.\n4. **WhatsApp AI Sahayak:** Multilingual conversational assistant enabling non-tech artisans to list products via voice notes.`;
+      } else if (/can i.*(?:voice|bol kar|speak)|voice.*(?:live|list|product|sell|bech|upload)|voice.*(?:work|kaam)|how.*voice/i.test(qLower)) {
+        botAnswer = `🎙️ **Yes, absolutely! You can list and publish products live using voice on Kaarvo AI:**\n\n• **Pillar 2 Multilingual Voice Cataloger:** Simply click the microphone on '3-Pillar AI Studio' and speak naturally in Hindi or regional languages (e.g. *'Maine 2 din me terracotta clay pot banaya, material laagat ₹180'*).\n• **Automated Studio Catalog Generation:** Kaarvo AI extracts materials, labor time, and care instructions, translates into professional English, and computes living-wage fair pricing.\n• **WhatsApp Voice Sahayak:** Non-tech artisans can also simply send a voice note to our WhatsApp bot (bottom-right button) to publish products live on ONDC and the storefront!`;
+      } else if (/chanderi.*banarasi|banarasi.*chanderi|difference between/i.test(qLower)) {
+        botAnswer = `🧵 **Heritage Craft Comparison: Chanderi Silk vs. Banarasi Silk**\n\n• **Chanderi Silk (Madhya Pradesh):** Lightweight, sheer, and gossamer-soft; blends fine silk with cotton and features delicate hand-woven bootis. Perfect for summer celebrations and day wear.\n\n• **Banarasi Silk (Varanasi, UP):** Heavy, opulent handloom weave crafted from pure katan mulberry silk with intricate gold & silver zari brocade. Prized for royal bridal wear and grand celebrations.`;
+      } else if (/bastar.*dhokra|dhokra/i.test(qLower)) {
+        botAnswer = `🏺 **GI Provenance of Bastar Dhokra (Chhattisgarh):**\n\n• 4,000-year-old metallurgical tradition dating back to the Mohenjo-daro Dancing Girl.\n• Hand-shaped beeswax threads over a clay core, coated with alluvial clay, and poured with molten bronze/bell-metal.\n• Because the mold is broken to reveal the cast, every single Dhokra piece is an irreplaceable museum original.`;
+      } else if (/blue pottery.*without clay|jaipur blue pottery/i.test(qLower)) {
+        botAnswer = `🏺 **Jaipur Blue Pottery (Crafted Without Clay):**\n\n• Made from crushed quartz stone powder, powdered glass, Multani Mitti, and natural gum (*saajhi*) without traditional clay.\n• Decorated with Persian cobalt oxide and copper oxide turquoise motifs, hand-fired only once at ~800°C.`;
+      } else if (/cons|kamiyan|nuksan|disadvantage|drawback|limitation|challenges|problem/i.test(qLower)) {
+        botAnswer = `⚖️ **Kaarvo AI & ONDC Craft Commerce ke Pramukh Challenges / Cons:**\n\n1. **Internet & Device Dependency:** Dur-daraz ke gaon ke artisans ko photos upload karne ya voice cataloging ke liye smartphone aur 4G internet connection ki zaroorat hoti hai.\n2. **Fragile Packaging Risk:** Terracotta, blue pottery aur glass crafts lambe distance courier transit me break hone ka risk rehta hai, isliye special eco-friendly kraft padding zaroori hoti hai.\n3. **Handcrafted Natural Variations:** Machine goods ke viprit, 100% handmade items me rang aur texture me halka farak hota hai, jise buyers ko samjhana padta hai.\n4. **Initial Tech Hesitation:** Traditional artisans shuruat me automated pricing aur digital banking par bharosa karne me thoda samay lete hain.\n5. **Craft Production Lead Times:** Machine factory ki tarah instantly hazaro units nahi ban sakte; heritage weaving ya pottery me samay lagta hai.`;
+      } else if (/pros|fayde|benefit|advantage|khubi|faida|why kaarvo/i.test(qLower)) {
+        botAnswer = `🌟 **Kaarvo AI ke Mukhya Fayde (Pros & Advantages):**\n\n1. **Bina Middlemen Direct ONDC Access:** Artisans bina kisi bicholiye ya private marketplace cut ke sidha national buyers se judte hain.\n2. **Voice-to-Catalog in Local Language:** Angrezi type karne ki zaroorat nahi; Hindi me bolte hi 4K enhanced photo ke sath professional English catalog ready ho jata hai.\n3. **Living-Wage Guaranteed Pricing:** Material + Kaarigar ki mehnat (hourly wage) calculate karke fair rate fix hota hai.\n4. **Digital Heritage Passport:** Har product ke sath QR-code provenance hota hai jo GI authenticity certify karta hai.\n5. **Live Masterpiece Auctions:** High-value rare crafts ko collectors ke beech competitive bidding me bechne ki suvidha.`;
+      } else if (/kaise start|how to start|kaise judein|how to join|kaise register|onboarding|shuru kaise/i.test(qLower)) {
+        botAnswer = `🚀 **Kaarvo AI par Shuruat Karne ke 3 Aasan Steps:**\n\n1. **Step 1 - Photo Lijiye:** Apne craft ki photo khinchein aur '3-Pillar AI Studio' me dalein (AI auto-enhance karega).\n2. **Step 2 - Voice Note Boliye:** Mic par Hindi me bole craft ka naam, laagat aur samay (e.g. *'Terracotta matka, ₹200 laagat'*).\n3. **Step 3 - Live Publish:** 'Publish to Store' dabate hi aapka item Kaarvo Store aur ONDC network par live ho jayega!\n\nNiche right corner me **WhatsApp Artisan Bot** se bhi seedha bol kar shuru kar sakte hain.`;
+      } else if (/free hai|fees|commission|charges|kitna charge|cost kitna|paisa lagta hai/i.test(qLower)) {
+        botAnswer = `💰 **Pricing & Platform Fee Structure:**\n\n• **Artisan Registration & Voice Cataloging:** Bilkul 100% Free hai.\n• **Zero Hidden Middleman Fee:** Traditional marketplaces 25%–35% commission kaat leti hain, jabki Kaarvo ONDC open-network standard par kaam karta hai jisme maximum kamai seedha artisan ke bank me aati hai.\n• **Fair Pricing Guarantee:** Har product me living-wage margin pehle se add hota hai taaki artisan ko fair labhaansh mile.`;
+      } else if (/safe hai|security|fraud|dhokha|payment safe|fake|trust/i.test(qLower)) {
+        botAnswer = `🛡️ **Security & Anti-Fraud Architecture:**\n\n• **Database Row-Locking:** Auctions aur payments me microsecond concurrency protection hai taaki double-bidding ya payment mismatch na ho.\n• **Escrow Protected Settlement:** Buyer ka payment secure gateway me hold hota hai aur delivery confirmation ke baad artisan ko dispatch settlement milta hai.\n• **Tamper-Proof Provenance:** Har craft ke sath Digital Heritage Passport hota hai jo fake nakli products ko eliminate karta hai.`;
+      } else if (/auction|bid|bidding|boli/i.test(qLower)) {
+        botAnswer = `🔨 **How Kaarvo Live Masterpiece Auctions Work:**\n\n1. Master artisans list rare artifacts with starting price and minimum increment.\n2. Verified buyers place competitive live bids with PostgreSQL row-locking protection.\n3. Anti-sniping auto-extends deadline by 5 minutes if bids arrive in the last 2 minutes.\n4. Winning bidder completes secure settlement to receive insured delivery.`;
+      } else {
+        botAnswer = `Namaste! I am your Kaarvo AI Craft Assistant. Ask me to find authentic Indian handicrafts, unique gifts, explain craft techniques, or guide you on voice product listing and live auctions!`;
+      }
+    }
+
+    setAiShoppingHistory(prev => [
+      ...prev,
+      {
+        sender: 'ai',
+        text: botAnswer,
+        recommendedProducts: recs
+      }
+    ]);
+    setAiShoppingLoading(false);
   };
 
   // Artisan Copilot Send (Real AI & Backend Connected)
@@ -2192,69 +2394,177 @@ export default function App() {
     let fallbackAnswer = '';
     const totalRev = orders.reduce((sum, o) => sum + (parseFloat(o.total_price) || 0), 0);
 
-    if (/application|app\b|platform|kaarvo|baare me|kya hai|kya h|kaise kaam|about|features|intro/i.test(qLower)) {
-      fallbackAnswer = `🙏 Namaste! Kaarvo AI ek AI-Powered Commerce Operating System hai jo Indian Artisans (हस्तशिल्पकार) ko digital bazaar aur ONDC se jodta hai:
+    // Intent: Cons / Challenges / Limitations / Nuksan / Kamiyan
+    if (/cons|kamiyan|kami|nuksan|disadvantage|drawback|limitation|challenges|problem|hurdle/i.test(qLower)) {
+      fallbackAnswer = `⚖️ **Kaarvo AI & ONDC Craft Commerce ke Mukhya Challenges / Cons:**
 
-✨ 1. AI Visual Studio: Craft photos ko auto-lighting aur high-clarity background enhancement deta hai.
-🎙️ 2. Multilingual Voice Cataloger: Aap Hindi me bolein, ye automatically grammatically correct English catalog, title aur description bana deta hai.
-⚖️ 3. Cost-Plus Fair Pricing: Material + Artisan Labor cost ke aadhar par fair living-wage margin suggest karta hai.
-📜 4. Digital Heritage Passport: 100% offline QR code ke sath GI authenticity aur artisan provenance verify karta hai.
-💬 5. WhatsApp AI Sahayak: WhatsApp par mic se bolkar ya photo bhejkar sidha live ONDC listing aur order updates deta hai.
+1. **Internet & Smartphone Dependence:** Dur-daraz ke gaon ke artisans ko high-res photos lene ya voice listing ke liye reliable smartphone aur 4G connectivity ki zaroorat hoti hai.
+2. **Fragile Packaging Risk:** Terracotta pottery, blue pottery aur glass art lambe distance courier transit me break hone ka risk rehta hai, jiske liye specialized eco-friendly kraft padding zaroori hoti hai.
+3. **Handcrafted Natural Variations:** Machine-made products ke viprit, 100% handmade items me rang, aakar aur texture me halka sa natural farak hota hai, jise buyers ko educate karna padta hai.
+4. **Initial Tech Hesitation:** Generational master artisans shuruat me automated pricing engines aur digital banking flows par bharosa karne me thoda samay lete hain.
+5. **Craft Production Lead Times:** Pure handloom weaving ya lost-wax metal casting me hafte lagte hain; factory ki tarah instantly mass production nahi kiya ja sakta.`;
+
+    // Intent: Pros / Advantages / Benefits / Fayde / Khubiyan
+    } else if (/pros|fayde|fayda|benefit|advantage|khubi|faida|acha kya hai|why kaarvo/i.test(qLower)) {
+      fallbackAnswer = `🌟 **Kaarvo AI ke Mukhya Fayde (Pros & Advantages):**
+
+1. **Bina Middlemen Direct ONDC Access:** Artisans bina kisi private marketplace ke 25%–35% commission cut ke sidha national buyers se judte hain.
+2. **Voice-to-Catalog in Local Language:** Angrezi type karne ki zaroorat nahi; Hindi ya regional bhasha me bolte hi 4K enhanced photo ke sath professional English catalog ready ho jata hai.
+3. **Living-Wage Guaranteed Pricing:** Material + Kaarigar ki mehnat (hourly wage) calculate karke fair cost-plus rate fix hota hai.
+4. **Digital Heritage Passport:** Har product ke sath QR-code provenance hota hai jo GI authenticity aur artisan identity certify karta hai.
+5. **Live Masterpiece Auctions:** High-value rare crafts ko verified collectors ke beech competitive live bidding me bechne ki suvidha.`;
+
+    // Intent: Voice Listing / Can I list via voice / Bol kar live karna
+    } else if (/voice.*(?:live|list|product|sell|bech|upload|work|kaam)|can i.*(?:voice|bol kar|speak)|how.*(?:voice|bol kar)|bol.*(?:live|bech|list)/i.test(qLower)) {
+      fallbackAnswer = `🎙️ **Yes, absolutely! Aap bol kar product live bech sakte hain:**
+
+1. **Pillar 2: Multilingual Voice Cataloger:** '3-Pillar AI Studio' tab par jaayein aur mic button par click karein.
+2. **Apni Bhasha Me Bolein:** Jaise: *"Maine 2 din me terracotta clay pot banaya, material laagat ₹180"*.
+3. **Automated Studio Catalog:** AI automatically craft origin, raw materials, care instructions aur living-wage fair price nikaal kar professional English catalog generate kar deta hai.
+4. **WhatsApp Voice Sahayak:** Non-tech artisans niche right corner me WhatsApp Bot par voice note bhejkar bhi seedha live product list kar sakte hain!`;
+
+    // Intent: How to Start / Onboarding / Shuru kaise karein
+    } else if (/kaise start|how to start|kaise judein|how to join|kaise register|onboarding|shuru kaise/i.test(qLower)) {
+      fallbackAnswer = `🚀 **Kaarvo AI par Shuruat Karne ke 3 Aasan Steps:**
+
+1. **Step 1 - Photo Lijiye:** Apne craft ki photo khinchein aur '3-Pillar AI Studio' me dalein (AI auto-enhance karega).
+2. **Step 2 - Voice Note Boliye:** Mic par Hindi me bole craft ka naam, laagat aur samay (e.g. *'Terracotta matka, ₹200 laagat'*).
+3. **Step 3 - Live Publish:** 'Publish to Store' dabate hi aapka item Kaarvo Store aur ONDC network par live ho jayega!
+
+Aap niche right corner me **WhatsApp Artisan Bot** se bhi seedha jud kar voice note bhej sakte hain.`;
+
+    // Intent: Fees / Commission / Charges / Free hai kya
+    } else if (/free hai|fees|commission|charges|kitna charge|cost kitna|paisa lagta hai/i.test(qLower)) {
+      fallbackAnswer = `💰 **Pricing & Platform Fee Structure:**
+
+• **Artisan Registration & Voice Cataloging:** Bilkul 100% Free hai.
+• **Zero Hidden Middleman Fee:** Traditional marketplaces 25%–35% commission cut leti hain, jabki Kaarvo ONDC open network par kaam karta hai jisme maximum revenue seedha artisan ke bank account me jata hai.
+• **Fair Pricing Guarantee:** Har product me living-wage margin pehle se add hota hai taaki artisan ko fair labhaansh mile.`;
+
+    // Intent: Security / Safe hai / Trust / Fraud / Escrow
+    } else if (/safe hai|security|fraud|dhokha|payment safe|fake|trust/i.test(qLower)) {
+      fallbackAnswer = `🛡️ **Security & Anti-Fraud Architecture:**
+
+• **Database Row-Locking:** Auctions aur payments me microsecond concurrency protection hai taaki double-bidding ya payment mismatch na ho.
+• **Escrow Protected Settlement:** Buyer ka payment secure gateway me hold hota hai aur delivery confirmation ke baad artisan ko dispatch settlement milta hai.
+• **Tamper-Proof Provenance:** Har craft ke sath Digital Heritage Passport hota hai jo fake nakli products ko eliminate karta hai.`;
+
+    // Intent: Auctions & Live Bidding Protocol
+    } else if (/auction|bid|bidding|boli|how.*auction|auction.*rule/i.test(qLower)) {
+      fallbackAnswer = `🔨 **Kaarvo Live Masterpiece Auctions Kaise Kaam Karti Hain:**
+
+1. **Artisan Listing:** Verified master artisans rare artifacts list karte hain, starting price, minimum increment aur duration set karke.
+2. **Real-Time Live Bidding:** Registered buyers real-time me bids lagate hain (PostgreSQL row-level locking protection ke sath).
+3. **Anti-Sniping Protection:** Agar last 2 minutes me koi bid aati hai to auction ka samay automatically 5 minutes badh jata hai.
+4. **Winner Declaration & Settlement:** Timer khatam hone par highest valid bidder jeet-ta hai aur secure payment complete karke insured delivery receive karta hai.`;
+
+    // Intent: Heritage Craft Comparisons
+    } else if (/chanderi.*banarasi|banarasi.*chanderi|difference between/i.test(qLower)) {
+      fallbackAnswer = `🧵 **Heritage Craft Comparison: Chanderi Silk vs. Banarasi Silk**
+
+• **Chanderi Silk (Madhya Pradesh):** Halka, sheer aur gossamer-soft; fine silk aur cotton ka blend hota hai jisme delicate hand-woven bootis hoti hain. Summer festive wear ke liye ideal.
+• **Banarasi Silk (Varanasi, UP):** Bhaari, regal aur opulent; pure katan mulberry silk se bana hota hai jisme heavy gold & silver zari brocade hota hai. Grand royal weddings ke liye prasiddh hai.`;
+
+    } else if (/bastar.*dhokra|dhokra/i.test(qLower)) {
+      fallbackAnswer = `🏺 **GI Provenance of Bastar Dhokra (Chhattisgarh):**
+
+• Mohenjo-daro ki *Dancing Girl* se chali aa rahi 4,000 saal purani lost-wax metal casting parampara.
+• Tribal artisans beeswax threads ko clay core par shape karte hain aur molten bell-metal daalte hain.
+• Cast nikaalne ke liye mold ko toda jata hai, isliye har Bastar Dhokra artifact poori duniya me 100% unique hota hai.`;
+
+    } else if (/blue pottery.*without clay|jaipur blue pottery/i.test(qLower)) {
+      fallbackAnswer = `🏺 **Jaipur Blue Pottery (Crafted Without Clay):**
+
+• Isme mitti (clay) ka bilkul istemal nahi hota! Yeh crushed quartz stone powder, powdered glass, Multani Mitti aur saajhi se banta hai.
+• Persian cobalt oxide aur copper turquoise glazes se paint karke ek hi baar ~800°C par bake kiya jata hai.`;
+
+    // Intent: Shipping / Logistics / Courier
+    } else if (/shipping|courier|delivery|dispatch|pack/i.test(qLower)) {
+      fallbackAnswer = `📦 **Shipping & Logistics Guidelines:**
+
+• **Integrated Partners:** India Post aur Delhivery ONDC Logistics direct artisan ke ghar se pickup karte hain.
+• **Packaging Protocol:** Terracotta aur ceramics ke liye double-corrugated box aur shredded kraft padding zaroori hai.
+• **Transit Insurance:** High-value artifacts transit damage insurance ke sath dispatch kiye jaate hain.`;
+
+    // Intent: Application / Platform Overview
+    } else if (/application|app\b|platform|kaarvo|baare me|kya hai|kya h|kaise kaam|about|features|intro/i.test(qLower)) {
+      fallbackAnswer = `🏛️ **Welcome to Kaarvo AI – The Artisan Commerce Operating System:**
+
+Kaarvo AI Indian artisans ko direct ONDC aur national buyers se jodta hai:
+
+✨ 1. **AI Visual Studio:** Craft photos ko auto-lighting aur 4K clarity deta hai.
+🎙️ 2. **Multilingual Voice Cataloger:** Hindi me bolein, professional English catalog instant ready!
+⚖️ 3. **Cost-Plus Fair Pricing:** Material + Labor hours ke hisaab se living-wage rate fix karta hai.
+📜 4. **Digital Heritage Passport:** QR provenance ke sath GI authenticity certify karta hai.
+🔨 5. **Live Masterpiece Auctions:** Rare crafts ke liye real-time English forward bidding engine.
+💬 6. **WhatsApp AI Sahayak:** Voice notes aur photos bhejkar direct mobile se store manage karein.
 
 Currently aapke store me ${products.length} products listed hain aur ₹${totalRev.toLocaleString()} ki sales process ho chuki hai!`;
-    } else if (/create product|list product|naya product|add product|kaise beche/i.test(qLower)) {
-      fallbackAnswer = `📦 Naya Product List Karna Bahut Aasan Hai:
 
-1. '3-Pillar AI Studio' tab par jaayein ya niche WhatsApp Bot kholein.
+    // Intent: Product Listing Help
+    } else if (/create product|list product|naya product|add product|kaise beche/i.test(qLower)) {
+      fallbackAnswer = `📦 **Naya Product List Karna Bahut Aasan Hai:**
+
+1. '3-Pillar AI Studio' tab par jaayein ya WhatsApp Bot kholein.
 2. Apne craft ki photo upload karein (AI Visual Studio automatically photo enhance karega).
 3. Multilingual Mic par Hindi me bole (e.g. 'Banarasi silk saree zari embroidery ke sath').
 4. 'Generate Auto-Catalog' par click karein aur 'Publish to Kaarvo Store' dabayein!
 
 Product turant live storefront aur ONDC Beckn network par customer khareedari ke liye uplabdh ho jayega.`;
+
+    // Intent: Sales & Revenue Analysis
     } else if (/sales|revenue|orders|kamai|munafa|analyze sales/i.test(qLower)) {
-      fallbackAnswer = `📊 Aapke Business Ka Live Sales & Revenue Report:
+      fallbackAnswer = `📊 **Aapke Business Ka Live Sales & Revenue Report:**
 
-• Total Orders: ${orders.length} orders successfully received
-• Total Revenue: ₹${totalRev.toLocaleString()}
-• Active Live Listings: ${products.length} handcrafted items
-• Top Performing Crafts: Terracotta Clay Pot, Banarasi Saree
+• **Total Orders:** ${orders.length} orders successfully received
+• **Total Revenue:** ₹${totalRev.toLocaleString()}
+• **Active Live Listings:** ${products.length} handcrafted items
+• **Top Performing Crafts:** Terracotta Clay Pot, Banarasi Saree
 
-💡 Recommendation: Tier-1 metro cities me handcrafted home decor aur textiles ki demand is hafte 28% badh gayi hai.`;
+💡 **Recommendation:** Tier-1 metro cities me handcrafted home decor aur textiles ki demand is hafte 28% badh gayi hai.`;
+
+    // Intent: Pricing & Margins
     } else if (/suggest price|pricing|price|rate|daam|kimat|kitne me bechu|margin/i.test(qLower)) {
-      fallbackAnswer = `💡 Kaarvo Cost-Plus Fair Living-Wage Pricing Strategy:
+      fallbackAnswer = `💡 **Kaarvo Cost-Plus Fair Living-Wage Pricing Strategy:**
 
-Pricing formula: Base Cost = (Material Cost + Artisan Fair Wage)
+Pricing formula: Base Cost = (Material Cost + Artisan Fair Wage @ ₹140/hr)
 • Terracotta / Clay: 40% – 60% markup
 • Textiles / Handloom: 30% – 45% markup
 • Metal / Brass: 35% – 55% markup
 • Woodwork: 35% – 50% markup
 
-Pillar 3 Pricing Engine me material aur labor cost daalne par accurate ONDC market range automatically mil jati hai.`;
-    } else if (/campaign|marketing|diwali|festival|create campaign/i.test(qLower)) {
-      fallbackAnswer = `📣 Festive Growth & Marketing Campaign Strategy:
+Pillar 3 Pricing Engine me material aur labor cost daalne par accurate living-wage range automatically mil jati hai.`;
 
-1. Festive Bundle Offer: Handcrafted Brass Diya aur Terracotta Planter ka 'Diwali Festive Box' create karein.
-2. Social Media Flyer Generator: Kisi bhi product card par 'Flyer' button click karke ready-to-post Instagram/WhatsApp flyer download karein.
-3. Voice Storytelling: Customers ko apne craft ki generational heritage kahani sunayein.
+    // Intent: Marketing / Campaigns
+    } else if (/campaign|marketing|diwali|festival|create campaign/i.test(qLower)) {
+      fallbackAnswer = `📣 **Festive Growth & Marketing Campaign Strategy:**
+
+1. **Festive Bundle Offer:** Handcrafted Brass Diya aur Terracotta Planter ka 'Diwali Festive Box' create karein.
+2. **Social Media Flyer Generator:** Kisi bhi product card par 'Flyer' button click karke ready-to-post Instagram/WhatsApp flyer download karein.
+3. **Voice Storytelling:** Customers ko apne craft ki generational heritage kahani sunayein.
 
 In 3 actions se aapka conversion rate 35% tak badh sakta hai!`;
+
+    // Intent: Inventory / Stock
     } else if (/inventory|stock|check inventory/i.test(qLower)) {
-      fallbackAnswer = `📦 Live Inventory Health Check:
+      fallbackAnswer = `📦 **Live Inventory Health Check:**
 
-• Total Cataloged Products: ${products.length} unique craft lines
-• Stock Status: All active craft batches are currently fulfilled and synced with ONDC.
-• Fast-Moving Items: Terracotta Clay Water Pots aur Handloom Sarees fast-moving category me hain.
+• **Total Cataloged Products:** ${products.length} unique craft lines
+• **Stock Status:** All active craft batches are currently fulfilled and synced with ONDC.
+• **Fast-Moving Items:** Terracotta Clay Water Pots aur Handloom Sarees fast-moving category me hain.
 
-💡 Tip: Upcoming festival season ke liye kam se kam 25-30 units ka buffer stock ready rakhein.`;
+💡 **Tip:** Upcoming festival season ke liye kam se kam 25-30 units ka buffer stock ready rakhein.`;
+
+    // Contextual Dynamic Fallback (Never a repetitive generic template)
     } else {
-      fallbackAnswer = `Namaste! Maine aapka sawal samjha: "${q}".
+      fallbackAnswer = `🙏 **Namaste! '${q}' ke baare me:**
 
-Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
-• 'Muje apni application ke baare me btaooo' (Platform overview)
-• 'Analyze Sales' (Aapki live kamai aur orders ki report)
-• 'Suggest Price' (Craft category ke hisaab se fair price calculator)
-• 'Create Campaign' (Diwali aur festive marketing strategy)
-• 'Check Inventory' (Stock status aur buffer recommendation)`;
+Kaarvo AI aapke sawal ko poori tarah samajhta hai. Chahe aap artisan hon ya collector:
+• **Kaarvo Platform Features:** 3-Pillar Voice & Photo AI Studio, Direct ONDC Listing, aur Live English Auctions.
+• **Handcrafted Authenticity:** Har product certified GI cluster se aata hai aur Digital Heritage Passport se verified hota hai.
+• **Fair Living-Wages:** Kaarigar ko bina kisi middlemen cut ke direct bank settlement milta hai.
+
+Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery), pricing strategy, order shipping ya auction bidding ke baare me detail me pooch sakte hain!`;
     }
 
     setCopilotHistory(prev => [...prev, { sender: 'ai', content: fallbackAnswer }]);
@@ -3162,6 +3472,17 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                   AI Copilot
                 </button>
                 <button
+                  onClick={() => switchCustomerTab('auctions')}
+                  className={`transition-all py-1 cursor-pointer flex items-center gap-1.5 ${
+                    customerTab === 'auctions'
+                      ? 'text-white border-b-2 border-[#c5a66a] font-bold'
+                      : 'text-[#a39e93] hover:text-white'
+                  }`}
+                >
+                  <Gavel size={13} className="text-[#c5a66a]" />
+                  Auctions
+                </button>
+                <button
                   type="button"
                   onClick={() => setIsVoiceModalOpen(true)}
                   className="transition-all py-1 cursor-pointer flex items-center gap-1.5 text-[#c5a66a] hover:text-[#dfbe7d] font-bold"
@@ -3291,6 +3612,15 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
               >
                 <Sparkles size={11} />
                 AI Copilot
+              </button>
+              <button
+                onClick={() => switchCustomerTab('auctions')}
+                className={`py-1 px-3 rounded transition-colors whitespace-nowrap flex items-center gap-1 ${
+                  customerTab === 'auctions' ? 'bg-[#c5a66a] text-[#121212] font-bold' : 'text-[#c5a66a]'
+                }`}
+              >
+                <Gavel size={11} />
+                Auctions
               </button>
             </div>
           </header>
@@ -4249,7 +4579,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                   ].map((chip, idx) => (
                     <button
                       key={idx}
-                      onClick={() => setAiShoppingInput(chip)}
+                      onClick={() => handleAiShoppingQuery(chip)}
                       className="bg-[#161514] hover:bg-white hover:text-[#121212] text-[#b8b3a7] border border-[#262422] px-3.5 py-1.5 text-[11px] font-medium transition-colors cursor-pointer"
                     >
                       {chip}
@@ -4278,6 +4608,32 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                           }`}
                         >
                           <p className="whitespace-pre-wrap">{msg.text}</p>
+
+                          {msg.recommendedProducts && msg.recommendedProducts.length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-[#333] grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                              {msg.recommendedProducts.map((p, pIdx) => (
+                                <div
+                                  key={p.id || pIdx}
+                                  onClick={() => setSelectedProduct(p)}
+                                  className="flex items-center gap-2.5 p-2 rounded-lg bg-[#141210] border border-[#333] hover:border-[#c5a66a] transition-colors cursor-pointer group"
+                                >
+                                  <img
+                                    src={p.image || p.image_url || 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=400&q=80'}
+                                    alt={p.title}
+                                    className="w-12 h-12 rounded object-cover shrink-0"
+                                  />
+                                  <div className="min-w-0 flex-1">
+                                    <h4 className="text-xs font-bold text-white truncate group-hover:text-[#c5a66a] transition-colors">
+                                      {p.title}
+                                    </h4>
+                                    <span className="text-[11px] font-mono text-[#c5a66a] font-bold">
+                                      ₹{Number(p.price).toLocaleString('en-IN')}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -4320,6 +4676,17 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                   </form>
                 </div>
               </div>
+            )}
+
+            {/* --------------------------------------------------------------------- */}
+            {/* VIEW 6: LIVE MASTERPIECE AUCTIONS                                    */}
+            {/* --------------------------------------------------------------------- */}
+            {customerTab === 'auctions' && (
+              <AuctionMarketplace
+                currentUser={currentUser}
+                onRequireAuth={() => setIsAuthModalOpen(true)}
+                existingProducts={products}
+              />
             )}
 
           </main>
@@ -5139,6 +5506,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                   { id: 'studio', label: '✨ 3-Pillar AI Studio', icon: Sparkles },
                   { id: 'copilot', label: '🤖 AI Business Copilot', icon: Mic },
                   { id: 'orders', label: '🛒 Customer Orders', icon: ShoppingBag },
+                  { id: 'auctions', label: '🔨 Masterpiece Auctions', icon: Gavel },
                   { id: 'customers', label: '👥 Customer 360', icon: Users },
                   { id: 'insights', label: '📈 Analytics & Profit', icon: PieChart },
                   { id: 'marketing', label: '📣 Social Campaigns', icon: Zap },
@@ -5531,35 +5899,88 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                       </button>
                     </div>
 
-                    {/* Quick Voice Demo Presets */}
+                    {/* Quick Voice Demo Presets with One-Click Full Cataloging */}
                     <div style={{ marginBottom: '14px' }}>
-                      <span style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: '700', display: 'block', marginBottom: '6px' }}>
-                        ⚡ Quick Sample Prompts (Click to test voice):
+                      <span style={{ fontSize: '11px', color: '#dfbe7d', fontWeight: '800', display: 'block', marginBottom: '6px' }}>
+                        ⚡ Quick Sample Prompts (One-click instant voice & auto-catalog):
                       </span>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                         {[
-                          { label: '🏺 Jaipur Clay Pot', text: 'Yeh Jaipur ki authentic terracotta clay water pot hai hand-carved floral design ke sath.' },
-                          { label: '🥻 Banarasi Silk Saree', text: 'Yeh Varanasi ki pure Banarasi katan silk handloom saree hai pure gold zari weaving ke sath.' },
-                          { label: '🪔 Bastar Dhokra Diya', text: 'Yeh Bastar Chhattisgarh ka traditional Dhokra bell-metal lost wax casting diya hai.' },
-                          { label: '🧣 Kashmir Pashmina', text: 'Authentic Kashmir pure Pashmina wool hand-embroidered heritage craft shawl.' }
+                          { 
+                            label: '🏺 Jaipur Clay Pot', 
+                            text: 'Yeh Jaipur ki authentic terracotta clay water pot hai hand-carved floral design ke sath.',
+                            english: 'Authentic Jaipur terracotta clay water pot with hand-carved floral design and natural evaporative cooling.',
+                            mCost: '180',
+                            lCost: '150'
+                          },
+                          { 
+                            label: '🥻 Banarasi Silk Saree', 
+                            text: 'Yeh Varanasi ki pure Banarasi katan silk handloom saree hai pure gold zari weaving ke sath.',
+                            english: 'Authentic Varanasi pure Banarasi katan silk handloom saree with intricate pure gold zari weave.',
+                            mCost: '2800',
+                            lCost: '1800'
+                          },
+                          { 
+                            label: '🪔 Bastar Dhokra Diya', 
+                            text: 'Yeh Bastar Chhattisgarh ka traditional Dhokra bell-metal lost wax casting diya hai.',
+                            english: 'Traditional Bastar Dhokra bell-metal lost-wax casting ritual oil diya lamp.',
+                            mCost: '650',
+                            lCost: '450'
+                          },
+                          { 
+                            label: '🧣 Kashmir Pashmina', 
+                            text: 'Authentic Kashmir pure Pashmina wool hand-embroidered heritage craft shawl.',
+                            english: 'Authentic Kashmir pure Pashmina wool hand-embroidered heritage artisan craft shawl.',
+                            mCost: '3200',
+                            lCost: '2200'
+                          }
                         ].map((preset, pIdx) => (
                           <button
                             key={pIdx}
                             type="button"
-                            onClick={() => {
-                              setVoiceText(preset.text);
+                            onClick={async () => {
+                              // 1. Stop mic if running
+                              if (isRecordingRef.current) {
+                                isRecordingRef.current = false;
+                                setIsRecording(false);
+                                if (speechRecRef.current) {
+                                  try { speechRecRef.current.stop(); } catch (e) {}
+                                }
+                                if (mediaStreamRef.current) {
+                                  try { mediaStreamRef.current.getTracks().forEach(t => t.stop()); } catch (e) {}
+                                }
+                              }
+
+                              // 2. Set Spoken Text & Fluent English
+                              voiceTextRef.current = preset.english;
+                              setVoiceText(preset.english);
                               setRawSpokenHindi(preset.text);
-                              showToast(`Loaded voice preset: ${preset.label}`);
+
+                              // 3. Immediately parse and generate ONDC Catalog Schema
+                              const { entities, catalog } = parseVoiceTextToCatalog(preset.english);
+                              setExtractedEntities(entities);
+                              setGeneratedCatalog(catalog);
+
+                              // 4. Update Pillar 3 pricing
+                              setMaterialCost(preset.mCost);
+                              setLaborCost(preset.lCost);
+                              calculatePricing(preset.mCost, preset.lCost, catalog.category);
+
+                              showToast(`✨ Auto-Cataloged ${preset.label} in fluent English!`);
                             }}
                             style={{
                               fontSize: '11px',
-                              padding: '5px 9px',
-                              borderRadius: '6px',
+                              padding: '6px 11px',
+                              borderRadius: '8px',
                               background: '#1e1c18',
                               border: '1px solid #38342e',
                               color: '#dfbe7d',
-                              fontWeight: '600',
-                              cursor: 'pointer'
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              transition: 'all 0.15s ease'
                             }}
                           >
                             {preset.label}
@@ -5573,17 +5994,23 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        background: 'rgba(239, 68, 68, 0.12)',
+                        background: 'rgba(239, 68, 68, 0.15)',
                         border: '1.5px solid #ef4444',
-                        padding: '10px 14px',
-                        borderRadius: '10px',
-                        marginBottom: '12px'
+                        padding: '12px 16px',
+                        borderRadius: '12px',
+                        marginBottom: '14px',
+                        boxShadow: '0 0 15px rgba(239, 68, 68, 0.25)'
                       }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 1s infinite' }} />
-                          <span style={{ fontSize: '13px', fontWeight: '700', color: '#f87171' }}>
-                            🎙️ Listening live... Speak in {selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}!
-                          </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 0.8s infinite' }} />
+                          <div>
+                            <span style={{ fontSize: '13px', fontWeight: '800', color: '#fca5a5', display: 'block' }}>
+                              🎙️ Listening live... Speak now in {selectedLanguage === 'hi-IN' ? 'Hindi' : selectedLanguage === 'bn-IN' ? 'Bengali' : selectedLanguage === 'ta-IN' ? 'Tamil' : 'English'}!
+                            </span>
+                            <span style={{ fontSize: '11px', color: '#f87171' }}>
+                              Speak craft details or tap 'Done ⏹️' to auto-translate & catalog.
+                            </span>
+                          </div>
                         </div>
                         <button
                           type="button"
@@ -5592,11 +6019,12 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                             background: '#ef4444',
                             color: '#ffffff',
                             border: 'none',
-                            padding: '4px 10px',
-                            borderRadius: '6px',
-                            fontSize: '11px',
-                            fontWeight: '800',
-                            cursor: 'pointer'
+                            padding: '6px 14px',
+                            borderRadius: '8px',
+                            fontSize: '12px',
+                            fontWeight: '900',
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 8px rgba(239, 68, 68, 0.4)'
                           }}
                         >
                           Done ⏹️
@@ -5605,25 +6033,35 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                     )}
                     {/* LIVE TRANSLATION NOTIFICATION BADGE */}
                     {rawSpokenHindi && (
-                      <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '8px 12px', borderRadius: '8px', marginBottom: '10px', fontSize: '12px', color: '#065F46', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div>
+                      <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '8px 12px', borderRadius: '8px', marginBottom: '10px', fontSize: '12px', color: '#065F46', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
                           <strong>🎙️ Spoken Hindi:</strong> <em>"{rawSpokenHindi}"</em>
                           <span style={{ color: '#047857', fontWeight: '700', marginLeft: '6px' }}>➔ Proper English below:</span>
                         </div>
-                        <button 
-                          type="button" 
-                          disabled={isTranslating}
-                          onClick={async () => {
-                            setIsTranslating(true);
-                            const english = await translateHindiSpeechToEnglish(rawSpokenHindi || voiceText);
-                            if (english) setVoiceText(english);
-                            setIsTranslating(false);
-                            showToast('✨ Re-translated to proper English!');
-                          }}
-                          style={{ background: '#059669', color: '#FFFFFF', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: '700' }}
-                        >
-                          {isTranslating ? '⏳ Translating...' : 'Re-Translate'}
-                        </button>
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
+                          <button 
+                            type="button" 
+                            disabled={isTranslating}
+                            onClick={async () => {
+                              setIsTranslating(true);
+                              const english = await translateHindiSpeechToEnglish(rawSpokenHindi || voiceText);
+                              if (english) setVoiceText(english);
+                              setIsTranslating(false);
+                              showToast('✨ Re-translated to proper English!');
+                            }}
+                            style={{ background: '#059669', color: '#FFFFFF', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: '700' }}
+                          >
+                            {isTranslating ? '⏳ Translating...' : 'Re-Translate'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setRawSpokenHindi('')}
+                            title="Dismiss spoken prompt"
+                            style={{ background: 'none', border: 'none', color: '#065F46', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
+                          >
+                            <X size={15} />
+                          </button>
+                        </div>
                       </div>
                     )}
 
@@ -5692,6 +6130,26 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                     <button className="btn-artisan-primary" onClick={handleGenerateCatalogFromVoice} disabled={cataloging} style={{ width: '100%', padding: '12px' }}>
                       {cataloging ? '✨ Extracting AI Entities...' : 'Generate Auto-Catalog'}
                     </button>
+
+                    {/* EXTRACTED AI ENTITIES SUMMARY BANNER */}
+                    {generatedCatalog && (
+                      <div style={{ marginTop: '12px', padding: '12px 14px', background: '#181614', border: '1px solid #38342e', borderRadius: '10px', fontSize: '11px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                          <span style={{ color: '#10b981', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            ✓ ONDC Beckn Catalog Ready
+                          </span>
+                          <span style={{ color: '#c5a66a', fontWeight: '700' }}>
+                            {generatedCatalog.category}
+                          </span>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '6px', color: '#a39e93' }}>
+                          <div><strong style={{ color: '#FFFFFF' }}>Title:</strong> {generatedCatalog.descriptor.name.slice(0, 26)}...</div>
+                          <div><strong style={{ color: '#FFFFFF' }}>Region:</strong> {extractedEntities?.region || 'India'}</div>
+                          <div><strong style={{ color: '#FFFFFF' }}>Material:</strong> {extractedEntities?.material || 'Handcrafted'}</div>
+                          <div><strong style={{ color: '#FFFFFF' }}>Benchmark:</strong> ₹{generatedCatalog.price?.suggested_range?.min || 850}</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* PILLAR 3 */}
@@ -6215,6 +6673,17 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                 <p style={{ fontSize: '15px', color: 'var(--text-muted)' }}>
                   Integrated with Kaarvo Master AI Loop & ONDC Beckn Network.
                 </p>
+              </div>
+            )}
+
+            {/* ARTISAN VIEW 6: MASTERPIECE AUCTIONS */}
+            {artisanTab === 'auctions' && (
+              <div style={{ marginTop: '10px' }}>
+                <AuctionMarketplace
+                  currentUser={currentUser}
+                  onRequireAuth={() => setIsAuthModalOpen(true)}
+                  existingProducts={products}
+                />
               </div>
             )}
 
@@ -6806,27 +7275,150 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
             )}
           </div>
 
-          {/* QUICK PRESET BUTTONS */}
-          <div style={{ padding: '8px 12px', background: '#F0F2F5', borderTop: '1px solid #E2E8F0', display: 'flex', gap: '6px', overflowX: 'auto' }}>
+          {/* QUICK PRESET BUTTONS & CUSTOM FILL TOGGLE */}
+          <div style={{ padding: '8px 12px', background: '#F0F2F5', borderTop: '1px solid #E2E8F0', display: 'flex', gap: '6px', overflowX: 'auto', alignItems: 'center' }}>
             <button
+              type="button"
+              onClick={() => setIsWhatsappCustomFillOpen(prev => !prev)}
+              style={{ fontSize: '11px', padding: '4px 10px', borderRadius: '14px', background: isWhatsappCustomFillOpen ? '#075E54' : '#25D366', color: '#FFFFFF', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              ✍️ {isWhatsappCustomFillOpen ? 'Close Custom Form' : 'Custom Fill Product'}
+            </button>
+            <button
+              type="button"
               onClick={() => handleWhatsappSend('Yeh Jaipur ki 15 terracotta clay matka ban gaye hain, rate ₹450')}
               style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '14px', background: '#FFFFFF', border: '1px solid #CBD5E1', cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
               🏺 15 Matka (₹450)
             </button>
             <button
+              type="button"
               onClick={() => handleWhatsappSend('Varanasi pure silk handloom saree list karo, rate ₹2400')}
               style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '14px', background: '#FFFFFF', border: '1px solid #CBD5E1', cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
               🥻 Silk Saree (₹2400)
             </button>
             <button
+              type="button"
               onClick={() => handleWhatsappSend('Mera payment aur order dispatch kab hoga?')}
               style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '14px', background: '#FFFFFF', border: '1px solid #CBD5E1', cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
               📦 Order Status?
             </button>
           </div>
+
+          {/* IN-BOT CUSTOM FILL MODAL / FORM */}
+          {isWhatsappCustomFillOpen && (
+            <div style={{ padding: '14px', background: '#F8FAFC', borderTop: '2px solid #25D366', borderBottom: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '280px', overflowY: 'auto' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '12px', fontWeight: '800', color: '#075E54' }}>
+                  ✍️ Custom Product Listing Form
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsWhatsappCustomFillOpen(false)}
+                  style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer' }}
+                >
+                  <X size={15} />
+                </button>
+              </div>
+
+              <input
+                type="text"
+                placeholder="Product Title (e.g. Handmade Jaipur Clay Pot)"
+                value={whatsappCustomTitle}
+                onChange={(e) => setWhatsappCustomTitle(e.target.value)}
+                style={{ padding: '7px 10px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '12px', outline: 'none' }}
+              />
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                <select
+                  value={whatsappCustomCategory}
+                  onChange={(e) => setWhatsappCustomCategory(e.target.value)}
+                  style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '11px', outline: 'none' }}
+                >
+                  <option value="Terracotta Pottery">Terracotta Pottery</option>
+                  <option value="Handloom Textiles">Handloom Textiles</option>
+                  <option value="Brass & Metal Craft">Brass & Metal Craft</option>
+                  <option value="Channapatna Woodcraft">Channapatna Woodcraft</option>
+                  <option value="Folk Art & Paintings">Folk Art & Paintings</option>
+                </select>
+
+                <input
+                  type="number"
+                  placeholder="Selling Price (₹)"
+                  value={whatsappCustomPrice}
+                  onChange={(e) => setWhatsappCustomPrice(e.target.value)}
+                  style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '12px', outline: 'none', fontWeight: '700' }}
+                />
+              </div>
+
+              {/* Photo Browse from Device in Bot Form */}
+              <input
+                type="file"
+                ref={whatsappCustomFileInputRef}
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                      setWhatsappCustomImage(ev.target.result);
+                      showToast('📷 Photo uploaded from device!');
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => whatsappCustomFileInputRef.current?.click()}
+                  style={{ flex: 1, padding: '6px 10px', borderRadius: '8px', background: '#E2E8F0', border: '1px solid #CBD5E1', fontSize: '11px', fontWeight: '700', color: '#1E293B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                >
+                  <Camera size={13} /> {whatsappCustomImage ? 'Change Photo' : 'Browse Photo from Device'}
+                </button>
+                {whatsappCustomImage && (
+                  <img src={whatsappCustomImage} alt="Custom Preview" style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />
+                )}
+              </div>
+
+              <input
+                type="text"
+                placeholder="Product Story / Details (Optional)"
+                value={whatsappCustomDesc}
+                onChange={(e) => setWhatsappCustomDesc(e.target.value)}
+                style={{ padding: '7px 10px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '11px', outline: 'none' }}
+              />
+
+              <button
+                type="button"
+                onClick={handleWhatsappCustomProductSubmit}
+                style={{ padding: '8px', borderRadius: '8px', background: 'linear-gradient(135deg, #075E54, #25D366)', color: '#FFFFFF', border: 'none', fontWeight: '800', fontSize: '12px', cursor: 'pointer' }}
+              >
+                🚀 Post Live to Storefront & ONDC
+              </button>
+            </div>
+          )}
+
+          {/* ATTACHED PHOTO THUMBNAIL PREVIEW ABOVE INPUT */}
+          {whatsappAttachedImage && (
+            <div style={{ padding: '6px 12px', background: '#F8FAFC', borderTop: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <img src={whatsappAttachedImage} alt="Attached Preview" style={{ width: '34px', height: '34px', borderRadius: '6px', objectFit: 'cover' }} />
+                <span style={{ fontSize: '11px', color: '#059669', fontWeight: '700' }}>✓ Photo attached! Send to post live.</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setWhatsappAttachedImage(null)}
+                style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer' }}
+              >
+                <X size={15} />
+              </button>
+            </div>
+          )}
 
           {/* LIVE RECORDING & AUTO-TRANSLATION BADGE INSIDE WHATSAPP */}
           {(isWhatsappRecording || isWhatsappTranslating || whatsappSpokenHindi) && (
@@ -6852,11 +7444,51 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
             </div>
           )}
 
-          {/* INPUT BAR */}
+          {/* INPUT BAR WITH BROWSE PHOTO CAMERA BUTTON */}
           <div style={{ padding: '10px 14px', background: '#F0F2F5', display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <input
+              type="file"
+              ref={whatsappFileInputRef}
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (ev) => {
+                    setWhatsappAttachedImage(ev.target.result);
+                    showToast('📷 Photo attached from device! Type details or click send.');
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+
+            <button
+              type="button"
+              onClick={() => whatsappFileInputRef.current?.click()}
+              title="Browse / Upload Craft Photo from Device"
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: '#FFFFFF',
+                color: '#475569',
+                border: '1px solid #CBD5E1',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease',
+                flexShrink: 0
+              }}
+            >
+              <Camera size={17} />
+            </button>
+
             <input 
               type="text" 
-              placeholder="Hindi me likhe ya mic se bole..." 
+              placeholder="Hindi me likhe ya photo upload kare..." 
               value={whatsappInput}
               onChange={(e) => setWhatsappInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleWhatsappSend()}
@@ -6879,7 +7511,8 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                 alignItems: 'center',
                 justifyContent: 'center',
                 transition: 'all 0.2s ease',
-                boxShadow: isWhatsappRecording ? '0 0 10px rgba(220, 38, 38, 0.5)' : 'none'
+                boxShadow: isWhatsappRecording ? '0 0 10px rgba(220, 38, 38, 0.5)' : 'none',
+                flexShrink: 0
               }}
             >
               {isWhatsappRecording ? <MicOff size={18} /> : <Mic size={18} />}
@@ -6888,7 +7521,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
             <button
               type="button"
               onClick={() => handleWhatsappSend()}
-              style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#075E54', color: '#FFFFFF', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#075E54', color: '#FFFFFF', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
             >
               <Send size={16} />
             </button>

@@ -15,17 +15,24 @@ class AICommerceCopilot:
         q_raw = (query or '').strip()
         q_lower = q_raw.lower()
 
-        # Database aggregations filtered by current artisan user if authenticated
-        if user and user.is_authenticated:
-            user_orders = list(Order.objects.filter(artisan=user))
-            user_products = list(Product.objects.filter(artisan=user))
-        else:
-            user_orders = list(Order.objects.all())
-            user_products = list(Product.objects.all())
-
-        total_revenue = sum(float(o.total_price or 0) for o in user_orders)
-        order_count = len(user_orders)
-        prod_count = len(user_products)
+        # Database aggregations filtered by current artisan user if authenticated (fault-tolerant)
+        user_orders = []
+        user_products = []
+        total_revenue = 0.0
+        order_count = 0
+        prod_count = 0
+        try:
+            if user and user.is_authenticated:
+                user_orders = list(Order.objects.filter(artisan=user))
+                user_products = list(Product.objects.filter(artisan=user))
+            else:
+                user_orders = list(Order.objects.all()[:20])
+                user_products = list(Product.objects.all()[:20])
+            total_revenue = sum(float(o.total_price or 0) for o in user_orders)
+            order_count = len(user_orders)
+            prod_count = len(user_products)
+        except Exception:
+            pass
 
         result_payload = {}
         approval_level = 1
@@ -33,9 +40,85 @@ class AICommerceCopilot:
         action_name = "QUERY_INFO"
         spoken_hindi = ""
 
+        # Intent 0A: Voice Listing & Voice Cataloging Inquiries
+        # e.g. "can i live our product via voice?", "can I list products by voice?", "voice se live kaise karein"
+        if re.search(r'can i.*(?:voice|bol kar|speak)|voice.*(?:live|list|product|sell|bech|upload)|voice.*(?:work|kaam)|how.*(?:voice|bol kar)|bol.*(?:live|bech|list)', q_lower):
+            action_name = "VOICE_EXPLANATION"
+            answer = (
+                "🎙️ **Yes, absolutely! You can list and publish products live using voice on Kaarvo AI:**\n\n"
+                "• **Pillar 2: Multilingual Voice Cataloger:** Simply click the microphone button on the **'3-Pillar AI Studio'** tab and speak naturally in Hindi or your regional language (for example: *'Maine 2 din me terracotta clay pot banaya, material laagat ₹180'*).\n"
+                "• **Automated Studio Catalog Generation:** Kaarvo AI extracts raw materials, artisan labor time, craft origin, and care instructions, translates it into professional global English, and calculates fair living-wage pricing.\n"
+                "• **WhatsApp Voice Sahayak:** Non-tech artisans can also simply send a voice note or raw craft photo to the WhatsApp Bot (bottom-right button), and the AI automatically syncs and launches the product live on ONDC and the Kaarvo storefront!"
+            )
+            spoken_hindi = "Haan bilkul! Aap Pillar 2 Multilingual Voice Cataloger ya WhatsApp Sahayak par bol kar apna product seedha live storefront aur ONDC par publish kar sakte hain."
+
+        # Intent 0B: Platform Overview & About Kaarvo
+        # e.g. "tell me about your platform", "what is kaarvo", "explain platform", "features"
+        elif re.search(r'about.*platform|tell me about|what is kaarvo|platform.*kya hai|explain.*platform|about.*(?:app|platform)|(?:app|platform).*kaise kaam|platform.*overview|features|intro', q_lower) and not re.search(r'auction|bid|boli', q_lower):
+            action_name = "APP_OVERVIEW"
+            answer = (
+                "🏛️ **Welcome to Kaarvo AI – The Artisan Commerce Operating System:**\n\n"
+                "Kaarvo AI is an AI-powered commerce platform designed to empower verified Indian master artisans and connect them directly with collectors and buyers across ONDC:\n\n"
+                "✨ **Key Capabilities:**\n"
+                "1. **3-Pillar Smart Cataloger Studio:** AI Photo Enhancement (4K lighting), Multilingual Voice Cataloging (Hindi/regional speech to high-end English), and Living-Wage Cost-Plus Pricing.\n"
+                "2. **Live Masterpiece Auctions:** High-concurrency English forward auctions with server-authoritative timers, microsecond row-locking, and anti-sniping protection.\n"
+                "3. **Digital Heritage Passport:** Tamper-proof QR provenance certifying artisan identity, GI craft cluster, and authentic materials.\n"
+                "4. **WhatsApp AI Sahayak:** Multilingual conversational assistant enabling non-tech artisans to list products and fulfill orders via voice notes."
+            )
+            spoken_hindi = "Namaste! Kaarvo AI ek AI commerce platform hai jo Indian artisans ko direct ONDC aur national collectors se jodta hai."
+
+        # Intent 0C: Heritage Craft Comparison & Knowledge
+        # e.g. "Difference between Chanderi and Banarasi silk", "Bastar Dhokra", "Jaipur Blue Pottery"
+        elif re.search(r'bastar.*dhokra|dhokra', q_lower):
+            action_name = "CRAFT_KNOWLEDGE"
+            answer = (
+                "🏺 **GI Provenance of Bastar Dhokra (Chhattisgarh):**\n\n"
+                "• **Ancient Lost-Wax Technique (*Cire Perdue*):** An unbroken 4,000-year-old metallurgical tradition dating back to the Mohenjo-daro *Dancing Girl*.\n"
+                "• **Artisan Process:** Master tribal artisans hand-shape beeswax threads over a clay core, coat it with alluvial river clay, and pour molten brass/bell-metal.\n"
+                "• **Uniqueness:** Because the clay mold is broken to reveal the bronze cast, every single Dhokra piece is an irreplaceable, one-of-a-kind museum original."
+            )
+            spoken_hindi = "Bastar Dhokra Chhattisgarh ki 4000 saal purani lost-wax metal craft hai jisme har piece anokha aur GI certified hota hai."
+
+        elif re.search(r'blue pottery.*without clay|jaipur blue pottery|blue pottery', q_lower):
+            action_name = "CRAFT_KNOWLEDGE"
+            answer = (
+                "🏺 **Jaipur Blue Pottery (Crafted Without Clay):**\n\n"
+                "• **Clay-Free Dough Formula:** Unlike traditional pottery, Jaipur Blue Pottery uses *zero* clay. It is hand-molded from crushed quartz stone powder, powdered glass, Fuller's earth (*Multani Mitti*), borax, and natural gum (*saajhi*).\n"
+                "• **Turquoise & Cobalt Glaze:** Decorated with Egyptian cobalt oxide and copper oxide, creating the iconic Persian blue and turquoise floral motifs.\n"
+                "• **GI Authenticity:** Hand-fired only once at ~800°C, producing an impervious, waterproof, hygienic ceramic that never develops cracks."
+            )
+            spoken_hindi = "Jaipur Blue Pottery bina kisi mitti ke quartz stone powder aur natural glass se banayi jati hai."
+
+        elif re.search(r'chanderi.*banarasi|banarasi.*chanderi|difference between|compare.*silk', q_lower):
+            action_name = "CRAFT_COMPARISON"
+            answer = (
+                "🧵 **Heritage Craft Comparison: Chanderi Silk vs. Banarasi Silk**\n\n"
+                "• **Chanderi Silk (Madhya Pradesh):**\n"
+                "  - **Texture & Feel:** Extremely lightweight, sheer, and gossamer-soft; woven by blending fine silk with cotton.\n"
+                "  - **Motifs & Zari:** Adorned with delicate hand-woven *bootis* (swans, peacocks, floral roundels) with subtle gold/silver borders.\n"
+                "  - **Best For:** Understated elegance, summer festivals, and daytime royal celebrations.\n\n"
+                "• **Banarasi Silk (Varanasi, Uttar Pradesh):**\n"
+                "  - **Texture & Feel:** Heavy, dense, and regal; crafted from pure katan mulberry silk.\n"
+                "  - **Motifs & Zari:** Famous for heavy gold & silver *zari* brocade, intricate Mughal floral jaal, kalga, and minakari accents.\n"
+                "  - **Best For:** Heirloom bridal wear, major weddings, and grand heritage occasions."
+            )
+            spoken_hindi = "Chanderi silk halki aur sheer hoti hai, jabki Banarasi silk bhaari aur opulent gold zari brocade ke sath royal occasions ke liye hoti hai."
+
+        # Intent 0D: Auctions & Live Bidding Protocol
+        elif re.search(r'auction|bid|bidding|boli', q_lower) and not re.search(r'maine.*banaya|naya craft|laagat', q_lower):
+            action_name = "AUCTION_EXPLANATION"
+            answer = (
+                "🔨 **How Kaarvo Live Masterpiece Auctions Work:**\n\n"
+                "1. **Artisan Listing:** Verified master artisans list museum-grade handcrafted artifacts, specifying starting price, minimum bid increment, and duration.\n"
+                "2. **Real-Time Live Bidding:** Registered buyers place progressively higher bids in real time with server-authoritative timestamps and PostgreSQL row-level locking.\n"
+                "3. **Anti-Sniping Protection:** If a bid is submitted in the final 2 minutes, the auction deadline automatically extends by 5 minutes to ensure fair competition.\n"
+                "4. **Settlement & Dispatch:** The highest valid bidder wins when the timer expires, receives a payment link, and once settled, the artisan dispatches the insured package."
+            )
+            spoken_hindi = "Kaarvo live auctions me collectors master craft pieces par real-time bids laga sakte hain, aur highest bidder auction jeet kar secure checkout karta hai."
+
         # 1. Voice Intent: Direct Product Creation & ONDC Live Listing
         # e.g. "Maine 2 din me terracotta ghada banaya, mitti aur laagat ₹200 aayi, isko live dukaan par daal do"
-        if re.search(r'maine.*banaya|naya craft|banayi hai|banaya hai|ghada banaya|matka banaya|saree buni|diya banaya|toy banaya|laagat|dukaan par daal|live becho|publish kar do', q_lower):
+        elif re.search(r'maine.*banaya|naya craft|banayi hai|banaya hai|ghada banaya|matka banaya|saree buni|diya banaya|toy banaya|laagat|dukaan par daal|live becho|publish kar do', q_lower):
             parsed = parse_hindi_craft_to_english(q_raw)
             
             # Extract material cost or default
@@ -192,18 +275,77 @@ class AICommerceCopilot:
             action_name = "APP_OVERVIEW"
             spoken_hindi = "Namaste! Kaarvo AI par aap bol kar product bech sakte hain, fair price nikaal sakte hain aur ONDC orders manage kar sakte hain."
 
-        # 8. General Helpful Artisan Copilot Response
-        else:
+        # 8. Intent: Cons / Challenges / Limitations (Directly answers "iske cons btaoo?")
+        elif re.search(r'cons|kamiyan|nuksan|disadvantage|drawback|limitation|challenges|problem|kya kami', q_lower):
+            action_name = "PLATFORM_CONS"
             answer = (
-                f"Namaste! Maine aapka sawal samjha: '{q_raw}'.\n\n"
-                "Aap mujhse bol kar yeh sab kara sakte hain:\n"
-                "• 'Maine 2 din me terracotta ghada banaya, laagat ₹200' (Auto Product Listing)\n"
-                "• 'Meri is hafte ki kamai aur orders kitne hain?' (Sales Report)\n"
-                "• 'Mujhe Blue pottery dikhao under ₹2000' (Customer Search)\n"
-                "• 'Banarasi saree ka fair price kitna hona chahiye?' (Pricing Advisor)\n"
-                "• 'Courier dispatch label print karo' (Shipping Dispatch)"
+                "⚖️ **Kaarvo AI & ONDC Craft Commerce ke Pramukh Challenges / Cons:**\n\n"
+                "1. **Internet & Device Dependency:** Dur-daraz ke gaon ke artisans ko photos upload karne ya voice cataloging ke liye smartphone aur 4G internet connection ki zaroorat hoti hai.\n"
+                "2. **Fragile Packaging Risk:** Terracotta, blue pottery aur glass crafts lambe distance courier transit me break hone ka risk rehta hai, isliye special eco-friendly kraft padding zaroori hoti hai.\n"
+                "3. **Handcrafted Natural Variations:** Machine goods ke viprit, 100% handmade items me rang aur texture me halka farak hota hai, jise buyers ko samjhana padta hai.\n"
+                "4. **Initial Tech Hesitation:** Traditional artisans shuruat me automated pricing aur digital banking par bharosa karne me thoda samay lete hain.\n"
+                "5. **Craft Production Lead Times:** Machine factory ki tarah instantly hazaro units nahi ban sakte; heritage weaving ya pottery me samay lagta hai."
             )
-            spoken_hindi = "Namaste! Aap mujhse bol kar naya product list kara sakte hain, sales check kar sakte hain ya customer crafts dhoondh sakte hain."
+            spoken_hindi = "Kaarvo AI me mukhya challenges internet connectivity, fragile packaging aur handmade craft ke natural variations ko manage karna hai."
+
+        # 9. Intent: Pros / Advantages / Benefits
+        elif re.search(r'pros|fayde|benefit|advantage|khubi|faida|acha kya hai|why kaarvo', q_lower):
+            action_name = "PLATFORM_PROS"
+            answer = (
+                "🌟 **Kaarvo AI ke Mukhya Fayde (Pros & Advantages):**\n\n"
+                "1. **Bina Middlemen Direct ONDC Access:** Artisans bina kisi bicholiye ya private marketplace cut ke sidha national buyers se judte hain.\n"
+                "2. **Voice-to-Catalog in Local Language:** Angrezi type karne ki zaroorat nahi; Hindi me bolte hi 4K enhanced photo ke sath professional English catalog ready ho jata hai.\n"
+                "3. **Living-Wage Guaranteed Pricing:** Material + Kaarigar ki mehnat (hourly wage) calculate karke fair rate fix hota hai.\n"
+                "4. **Digital Heritage Passport:** Har product ke sath QR-code provenance hota hai jo GI authenticity certify karta hai.\n"
+                "5. **Live Masterpiece Auctions:** High-value rare crafts ko collectors ke beech competitive bidding me bechne ki suvidha."
+            )
+            spoken_hindi = "Kaarvo AI ke sabse bade fayde hain: zero middlemen, local language voice listing aur guaranteed living-wage pricing."
+
+        # 10. Intent: How to Start / Onboarding Guide
+        elif re.search(r'kaise start|how to start|kaise judein|how to join|kaise register|onboarding|shuru kaise', q_lower):
+            action_name = "HOW_TO_START"
+            answer = (
+                "🚀 **Kaarvo AI par Shuruat Karne ke 3 Aasan Steps:**\n\n"
+                "1. **Step 1 - Photo Lijiye:** Apne craft ki photo khinchein aur '3-Pillar AI Studio' me dalein (AI auto-enhance karega).\n"
+                "2. **Step 2 - Voice Note Boliye:** Mic par Hindi me bole craft ka naam, laagat aur samay (e.g. *'Terracotta matka, ₹200 laagat'*).\n"
+                "3. **Step 3 - Live Publish:** 'Publish to Store' dabate hi aapka item Kaarvo Store aur ONDC network par live ho jayega!\n\n"
+                "Aap niche right corner me **WhatsApp Artisan Bot** se bhi seedha bol kar shuru kar sakte hain."
+            )
+            spoken_hindi = "Shuru karne ke liye bas 3-Pillar Studio ya WhatsApp par apne craft ki photo aur voice note share karein."
+
+        # 11. Intent: Fees / Commission / Free
+        elif re.search(r'free hai|fees|commission|charges|kitna charge|cost kitna|paisa lagta hai', q_lower):
+            action_name = "FEES_INFO"
+            answer = (
+                "💰 **Pricing & Platform Fee Structure:**\n\n"
+                "• **Artisan Registration & Voice Cataloging:** Bilkul 100% Free hai.\n"
+                "• **Zero Hidden Middleman Fee:** Traditional marketplaces 25%–35% commission kaat leti hain, jabki Kaarvo ONDC open-network standard par kaam karta hai jisme maximum kamai seedha artisan ke bank me aati hai.\n"
+                "• **Fair Pricing Guarantee:** Har product me living-wage margin pehle se add hota hai taaki artisan ko fair labhaansh mile."
+            )
+            spoken_hindi = "Kaarvo par artisan registration aur voice cataloging bilkul free hai aur koi hidden commission nahi hai."
+
+        # 12. Intent: Security & Trust
+        elif re.search(r'safe hai|security|fraud|dhokha|payment safe|fake|trust', q_lower):
+            action_name = "SECURITY_TRUST"
+            answer = (
+                "🛡️ **Security & Anti-Fraud Architecture:**\n\n"
+                "• **Database Row-Locking:** Auctions aur payments me microsecond concurrency protection hai taaki double-bidding ya payment mismatch na ho.\n"
+                "• **Escrow Protected Settlement:** Buyer ka payment secure gateway me hold hota hai aur delivery confirmation ke baad artisan ko dispatch settlement milta hai.\n"
+                "• **Tamper-Proof Provenance:** Har craft ke sath Digital Heritage Passport hota hai jo fake nakli products ko eliminate karta hai."
+            )
+            spoken_hindi = "Kaarvo par payments escrow protected hain aur sabhi transactions row-locking security ke sath 100 percent safe hain."
+
+        # 13. Dynamic Contextual Smart Fallback (No repetitive generic list)
+        else:
+            action_name = "SMART_CONVERSATIONAL_ANSWER"
+            answer = (
+                f"🙏 **Namaste! '{q_raw}' ke baare me jankari:**\n\n"
+                f"Kaarvo AI ek dedicated platform hai jo traditional Indian artisans aur craft collectors dono ke liye banaya gaya hai.\n\n"
+                f"• **Artisans ke liye:** Bol kar naye products live bechein, fair living-wage price calculate karein, aur bina bicholiye direct ONDC par national buyers tak pahunchein.\n"
+                f"• **Buyers & Collectors ke liye:** Certified mastercrafts khareedein, Digital Heritage Passport se authenticity verify karein, ya Live Masterpiece Auctions me participate karein.\n\n"
+                f"Aap mujhse kisi bhi craft technique (jaise Banarasi silk, Terracotta, Blue Pottery, Dhokra), pricing, platform features ya order delivery ke baare me vistar se pooch sakte hain!"
+            )
+            spoken_hindi = f"Namaste! Maine aapka sawal '{q_raw}' samjha. Main Kaarvo craft aur commerce se jude sabhi sawalon me aapki poori madad kar sakta hoon."
 
         latency = int((time.time() - start_time) * 1000)
 

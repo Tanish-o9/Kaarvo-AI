@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     
     # Local apps
     'artisan_api',
+    'auctions',
 ]
 
 MIDDLEWARE = [
@@ -61,11 +62,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'artisan_backend.wsgi.application'
 
-DATABASE_URL = os.getenv('DATABASE_URL')
-if DATABASE_URL:
+import sys
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+elif os.getenv('DATABASE_URL'):
+    DATABASE_URL = os.getenv('DATABASE_URL')
     db_config = dj_database_url.parse(
         DATABASE_URL,
-        conn_max_age=600,
+        conn_max_age=0,
         conn_health_checks=True,
         ssl_require=True
     )
@@ -125,7 +134,18 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=14),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
