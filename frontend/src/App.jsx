@@ -3953,9 +3953,13 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                   <span className="w-1.5 h-1.5 bg-[#c5a66a] rounded-full inline-block animate-pulse"></span>
                   28 Certified Indian Craft Clusters • Direct Artisan Fair Trade (ONDC)
                 </span>
-                <span className="hidden md:inline tracking-[0.2em] text-[#e8e4dc]">
-                  Insured Global Delivery & Provenance Guarantee
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="hidden md:inline tracking-[0.2em] text-[#e8e4dc]">
+                    Insured Global Delivery & Provenance Guarantee
+                  </span>
+                  {/* Top-Most Corner Language Switcher */}
+                  {renderLanguageSwitcher()}
+                </div>
               </div>
             </div>
 
