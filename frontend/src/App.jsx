@@ -50,6 +50,7 @@ export default function App() {
   const [accessToken, setAccessToken] = useState(() => localStorage.getItem('kaarvo_access_token') || null);
   const [refreshToken, setRefreshToken] = useState(() => localStorage.getItem('kaarvo_refresh_token') || null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState('register'); // 'login' | 'register'
   const [authRole, setAuthRole] = useState('artisan'); // 'artisan' | 'customer'
   const [showPassword, setShowPassword] = useState(false);
@@ -4009,17 +4010,25 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
 
                 {/* User Account / Sign In */}
                 {currentUser ? (
-                  <div className="flex items-center gap-2 bg-[#1c1a18] px-3 py-1.5 rounded-full border border-[#2d2b28]">
-                    <div className="w-5 h-5 rounded-full bg-[#c5a66a] text-[#121212] flex items-center justify-center text-[10px] font-extrabold">
-                      {(currentUser.full_name || currentUser.username || 'U')[0].toUpperCase()}
-                    </div>
-                    <span className="text-[11px] font-medium text-white uppercase tracking-wider hidden sm:inline">
-                      {currentUser.full_name || currentUser.username}
-                    </span>
+                  <div className="flex items-center gap-1.5 bg-[#1c1a18] pl-2.5 pr-1.5 py-1 rounded-full border border-[#2d2b28] hover:border-[#c5a66a] transition-all shadow-sm">
                     <button
+                      type="button"
+                      onClick={() => setIsProfileModalOpen(true)}
+                      className="flex items-center gap-2 cursor-pointer bg-transparent border-none text-left p-0 focus:outline-none"
+                      title="Click to view & manage your Artisan Profile"
+                    >
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#c5a66a] to-[#dfbe7d] text-[#121212] flex items-center justify-center text-[11px] font-extrabold shadow-sm">
+                        {(currentUser.full_name || currentUser.username || 'U')[0].toUpperCase()}
+                      </div>
+                      <span className="text-[11px] font-bold text-white uppercase tracking-wider hidden sm:inline hover:text-[#c5a66a] transition-colors">
+                        {currentUser.full_name || currentUser.username}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
                       onClick={handleAuthLogout}
                       title="Sign Out"
-                      className="text-[#8e9192] hover:text-red-400 ml-1 cursor-pointer"
+                      className="text-[#8e9192] hover:text-red-400 p-1 cursor-pointer transition-colors"
                     >
                       <LogOut size={13} />
                     </button>
@@ -6044,16 +6053,24 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
             </div>
 
             {/* ARTISAN USER CARD (Stitch Auth Profile) */}
-            <div style={{
-              background: 'var(--bg-subtle)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: 'var(--radius-md)',
-              padding: '12px 14px',
-              marginBottom: '12px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px'
-            }}>
+            <div 
+              onClick={() => setIsProfileModalOpen(true)}
+              title="Click to open your full Artisan Profile"
+              style={{
+                background: 'var(--bg-subtle)',
+                border: '1px solid var(--border-subtle)',
+                borderRadius: 'var(--radius-md)',
+                padding: '12px 14px',
+                marginBottom: '12px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                cursor: 'pointer',
+                transition: 'border-color 0.2s ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#c5a66a'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{
                   width: '34px',
@@ -8863,6 +8880,237 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
         </div>
       )}
 
+
+      {/* ========================================================================= */}
+      {/* PROPER ARTISAN & USER PROFILE MODAL                                       */}
+      {/* ========================================================================= */}
+      {isProfileModalOpen && (
+        <div 
+          className="stitch-modal-backdrop" 
+          onClick={() => setIsProfileModalOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.8)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px'
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: 'linear-gradient(145deg, #181614 0%, #1c1a17 100%)',
+              border: '1.5px solid #c5a66a',
+              borderRadius: '20px',
+              maxWidth: '520px',
+              width: '100%',
+              boxShadow: '0 24px 60px rgba(0,0,0,0.85)',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Modal Header */}
+            <div style={{
+              padding: '18px 24px',
+              borderBottom: '1px solid #2d2a26',
+              background: '#141311',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <span style={{ fontSize: '12px', fontWeight: '800', color: '#c5a66a', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                🏛️ User Account & Master Artisan Profile
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsProfileModalOpen(false)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#a39e93',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Profile Hero */}
+            <div style={{ padding: '24px 28px', borderBottom: '1px solid #2d2a26', display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <div style={{
+                width: '68px',
+                height: '68px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #c5a66a 0%, #dfbe7d 100%)',
+                color: '#121212',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: '900',
+                fontSize: '28px',
+                boxShadow: '0 8px 24px rgba(197, 166, 106, 0.35)',
+                flexShrink: 0
+              }}>
+                {((currentUser?.full_name || currentUser?.username || 'U')[0] || 'U').toUpperCase()}
+              </div>
+              <div style={{ flex: 1, overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <h3 className="font-serif" style={{ fontSize: '22px', fontWeight: '800', color: '#FFFFFF', margin: 0 }}>
+                    {currentUser?.full_name || currentUser?.username || 'Tanish'}
+                  </h3>
+                  <span style={{
+                    fontSize: '10px',
+                    fontWeight: '800',
+                    color: '#10b981',
+                    background: 'rgba(16, 185, 129, 0.15)',
+                    border: '1px solid #10b981',
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    textTransform: 'uppercase'
+                  }}>
+                    ✓ ONDC Verified
+                  </span>
+                </div>
+                <div style={{ fontSize: '13px', color: '#c5a66a', marginTop: '3px', fontWeight: '600' }}>
+                  {currentUser?.craft_type || settingsCraft || 'Master Artisan & Heritage Craftsman'}
+                </div>
+                <div style={{ fontSize: '12px', color: '#8e9192', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <MapPin size={12} color="#c5a66a" />
+                  {currentUser?.region || settingsRegion || 'Jaipur, Rajasthan, India'}
+                </div>
+              </div>
+            </div>
+
+            {/* Profile Details Grid */}
+            <div style={{ padding: '20px 28px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div style={{ background: '#141311', border: '1px solid #282623', padding: '12px 14px', borderRadius: '10px' }}>
+                  <div style={{ fontSize: '10px', color: '#8e9192', textTransform: 'uppercase', fontWeight: '700' }}>Email Address</div>
+                  <div style={{ fontSize: '13px', color: '#FFFFFF', fontWeight: '600', marginTop: '3px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {currentUser?.email || 'tanishrajput673@gmail.com'}
+                  </div>
+                </div>
+                <div style={{ background: '#141311', border: '1px solid #282623', padding: '12px 14px', borderRadius: '10px' }}>
+                  <div style={{ fontSize: '10px', color: '#8e9192', textTransform: 'uppercase', fontWeight: '700' }}>Settlement UPI</div>
+                  <div style={{ fontSize: '13px', color: '#10b981', fontWeight: '700', marginTop: '3px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {settingsUpi || 'artisan.mohan@okhdfcbank'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Activity Stats */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', background: '#141311', border: '1px solid #282623', padding: '14px', borderRadius: '12px' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', color: '#8e9192', textTransform: 'uppercase' }}>Live Crafts</div>
+                  <div style={{ fontSize: '18px', fontWeight: '800', color: '#FFFFFF', marginTop: '2px' }}>{myArtisanProducts.length}</div>
+                </div>
+                <div style={{ textAlign: 'center', borderLeft: '1px solid #282623', borderRight: '1px solid #282623' }}>
+                  <div style={{ fontSize: '10px', color: '#8e9192', textTransform: 'uppercase' }}>Orders</div>
+                  <div style={{ fontSize: '18px', fontWeight: '800', color: '#c5a66a', marginTop: '2px' }}>{myArtisanOrders.length}</div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', color: '#8e9192', textTransform: 'uppercase' }}>Total Earned</div>
+                  <div style={{ fontSize: '18px', fontWeight: '800', color: '#10b981', marginTop: '2px' }}>₹{myArtisanRevenue.toLocaleString()}</div>
+                </div>
+              </div>
+
+              {/* Bio & Heritage Story */}
+              <div style={{ background: '#141311', border: '1px solid #282623', padding: '12px 14px', borderRadius: '10px' }}>
+                <div style={{ fontSize: '10px', color: '#c5a66a', textTransform: 'uppercase', fontWeight: '800' }}>Craft Tradition Story</div>
+                <p style={{ fontSize: '12px', color: '#b8b3a7', lineHeight: '1.5', margin: '4px 0 0' }}>
+                  {currentUser?.artisan_bio || settingsBio || 'Preserving centuries of heritage craft tradition with verified 100% fair living-wage trade on ONDC.'}
+                </p>
+              </div>
+
+              {/* Quick Navigation Buttons */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '6px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsProfileModalOpen(false);
+                    switchMode('artisan');
+                    switchArtisanTab('settings');
+                  }}
+                  style={{
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    background: '#25221d',
+                    border: '1px solid #c5a66a',
+                    color: '#f5d794',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <Settings size={14} /> Edit Profile & Bank
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsProfileModalOpen(false);
+                    switchMode('artisan');
+                    switchArtisanTab('studio');
+                  }}
+                  style={{
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    background: '#25221d',
+                    border: '1px solid #38342e',
+                    color: '#FFFFFF',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <Sparkles size={14} color="#c5a66a" /> 3-Pillar AI Studio
+                </button>
+              </div>
+
+              {/* Sign Out Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsProfileModalOpen(false);
+                  handleAuthLogout();
+                }}
+                style={{
+                  marginTop: '4px',
+                  width: '100%',
+                  padding: '10px',
+                  borderRadius: '8px',
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid #ef4444',
+                  color: '#ef4444',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px'
+                }}
+              >
+                <LogOut size={14} /> Sign Out of Account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ========================================================================= */}
             {/* MODAL FOR AUTHENTICATED USER SWITCHING OR RE-AUTHENTICATION */}
