@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Sparkles, Camera, Mic, MicOff, ShoppingBag, Layers, Package, Users, Sliders,
-  TrendingUp, Send, CheckCircle, FileText, ArrowRight, ShieldCheck, RefreshCw,
+  TrendingUp, Send, CheckCircle, FileText, ArrowLeft, ArrowRight, ShieldCheck, RefreshCw,
   Globe, CreditCard, Check, X, Star, MapPin, Search, Filter, Heart,
   ShoppingCart, ChevronRight, MessageSquare, Award, ArrowUpRight, HelpCircle,
   Truck, ShieldAlert, Zap, Compass, Store, Settings, PieChart, Tag, RefreshCcw, Home, Trash2,
@@ -5774,8 +5774,36 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
             justifyContent: 'space-between'
           }}>
             <div>
+              {/* TOP BACK TO STORE BUTTON IN SIDEBAR */}
+              <button
+                type="button"
+                onClick={() => switchMode('customer')}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '11px 14px',
+                  marginBottom: '20px',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, rgba(197, 166, 106, 0.22) 0%, rgba(197, 166, 106, 0.08) 100%)',
+                  border: '1.5px solid #c5a66a',
+                  color: '#f5d794',
+                  fontSize: '13px',
+                  fontWeight: '800',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.3)',
+                  transition: 'all 0.2s ease'
+                }}
+                title="Return to Customer Storefront / Home page"
+              >
+                <ArrowLeft size={16} />
+                <span>← Back to Customer Store</span>
+              </button>
+
               {/* SIDEBAR HEADER */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0 8px 24px', borderBottom: '1px solid var(--border-subtle)', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0 8px 20px', borderBottom: '1px solid var(--border-subtle)', marginBottom: '20px' }}>
                 <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'var(--primary)', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>
                   🎨
                 </div>
@@ -5896,7 +5924,61 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
           </aside>
 
           {/* MAIN ARTISAN OS BODY */}
-          <main style={{ flex: 1, padding: '36px', maxWidth: '1280px', margin: '0 auto' }}>
+          <main style={{ flex: 1, padding: '24px 36px 36px', maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
+            
+            {/* TOP GLOBAL BACK & BREADCRUMB BAR (Always Visible) */}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              flexWrap: 'wrap', 
+              gap: '12px', 
+              marginBottom: '24px', 
+              paddingBottom: '16px', 
+              borderBottom: '1px solid var(--border-subtle)' 
+            }}>
+              <button
+                type="button"
+                onClick={() => switchMode('customer')}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 18px',
+                  borderRadius: '10px',
+                  background: '#25221d',
+                  border: '1.5px solid #c5a66a',
+                  color: '#f5d794',
+                  fontSize: '13px',
+                  fontWeight: '800',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  transition: 'all 0.2s ease'
+                }}
+                title="Go back to Customer Store / Home page"
+              >
+                <ArrowLeft size={17} />
+                <span>← Back to Customer Storefront / Home</span>
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                <span 
+                  onClick={() => switchMode('customer')} 
+                  style={{ color: '#a39e93', cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  Customer Store
+                </span>
+                <span style={{ color: '#555' }}>/</span>
+                <span style={{ color: '#c5a66a', fontWeight: '700' }}>Artisan OS</span>
+                <span style={{ color: '#555' }}>/</span>
+                <span style={{ color: '#FFFFFF', fontWeight: '700', textTransform: 'capitalize' }}>
+                  {artisanTab === 'studio' ? '3-Pillar AI Studio' : artisanTab}
+                </span>
+                <span style={{ marginLeft: '10px', padding: '3px 8px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid #10b981', color: '#6ee7b7', fontSize: '10px', fontWeight: '800' }}>
+                  ONDC Studio Live
+                </span>
+              </div>
+            </div>
 
             {/* ARTISAN VIEW 1: DASHBOARD OVERVIEW */}
             {artisanTab === 'dashboard' && (
