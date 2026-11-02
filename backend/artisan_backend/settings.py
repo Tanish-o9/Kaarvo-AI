@@ -1,7 +1,13 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables
+load_dotenv(BASE_DIR / '.env')
+load_dotenv(BASE_DIR.parent / '.env')
 
 SECRET_KEY = 'django-insecure-kaarvo-artisan-ai-commerce-os-secret-key-super-secure'
 
@@ -55,12 +61,31 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'artisan_backend.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DATABASE_URL = os.getenv('DATABASE_URL')
+if DATABASE_URL:
+    db_config = dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+        ssl_require=True
+    )
+    # Required for Neon pooler pgBouncer compatibility
+    db_config['DISABLE_SERVER_SIDE_CURSORS'] = True
+    DATABASES = {
+        'default': db_config
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+# Marketplace and Logistics modes
+MARKETPLACE_MODE = os.getenv('MARKETPLACE_MODE', 'mock')
+PAYMENT_MODE = os.getenv('PAYMENT_MODE', 'mock')
+LOGISTICS_MODE = os.getenv('LOGISTICS_MODE', 'mock')
 
 AUTH_PASSWORD_VALIDATORS = [
     {
