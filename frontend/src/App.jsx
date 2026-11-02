@@ -52,6 +52,7 @@ export default function App() {
   const [authMode, setAuthMode] = useState('register'); // 'login' | 'register'
   const [authRole, setAuthRole] = useState('artisan'); // 'artisan' | 'customer'
   const [showPassword, setShowPassword] = useState(false);
+  const [showRegPassword, setShowRegPassword] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState('');
 
@@ -2447,13 +2448,34 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                       <div className="stitch-input-wrapper" style={{ marginBottom: '6px' }}>
                         <Lock size={16} className="stitch-input-icon" />
                         <input
-                          type="password"
+                          type={showRegPassword ? 'text' : 'password'}
                           className="stitch-input"
                           placeholder="Min 4 characters"
                           value={regPassword}
                           onChange={(e) => setRegPassword(e.target.value)}
                           required
+                          style={{ paddingRight: '44px' }}
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowRegPassword(!showRegPassword)}
+                          aria-label={showRegPassword ? "Hide password" : "Show password"}
+                          style={{
+                            position: 'absolute',
+                            right: '12px',
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#c5a66a',
+                            cursor: 'pointer',
+                            padding: '4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s ease'
+                          }}
+                        >
+                          {showRegPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
                       </div>
                       {/* PASSWORD STRENGTH VISUAL BAR */}
                       <div style={{ width: '100%', height: '3px', background: '#262422', borderRadius: '2px', overflow: 'hidden', marginBottom: '12px' }}>
