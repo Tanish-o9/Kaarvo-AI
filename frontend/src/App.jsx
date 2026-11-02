@@ -49,7 +49,7 @@ export default function App() {
   const [accessToken, setAccessToken] = useState(() => localStorage.getItem('kaarvo_access_token') || null);
   const [refreshToken, setRefreshToken] = useState(() => localStorage.getItem('kaarvo_refresh_token') || null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
+  const [authMode, setAuthMode] = useState('register'); // 'login' | 'register'
   const [authRole, setAuthRole] = useState('artisan'); // 'artisan' | 'customer'
   const [showPassword, setShowPassword] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
@@ -107,7 +107,7 @@ export default function App() {
     showToast('🎉 Phone OTP successfully verified via ONDC SMS Gateway!');
   };
 
-  // Automatic Token Refresh Helper
+  // Automatic Token Refresh Helper & Session Validator
   const refreshAuthToken = async () => {
     const curRefresh = localStorage.getItem('kaarvo_refresh_token');
     if (!curRefresh) return null;
@@ -122,11 +122,22 @@ export default function App() {
         if (data.access_token) {
           localStorage.setItem('kaarvo_access_token', data.access_token);
           setAccessToken(data.access_token);
+          if (data.refresh_token) {
+            localStorage.setItem('kaarvo_refresh_token', data.refresh_token);
+            setRefreshToken(data.refresh_token);
+          }
+          if (data.user) {
+            localStorage.setItem('kaarvo_user', JSON.stringify(data.user));
+            setCurrentUser(data.user);
+          }
           return data.access_token;
         }
+      } else if (res.status === 401) {
+        console.warn('Refresh token is invalid or expired.');
+        return null;
       }
     } catch (err) {
-      console.warn('Token refresh notice:', err);
+      console.warn('Token refresh network notice:', err);
     }
     return null;
   };
@@ -247,6 +258,8 @@ export default function App() {
     setAccessToken(null);
     setRefreshToken(null);
     setCurrentUser(null);
+    setAuthMode('register');
+    setIsAuthModalOpen(true);
     showToast('👋 Signed out successfully.');
   };
 
@@ -1168,6 +1181,50 @@ export default function App() {
     }
   };
 
+  // --- AUTHENTICATION & JWT REFRESH LIFECYCLE ON APP STARTUP ---
+  useEffect(() => {
+    const initAuthSession = async () => {
+      const curRefresh = localStorage.getItem('kaarvo_refresh_token');
+      const curUser = localStorage.getItem('kaarvo_user');
+
+      if (!curRefresh || !curUser) {
+        // NEW USER: Direct open Sign Up (register) modal immediately on site visit!
+        setAuthMode('register');
+        setIsAuthModalOpen(true);
+      } else {
+        // EXISTING USER: Validate and refresh tokens seamlessly
+        const freshToken = await refreshAuthToken();
+        if (freshToken) {
+          // Token is healthy! Keep user seamlessly in their session
+          setIsAuthModalOpen(false);
+        } else {
+          // Token invalid or expired: Clear stale session and direct to Sign Up
+          localStorage.removeItem('kaarvo_access_token');
+          localStorage.removeItem('kaarvo_refresh_token');
+          localStorage.removeItem('kaarvo_user');
+          setAccessToken(null);
+          setRefreshToken(null);
+          setCurrentUser(null);
+          setAuthMode('register');
+          setIsAuthModalOpen(true);
+          showToast('Session expired. Please register or sign in to continue.');
+        }
+      }
+    };
+
+    initAuthSession();
+
+    // Silent background token refresher (refreshes access token every 45 mins)
+    const tokenRefreshTimer = setInterval(() => {
+      const curRefresh = localStorage.getItem('kaarvo_refresh_token');
+      if (curRefresh) {
+        refreshAuthToken();
+      }
+    }, 45 * 60 * 1000);
+
+    return () => clearInterval(tokenRefreshTimer);
+  }, []);
+
   useEffect(() => {
     fetchData();
     // No default pricing calculation until user enters costs
@@ -1649,9 +1706,13 @@ export default function App() {
     setProducts(prev => [newP, ...prev.filter(p => p.id !== newP.id)]);
 
     try {
+      const activeTok = localStorage.getItem('kaarvo_access_token');
       await fetch(`${API_BASE}/products`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(activeTok ? { 'Authorization': `Bearer ${activeTok}` } : {})
+        },
         body: JSON.stringify(newP)
       });
     } catch (err) {

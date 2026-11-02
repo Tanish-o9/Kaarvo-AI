@@ -252,11 +252,29 @@ class TokenRefreshCustomView(APIView):
         try:
             refresh = RefreshToken(refresh_str)
             access_token = str(refresh.access_token)
-            return Response({
+            resp_data = {
                 'access_token': access_token,
+                'refresh_token': refresh_str,
                 'token_type': 'Bearer',
                 'expires_in': 3600
-            })
+            }
+            user_id = refresh.payload.get('user_id')
+            if user_id:
+                try:
+                    user = User.objects.get(id=user_id)
+                    resp_data['user'] = {
+                        'id': user.id,
+                        'username': user.username,
+                        'full_name': f"{user.first_name} {user.last_name}".strip() or user.username,
+                        'email': user.email,
+                        'role': 'artisan' if hasattr(user, 'artisan_profile') else 'customer'
+                    }
+                    if hasattr(user, 'artisan_profile'):
+                        resp_data['user']['craft_type'] = user.artisan_profile.craft_type
+                        resp_data['user']['region'] = user.artisan_profile.region
+                except User.DoesNotExist:
+                    pass
+            return Response(resp_data)
         except Exception:
             return Response({'error': 'Invalid or expired refresh token. Please sign in again.'}, status=status.HTTP_401_UNAUTHORIZED)
 
