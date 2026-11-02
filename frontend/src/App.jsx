@@ -491,6 +491,11 @@ export default function App() {
   ]);
   const voiceRecognitionRef = useRef(null);
   const voiceMediaStreamRef = useRef(null);
+  const voiceAudioChunksRef = useRef([]);
+  const voiceAudioProcessorRef = useRef(null);
+  const voiceAudioContextRef = useRef(null);
+  const voiceCapturedQueryRef = useRef('');
+  const [voiceAudioLevel, setVoiceAudioLevel] = useState(0);
 
   // Process image on HTML5 canvas with Adaptive AI Lighting & Photo Super-Enhancement
   const processCanvasImage = (rawUrl) => {
@@ -1123,6 +1128,38 @@ export default function App() {
     }, 800);
   };
 
+  // Pure in-browser 16-bit PCM mono WAV Encoder
+  const encodeWavBlob = (samples, sampleRate = 16000) => {
+    const buffer = new ArrayBuffer(44 + samples.length * 2);
+    const view = new DataView(buffer);
+
+    const writeStr = (v, offset, str) => {
+      for (let i = 0; i < str.length; i++) v.setUint8(offset + i, str.charCodeAt(i));
+    };
+
+    writeStr(view, 0, 'RIFF');
+    view.setUint32(4, 36 + samples.length * 2, true);
+    writeStr(view, 8, 'WAVE');
+    writeStr(view, 12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true); // PCM format
+    view.setUint16(22, 1, true); // 1 channel (mono)
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true); // Byte rate
+    view.setUint16(32, 2, true); // Block align
+    view.setUint16(34, 16, true); // 16 bits per sample
+    writeStr(view, 36, 'data');
+    view.setUint32(40, samples.length * 2, true);
+
+    let offset = 44;
+    for (let i = 0; i < samples.length; i++, offset += 2) {
+      const s = Math.max(-1, Math.min(1, samples[i]));
+      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
+
+    return new Blob([view], { type: 'audio/wav' });
+  };
+
   // --- FEATURE 6 HELPERS: Two-Way Conversational Voice AI Sahayak ---
   const speakVoiceText = (text) => {
     if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -1168,8 +1205,10 @@ export default function App() {
     setIsVoiceSpeaking(false);
   };
 
-  const stopVoiceListening = () => {
+  const stopVoiceListening = async () => {
     setIsVoiceListening(false);
+    setVoiceAudioLevel(0);
+
     if (voiceRecognitionRef.current) {
       try {
         voiceRecognitionRef.current.onend = null;
@@ -1178,76 +1217,176 @@ export default function App() {
       } catch (e) {}
       voiceRecognitionRef.current = null;
     }
+
+    if (voiceAudioProcessorRef.current) {
+      try { voiceAudioProcessorRef.current.disconnect(); } catch (e) {}
+      voiceAudioProcessorRef.current = null;
+    }
+
+    if (voiceAudioContextRef.current) {
+      try { voiceAudioContextRef.current.close(); } catch (e) {}
+      voiceAudioContextRef.current = null;
+    }
+
     if (voiceMediaStreamRef.current) {
       try {
         voiceMediaStreamRef.current.getTracks().forEach(t => t.stop());
       } catch (e) {}
       voiceMediaStreamRef.current = null;
     }
+
+    let captured = (voiceCapturedQueryRef.current || voiceTranscript || '').trim();
+
+    // Dual-engine fallback: If WebSpeech API was empty, transcribe recorded PCM WAV audio via Backend STT
+    if (!captured && voiceAudioChunksRef.current && voiceAudioChunksRef.current.length > 0) {
+      const totalLen = voiceAudioChunksRef.current.reduce((acc, c) => acc + c.length, 0);
+      if (totalLen > 1600) {
+        const merged = new Float32Array(totalLen);
+        let offset = 0;
+        for (const chunk of voiceAudioChunksRef.current) {
+          merged.set(chunk, offset);
+          offset += chunk.length;
+        }
+
+        const wavBlob = encodeWavBlob(merged, 16000);
+        showToast('⏳ Aawaz process ho rahi hai...');
+
+        try {
+          const formData = new FormData();
+          formData.append('audio', wavBlob, 'recording.wav');
+          formData.append('language', voiceLanguage || 'hi-IN');
+
+          const baseUrl = getBackendApiBase();
+          const res = await fetch(`${baseUrl}/api/v1/voice-transcribe`, {
+            method: 'POST',
+            body: formData,
+            signal: AbortSignal.timeout(6000)
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.transcript) {
+              captured = data.transcript;
+              voiceCapturedQueryRef.current = data.transcript;
+              setVoiceTranscript(data.transcript);
+            }
+          }
+        } catch (sttErr) {
+          console.warn('Backend audio transcribe notice for Sahayak:', sttErr);
+        }
+      }
+    }
+
+    if (captured) {
+      handleVoiceQuery(captured);
+    } else {
+      showToast('⚠️ Aawaz detect nahi hui. Kripya mic dabakar dubara bole ya text type karein.');
+    }
   };
 
   const startVoiceListening = async () => {
     stopVoiceSpeaking();
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      showToast('⚠️ Speech recognition browser me uplabdh nahi hai. Kripya niche diye chips tap karein ya text likhein!');
-      return;
-    }
+    voiceCapturedQueryRef.current = '';
+    voiceAudioChunksRef.current = [];
+    setVoiceTranscript('');
+    setVoiceAudioLevel(0);
 
+    let stream = null;
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
         voiceMediaStreamRef.current = stream;
       }
     } catch (e) {
       console.warn('Mic permission notice:', e);
+      showToast('⚠️ Kripya browser settings me Microphone permission allow karein!');
+      return;
     }
 
-    try {
-      if (voiceRecognitionRef.current) {
-        try { voiceRecognitionRef.current.stop(); } catch (e) {}
+    // Set up Web Audio PCM recorder for hardware capture fallback
+    if (stream) {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          const ctx = new AudioCtx({ sampleRate: 16000 });
+          voiceAudioContextRef.current = ctx;
+          const source = ctx.createMediaStreamSource(stream);
+          const processor = ctx.createScriptProcessor(4096, 1, 1);
+          voiceAudioProcessorRef.current = processor;
+
+          processor.onaudioprocess = (e) => {
+            const inputData = e.inputBuffer.getChannelData(0);
+            voiceAudioChunksRef.current.push(new Float32Array(inputData));
+
+            // Compute RMS volume for live audio feedback
+            let sumSquares = 0;
+            for (let i = 0; i < inputData.length; i++) {
+              sumSquares += inputData[i] * inputData[i];
+            }
+            const rms = Math.sqrt(sumSquares / inputData.length);
+            const levelPct = Math.min(100, Math.round(rms * 450));
+            setVoiceAudioLevel(levelPct);
+          };
+
+          source.connect(processor);
+          processor.connect(ctx.destination);
+        }
+      } catch (audioErr) {
+        console.warn('AudioContext setup error:', audioErr);
       }
+    }
 
-      const rec = new SpeechRecognition();
-      voiceRecognitionRef.current = rec;
-      rec.continuous = false;
-      rec.interimResults = true;
-      rec.lang = voiceLanguage;
+    // Start Web Speech API in parallel
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      try {
+        if (voiceRecognitionRef.current) {
+          try { voiceRecognitionRef.current.stop(); } catch (e) {}
+        }
 
-      rec.onstart = () => {
+        const rec = new SpeechRecognition();
+        voiceRecognitionRef.current = rec;
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.lang = voiceLanguage;
+
+        rec.onstart = () => {
+          setIsVoiceListening(true);
+          showToast('🎙️ वॉयस सहायक सुन रहा है... आप बोल सकते हैं!');
+        };
+
+        rec.onresult = (event) => {
+          let interim = '';
+          for (let i = 0; i < event.results.length; i++) {
+            interim += event.results[i][0].transcript;
+          }
+          if (interim) {
+            setVoiceTranscript(interim);
+            voiceCapturedQueryRef.current = interim;
+          }
+        };
+
+        rec.onerror = (e) => {
+          console.warn('SpeechRecognition notice:', e.error);
+        };
+
+        rec.onend = () => {};
+
+        rec.start();
         setIsVoiceListening(true);
-        showToast('🎙️ वॉयस सहायक सुन रहा है... आप बोल सकते हैं!');
-      };
-
-      rec.onresult = (event) => {
-        let interim = '';
-        for (let i = 0; i < event.results.length; i++) {
-          interim += event.results[i][0].transcript;
-        }
-        setVoiceTranscript(interim);
-        if (event.results[0] && event.results[0].isFinal) {
-          const finalQuery = event.results[0][0].transcript;
-          stopVoiceListening();
-          handleVoiceQuery(finalQuery);
-        }
-      };
-
-      rec.onerror = (e) => {
-        console.warn('SpeechRecognition error:', e.error);
-        setIsVoiceListening(false);
-        if (e.error === 'not-allowed') {
-          showToast('⚠️ Kripya browser settings me Microphone permission allow karein!');
-        }
-      };
-
-      rec.onend = () => {
-        setIsVoiceListening(false);
-      };
-
-      rec.start();
-    } catch (err) {
-      console.warn('Speech recognition start failed:', err);
-      setIsVoiceListening(false);
+      } catch (err) {
+        console.warn('Speech recognition start failed, using hardware audio fallback:', err);
+        setIsVoiceListening(true);
+      }
+    } else {
+      setIsVoiceListening(true);
+      showToast('🎙️ Hardware Mic Active - Speak now!');
     }
   };
 
@@ -1317,6 +1456,20 @@ export default function App() {
           };
 
           setProducts(prev => [newProd, ...prev.filter(item => item.id !== newProd.id)]);
+          setGeneratedCatalog({
+            title: newProd.title,
+            description: newProd.description,
+            category: newProd.category,
+            price: newProd.price,
+            original_price: newProd.original_price,
+            origin: newProd.location,
+            materials: newProd.material,
+            technique: newProd.technique,
+            care_instructions: 'Wipe gently with clean soft dry cloth.',
+            verification_score: 98,
+            ondc_ready: true,
+            image_url: newProd.image
+          });
 
           try {
             await fetch(`${API_BASE}/products`, {
@@ -1806,37 +1959,7 @@ export default function App() {
     voiceTextRef.current = voiceText;
   }, [voiceText]);
 
-  // Pure in-browser 16-bit PCM mono WAV Encoder
-  const encodeWavBlob = (samples, sampleRate = 16000) => {
-    const buffer = new ArrayBuffer(44 + samples.length * 2);
-    const view = new DataView(buffer);
-
-    const writeStr = (v, offset, str) => {
-      for (let i = 0; i < str.length; i++) v.setUint8(offset + i, str.charCodeAt(i));
-    };
-
-    writeStr(view, 0, 'RIFF');
-    view.setUint32(4, 36 + samples.length * 2, true);
-    writeStr(view, 8, 'WAVE');
-    writeStr(view, 12, 'fmt ');
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true); // PCM format
-    view.setUint16(22, 1, true); // 1 channel (mono)
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * 2, true); // Byte rate
-    view.setUint16(32, 2, true); // Block align
-    view.setUint16(34, 16, true); // 16 bits per sample
-    writeStr(view, 36, 'data');
-    view.setUint32(40, samples.length * 2, true);
-
-    let offset = 44;
-    for (let i = 0; i < samples.length; i++, offset += 2) {
-      const s = Math.max(-1, Math.min(1, samples[i]));
-      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-    }
-
-    return new Blob([view], { type: 'audio/wav' });
-  };
+  // (Shared encodeWavBlob used here)
 
   const stopVoiceRecording = async () => {
     isRecordingRef.current = false;
@@ -7004,45 +7127,53 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
 
           {/* ACTIVE STATUS BANNER */}
           {(isVoiceListening || isVoiceSpeaking || voiceLoading) && (
-            <div style={{ padding: '10px 16px', background: isVoiceListening ? '#3f1111' : isVoiceSpeaking ? '#063b2c' : '#292211', borderBottom: '1px solid #38342e', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFFFFF' }}>
-                {isVoiceListening ? (
-                  <>
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 1s infinite' }} />
-                    <span style={{ fontWeight: '700', color: '#fca5a5' }}>सुन रहा हूँ: </span>
-                    <span style={{ fontStyle: 'italic', maxWidth: '210px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      "{voiceTranscript || 'Boliye...'}"
-                    </span>
-                  </>
-                ) : isVoiceSpeaking ? (
-                  <>
+            <div style={{ padding: '10px 16px', background: isVoiceListening ? '#2e0f0f' : isVoiceSpeaking ? '#063b2c' : '#292211', borderBottom: '1px solid #38342e', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
+              {isVoiceListening ? (
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 1s infinite' }} />
+                      <span style={{ fontWeight: '700', color: '#fca5a5' }}>सुन रहा हूँ: </span>
+                      <span style={{ fontStyle: 'italic', maxWidth: '190px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#FFFFFF' }}>
+                        "{voiceTranscript || 'Boliye...'}"
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={stopVoiceListening}
+                      style={{ background: '#ef4444', color: '#FFFFFF', border: 'none', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
+                    >
+                      Done ⏹️
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', color: '#10b981' }}>
+                    <span>🔊 Mic Hearing Voice:</span>
+                    <div style={{ flex: 1, height: '4px', background: '#262422', borderRadius: '2px', overflow: 'hidden' }}>
+                      <div style={{ width: `${voiceAudioLevel}%`, height: '100%', background: 'linear-gradient(90deg, #10b981, #c5a66a)', transition: 'width 0.1s ease' }} />
+                    </div>
+                    <span style={{ fontWeight: '700', minWidth: '28px' }}>{voiceAudioLevel}%</span>
+                  </div>
+                </div>
+              ) : isVoiceSpeaking ? (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFFFFF' }}>
                     <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', animation: 'pulse 1s infinite' }} />
                     <span style={{ fontWeight: '700', color: '#6ee7b7' }}>बोल रहा हूँ (Speaking)...</span>
-                  </>
-                ) : (
-                  <>
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#c5a66a', animation: 'pulse 1s infinite' }} />
-                    <span style={{ color: '#dfbe7d' }}>AI प्रोसेसिंग चालू है...</span>
-                  </>
-                )}
-              </div>
-              {isVoiceListening ? (
-                <button
-                  type="button"
-                  onClick={stopVoiceListening}
-                  style={{ background: '#ef4444', color: '#FFFFFF', border: 'none', padding: '3px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '800', cursor: 'pointer' }}
-                >
-                  Stop
-                </button>
-              ) : isVoiceSpeaking ? (
-                <button
-                  type="button"
-                  onClick={stopVoiceSpeaking}
-                  style={{ background: '#10b981', color: '#FFFFFF', border: 'none', padding: '3px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '800', cursor: 'pointer' }}
-                >
-                  Mute
-                </button>
-              ) : null}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={stopVoiceSpeaking}
+                    style={{ background: '#10b981', color: '#FFFFFF', border: 'none', padding: '3px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '800', cursor: 'pointer' }}
+                  >
+                    Mute
+                  </button>
+                </>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFFFFF' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#c5a66a', animation: 'pulse 1s infinite' }} />
+                  <span style={{ color: '#dfbe7d' }}>AI प्रोसेसिंग चालू है...</span>
+                </div>
+              )}
             </div>
           )}
 
@@ -7078,19 +7209,74 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                       <div style={{ fontSize: '10px', color: '#c5a66a', fontWeight: '800', textTransform: 'uppercase', marginBottom: '4px' }}>✨ Live Store Listing Created</div>
                       <div style={{ fontWeight: '700', fontSize: '12px', color: '#FFFFFF' }}>{m.payload.product.title}</div>
                       <div style={{ fontSize: '12px', color: '#10b981', fontWeight: '800', marginTop: '2px' }}>₹{m.payload.product.price} • Living-Wage Verified</div>
+                      <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMode('customer');
+                            switchCustomerTab('shop');
+                            setIsVoiceModalOpen(false);
+                            showToast('Opened live product in storefront!');
+                          }}
+                          style={{ flex: 1, padding: '7px 8px', borderRadius: '6px', background: '#c5a66a', color: '#121212', border: 'none', cursor: 'pointer', fontWeight: '800', fontSize: '11px' }}
+                        >
+                          🛍️ View in Store →
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMode('artisan');
+                            switchArtisanTab('studio');
+                            setIsVoiceModalOpen(false);
+                            showToast('Opened craft in 3-Pillar AI Studio!');
+                          }}
+                          style={{ flex: 1, padding: '7px 8px', borderRadius: '6px', background: '#262422', color: '#dfbe7d', border: '1px solid #3d3a35', cursor: 'pointer', fontWeight: '700', fontSize: '11px' }}
+                        >
+                          🎨 Edit in Studio →
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {m.action === 'ANALYZE_SALES' && (
+                    <div style={{ marginTop: '10px', padding: '10px', background: '#1c241e', borderRadius: '8px', border: '1px solid #10b981' }}>
+                      <div style={{ fontSize: '10px', color: '#10b981', fontWeight: '800', textTransform: 'uppercase', marginBottom: '4px' }}>📊 Live Business Performance</div>
+                      <div style={{ fontSize: '12px', color: '#FFFFFF', fontWeight: '700' }}>
+                        Total Revenue: <span style={{ color: '#10b981' }}>₹{m.payload?.total_revenue?.toLocaleString() || '0'}</span> • Orders: <span style={{ color: '#dfbe7d' }}>{m.payload?.order_count || 0}</span>
+                      </div>
                       <button
                         type="button"
                         onClick={() => {
-                          setMode('customer');
-                          switchCustomerTab('shop');
+                          setMode('artisan');
+                          switchArtisanTab('orders');
                           setIsVoiceModalOpen(false);
-                          showToast('Opened live product in storefront!');
+                          showToast('Switched to Live Orders & Sales tab!');
                         }}
-                        style={{ marginTop: '8px', width: '100%', padding: '6px', borderRadius: '6px', background: '#c5a66a', color: '#121212', border: 'none', cursor: 'pointer', fontWeight: '800', fontSize: '11px' }}
+                        style={{ marginTop: '8px', width: '100%', padding: '6px', borderRadius: '6px', background: '#10b981', color: '#121212', border: 'none', cursor: 'pointer', fontWeight: '800', fontSize: '11px' }}
                       >
-                        View Live on Storefront →
+                        📋 View Orders & Sales Tab →
                       </button>
                     </div>
+                  )}
+
+                  {m.action === 'NAVIGATE_TAB' && m.payload?.target && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const t = m.payload.target;
+                        if (['studio', 'orders', 'copilot', 'dashboard', 'settings', 'insights'].includes(t)) {
+                          setMode('artisan');
+                          switchArtisanTab(t);
+                        } else {
+                          setMode('customer');
+                          switchCustomerTab(t === 'store' ? 'shop' : t);
+                        }
+                        setIsVoiceModalOpen(false);
+                      }}
+                      style={{ marginTop: '8px', width: '100%', padding: '6px', borderRadius: '6px', background: '#c5a66a', color: '#121212', border: 'none', cursor: 'pointer', fontWeight: '800', fontSize: '11px' }}
+                    >
+                      👉 Switch to {m.payload.target.toUpperCase()} Tab →
+                    </button>
                   )}
 
                   {m.action === 'VOICE_FILTER_STORE' && (
