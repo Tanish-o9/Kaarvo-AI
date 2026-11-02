@@ -261,24 +261,46 @@ export default function App() {
     showToast('👋 Signed out successfully.');
   };
 
-    // Tab Persistence: Customer vs Artisan views
+  // Tab & Mode Persistence: Preserve active page across browser refresh (F5)
   const getInitialMode = () => {
-    // Always open on the Main Dashboard (Customer Storefront) by default
+    try {
+      const hash = (typeof window !== 'undefined' ? window.location.hash : '').replace('#', '').toLowerCase();
+      const artisanTabs = ['dashboard', 'studio', 'copilot', 'orders', 'auctions', 'customers', 'insights', 'marketing', 'settings'];
+      if (artisanTabs.includes(hash)) {
+        return 'artisan';
+      }
+      const customerTabs = ['home', 'shop', 'collections', 'artisans', 'ai_ask', 'stories', 'cart'];
+      if (customerTabs.includes(hash)) {
+        return 'customer';
+      }
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('kaarvo_app_mode') : null;
+      if (saved === 'artisan' || saved === 'customer') {
+        return saved;
+      }
+    } catch (e) {}
     return 'customer';
   };
 
   const getInitialCustomerTab = () => {
-    const hash = window.location.hash.replace('#', '');
-    const valid = ['home', 'shop', 'collections', 'artisans', 'ai_ask', 'stories'];
-    if (valid.includes(hash)) return hash;
-    return localStorage.getItem('kaarvo_customer_tab') || 'home';
+    try {
+      const hash = (typeof window !== 'undefined' ? window.location.hash : '').replace('#', '').toLowerCase();
+      const valid = ['home', 'shop', 'collections', 'artisans', 'ai_ask', 'stories', 'cart'];
+      if (valid.includes(hash)) return hash;
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('kaarvo_customer_tab') : null;
+      if (saved && valid.includes(saved)) return saved;
+    } catch (e) {}
+    return 'home';
   };
 
   const getInitialArtisanTab = () => {
-    const hash = window.location.hash.replace('#', '');
-    const valid = ['dashboard', 'copilot', 'studio', 'orders', 'customers', 'insights', 'marketing', 'settings'];
-    if (valid.includes(hash)) return hash;
-    return localStorage.getItem('kaarvo_artisan_tab') || 'dashboard';
+    try {
+      const hash = (typeof window !== 'undefined' ? window.location.hash : '').replace('#', '').toLowerCase();
+      const valid = ['dashboard', 'copilot', 'studio', 'orders', 'auctions', 'customers', 'insights', 'marketing', 'settings'];
+      if (valid.includes(hash)) return hash;
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('kaarvo_artisan_tab') : null;
+      if (saved && valid.includes(saved)) return saved;
+    } catch (e) {}
+    return 'dashboard';
   };
 
   const [mode, setMode] = useState(getInitialMode);
@@ -1880,6 +1902,35 @@ export default function App() {
     'Jewelry (traditional)': { min: 0.45, max: 0.70, label: '45% – 70%' }
   };
 
+  // Preserve active mode & tab on browser refresh or hash navigation
+  useEffect(() => {
+    const handleHashSync = () => {
+      try {
+        const hash = (window.location.hash || '').replace('#', '').toLowerCase();
+        const artisanTabs = ['dashboard', 'studio', 'copilot', 'orders', 'auctions', 'customers', 'insights', 'marketing', 'settings'];
+        const customerTabs = ['home', 'shop', 'collections', 'artisans', 'ai_ask', 'stories', 'cart'];
+
+        if (artisanTabs.includes(hash)) {
+          setMode('artisan');
+          setArtisanTab(hash);
+          localStorage.setItem('kaarvo_app_mode', 'artisan');
+          localStorage.setItem('kaarvo_artisan_tab', hash);
+        } else if (customerTabs.includes(hash)) {
+          setMode('customer');
+          setCustomerTab(hash);
+          localStorage.setItem('kaarvo_app_mode', 'customer');
+          localStorage.setItem('kaarvo_customer_tab', hash);
+        }
+      } catch (e) {}
+    };
+
+    window.addEventListener('hashchange', handleHashSync);
+    // Sync hash immediately on mount
+    handleHashSync();
+
+    return () => window.removeEventListener('hashchange', handleHashSync);
+  }, []);
+
   // Fetch DB data from Django API
   const fetchData = async () => {
     setLoading(true);
@@ -1983,10 +2034,19 @@ export default function App() {
   const switchMode = (newMode) => {
     setMode(newMode);
     localStorage.setItem('kaarvo_app_mode', newMode);
+    if (newMode === 'artisan') {
+      const target = artisanTab || localStorage.getItem('kaarvo_artisan_tab') || 'dashboard';
+      window.location.hash = target;
+    } else {
+      const target = customerTab || localStorage.getItem('kaarvo_customer_tab') || 'home';
+      window.location.hash = target;
+    }
   };
 
   const switchCustomerTab = (tab) => {
     setCustomerTab(tab);
+    setMode('customer');
+    localStorage.setItem('kaarvo_app_mode', 'customer');
     localStorage.setItem('kaarvo_customer_tab', tab);
     window.location.hash = tab;
     try {
@@ -1996,6 +2056,8 @@ export default function App() {
 
   const switchArtisanTab = (tab) => {
     setArtisanTab(tab);
+    setMode('artisan');
+    localStorage.setItem('kaarvo_app_mode', 'artisan');
     localStorage.setItem('kaarvo_artisan_tab', tab);
     window.location.hash = tab;
   };
