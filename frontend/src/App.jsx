@@ -2461,8 +2461,14 @@ export default function App() {
     setExtractedEntities(entities);
     setGeneratedCatalog(catalog);
 
-    // Pick active pricing from Pillar 3, overrides, or catalog calculated range
-    const activePrice = customOverrides.price || pricingResult?.min || catalog.price.suggested_range.min || (parseFloat(materialCost || 0) + parseFloat(laborCost || 0)) * 1.4 || 850;
+    // Pick active pricing from overrides, Pillar 3, or user input
+    const userCostSum = (parseFloat(materialCost) || 0) + (parseFloat(laborCost) || 0);
+    const activePrice = customOverrides.price || (userCostSum > 0 ? Math.round(userCostSum * 1.4) : (pricingResult?.min || catalog.price?.suggested_range?.min || 0));
+
+    if (!activePrice || activePrice <= 0) {
+      showToast('⚠️ Kripya product ka valid price dalein (Pillar 3 me cost dalein ya Live Selling Price box me likhein)!');
+      return;
+    }
     const activeTitle = customOverrides.title || catalog.descriptor.name;
     const activeDesc = customOverrides.description || catalog.descriptor.long_desc;
 
@@ -6533,8 +6539,9 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
 
                   const defaultTitle = generatedCatalog?.descriptor?.name || (voiceText ? voiceText.slice(0, 45) : 'Handcrafted Jaipur Terracotta Clay Heirloom');
                   const defaultCategory = generatedCatalog?.category || craftCategory || 'Pottery / Terracotta';
-                  const calculatedPrice = pricingResult?.min || generatedCatalog?.price?.suggested_range?.min || (parseFloat(materialCost || 0) + parseFloat(laborCost || 0)) * 1.4 || 850;
-                  const finalDisplayPrice = Math.round(customLivePrice ? parseFloat(customLivePrice) : calculatedPrice);
+                  const userEnteredCost = (parseFloat(materialCost) || 0) + (parseFloat(laborCost) || 0);
+                  const dynamicCostPrice = userEnteredCost > 0 ? Math.round(userEnteredCost * 1.4) : (pricingResult?.min || generatedCatalog?.price?.suggested_range?.min || 0);
+                  const finalDisplayPrice = customLivePrice !== '' ? (parseFloat(customLivePrice) || 0) : dynamicCostPrice;
                   const activeImg = enhancedImage || rawImageFile;
                   const finalTitle = customLiveTitle || defaultTitle;
                   const finalDesc = customLiveDesc || generatedCatalog?.descriptor?.long_desc || (voiceText ? `Handcrafted heritage item: ${voiceText}. Living wage and authenticity verified under ONDC Beckn protocol.` : 'Authentic generational handcrafted piece made with verified indigenous techniques. Quality and living wage verified under ONDC Beckn charter.');
@@ -6656,8 +6663,8 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                               <div style={{ paddingTop: '10px', borderTop: '1px solid #282623', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <div>
                                   <span style={{ fontSize: '9px', color: '#a39e93', display: 'block', textTransform: 'uppercase' }}>Living Wage Price</span>
-                                  <span className="font-serif" style={{ fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>
-                                    ₹{finalDisplayPrice.toLocaleString()}
+                                  <span className="font-serif" style={{ fontSize: '20px', fontWeight: '800', color: finalDisplayPrice > 0 ? '#FFFFFF' : '#eab308' }}>
+                                    {finalDisplayPrice > 0 ? `₹${finalDisplayPrice.toLocaleString()}` : 'Price not set'}
                                   </span>
                                 </div>
                                 <div style={{ display: 'flex', gap: '6px' }}>
@@ -6709,15 +6716,22 @@ Aap mujhse kisi bhi craft technique (Banarasi Silk, Dhokra, Jaipur Blue Pottery)
                               </label>
                               <input
                                 type="number"
-                                value={finalDisplayPrice}
+                                value={customLivePrice !== '' ? customLivePrice : (finalDisplayPrice > 0 ? finalDisplayPrice : '')}
                                 onChange={(e) => setCustomLivePrice(e.target.value)}
+                                placeholder="e.g. 500 (Set Price)"
                                 className="input-artisan"
                                 style={{ width: '100%', fontSize: '14px', padding: '10px 14px', color: '#10b981', fontWeight: '800' }}
                               />
                             </div>
                             <div style={{ background: '#1c1a18', border: '1px solid #2d2b28', padding: '10px 12px', borderRadius: '8px', fontSize: '11px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                              <span style={{ color: '#a39e93' }}>Material: ₹{materialCost || 180} | Labor: ₹{laborCost || 150}</span>
-                              <span style={{ color: '#10b981', fontWeight: '700', marginTop: '2px' }}>✓ 100% Direct Artisan Pay</span>
+                              {(materialCost || laborCost) ? (
+                                <>
+                                  <span style={{ color: '#a39e93' }}>Material: ₹{materialCost || 0} | Labor: ₹{laborCost || 0}</span>
+                                  <span style={{ color: '#10b981', fontWeight: '700', marginTop: '2px' }}>✓ 100% Direct Artisan Pay</span>
+                                </>
+                              ) : (
+                                <span style={{ color: '#dfbe7d' }}>⚡ Pillar 3 me cost dalein ya yahan direct price likhein</span>
+                              )}
                             </div>
                           </div>
 
