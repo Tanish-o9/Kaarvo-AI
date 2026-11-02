@@ -5737,7 +5737,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                             Inspect & Review Product Before Going Live
                           </h2>
                           <p style={{ fontSize: '13px', color: '#b8b3a7', maxWidth: '680px', lineHeight: '1.5' }}>
-                            यह सेक्शन ठीक वही दिखाता है जैसा आपके ग्राहकों को लाइव स्टोर में दिखेगा। विवरण चेक करें, आवश्यकतानुसार शीर्षक या कीमत बदलें, और संतुष्ट होने पर ही आगे लाइव करें।
+                            This section displays the exact card and details that customers across India will see in the live store. Inspect details, fine-tune title or price, and confirm satisfaction before publishing.
                           </p>
                         </div>
 
@@ -5776,7 +5776,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                         {/* LEFT: EXACT 1:1 CUSTOMER STORE CARD PREVIEW */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           <span style={{ fontSize: '11px', fontWeight: '800', color: '#c5a66a', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                            📱 Exact Customer Card Preview (ग्राहकों को ऐसा दिखेगा):
+                            📱 Exact Customer Card Preview (Storefront View):
                           </span>
 
                           <div 
@@ -5847,13 +5847,13 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                         {/* RIGHT: LIVE ADJUSTMENT & SATISFACTION INSPECTION */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                           <span style={{ fontSize: '11px', fontWeight: '800', color: '#dfbe7d', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                            ⚙️ Fine-Tune & Satisfaction Check (जांच व बदलाव):
+                            ⚙️ Fine-Tune & Satisfaction Check:
                           </span>
 
                           {/* Editable Title */}
                           <div>
                             <label style={{ fontSize: '11px', fontWeight: '700', color: '#FFFFFF', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
-                              Product Title (शीर्षक)
+                              Product Title
                             </label>
                             <input
                               type="text"
@@ -5888,7 +5888,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                           {/* Full Story / Description */}
                           <div>
                             <label style={{ fontSize: '11px', fontWeight: '700', color: '#FFFFFF', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
-                              Product Story & Description (विवरण)
+                              Product Story & Description
                             </label>
                             <textarea
                               rows={3}
@@ -5920,7 +5920,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                               style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#10b981' }}
                             />
                             <div style={{ fontSize: '13px', color: isArtisanSatisfied ? '#6ee7b7' : '#FFFFFF', fontWeight: isArtisanSatisfied ? '700' : '500' }}>
-                              {isArtisanSatisfied ? '✓ मैं प्रिव्यू, फ़ोटो और प्राइस से पूरी तरह संतुष्ट हूँ! (Ready to Post Live)' : 'हाँ, मैंने प्रिव्यू चेक कर लिया है और मैं संतुष्ट हूँ।'}
+                              {isArtisanSatisfied ? '✓ I am fully satisfied with the preview, photo, and pricing! (Ready to Post Live)' : 'Yes, I have reviewed the preview and I am satisfied.'}
                             </div>
                           </label>
 
@@ -5929,7 +5929,7 @@ Aap Kaarvo AI Copilot se yeh sab pooch sakte hain:
                             type="button"
                             onClick={() => {
                               if (!isArtisanSatisfied) {
-                                showToast('⚠️ कृपया पहले "संतुष्ट" चेकबॉक्स पर टिक करें!');
+                                showToast('⚠️ Please verify and check the satisfaction checkbox first!');
                                 return;
                               }
                               handleSaveCatalogToDB({
