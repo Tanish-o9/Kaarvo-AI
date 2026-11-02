@@ -289,6 +289,8 @@ export default function App() {
 
   // DB State
   const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // DYNAMIC SELLING ARTISANS (Zero Fake Data: Only artisans who have listed real products)
   // Compute products strictly created by the currently logged-in artisan
@@ -339,8 +341,7 @@ export default function App() {
     });
     return Array.from(map.values());
   }, [products]);
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+
 
   // Cart & Wishlist State
   const [cartItems, setCartItems] = useState(() => {
